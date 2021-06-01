@@ -307,6 +307,8 @@ Route::group('api/', function () {
     Route::any('notice/routine_pay', 'api.Common/routineNotify')->name('routineNotify');
     //支付宝支付回调
     Route::any('notice/alipay_pay/:type', 'api.Common/alipayNotify')->name('alipayNotify');
+    //tapgo支付回调
+    Route::any('notice/tapgo', 'api.Common/tapgoNotify')->name('tapgoNotify');
 
     //城市列表
     Route::get('system/city/lst', 'merchant.store.shipping.City/getlist');

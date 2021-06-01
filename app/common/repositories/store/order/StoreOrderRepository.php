@@ -45,6 +45,7 @@ use app\common\repositories\wechat\WechatUserRepository;
 use crmeb\jobs\PayGiveCouponJob;
 use crmeb\jobs\SendSmsJob;
 use crmeb\jobs\SendTemplateMessageJob;
+use crmeb\payment\weichat\Wechat;
 use crmeb\services\AlipayService;
 use crmeb\services\ExpressService;
 use crmeb\services\MiniProgramService;
@@ -53,6 +54,7 @@ use crmeb\services\printer\Printer;
 use crmeb\services\SwooleTaskService;
 use crmeb\services\UploadService;
 use crmeb\services\WechatService;
+use crmeb\tapgo\TapGo;
 use Exception;
 use FormBuilder\Factory\Elm;
 use FormBuilder\Form;
@@ -78,8 +80,8 @@ class StoreOrderRepository extends BaseRepository
     /**
      * 支付类型
      */
-    const PAY_TYPE = ['balance', 'weixin', 'routine', 'h5', 'alipay', 'alipayQr'];
-
+    // const PAY_TYPE = ['balance', 'weixin', 'routine', 'h5', 'alipay', 'alipayQr'];
+    const PAY_TYPE = ['balance', 'weixin', 'routine', 'h5', 'alipay', 'alipayQr','payme','tapgo'];
     /**
      * StoreOrderRepository constructor.
      * @param StoreOrderDao $dao
@@ -918,7 +920,42 @@ class StoreOrderRepository extends BaseRepository
         $url = AlipayService::create('order')->qrPaymentPrepare($groupOrder['group_order_sn'], $groupOrder['pay_price'], '订单支付');
         return app('json')->status('alipayQr', ['config' => $url, 'order_id' => $groupOrder['group_order_id']]);
     }
-
+    /**
+     * @param User $user
+     * @param StoreGroupOrder $groupOrder
+     * @param $return_url
+     * @return \think\response\Json
+     * @author zhongguanmao
+     * @day 2021/6/1
+     */
+    public function payTapgo(User $user, StoreGroupOrder $groupOrder)
+    {
+        $tapgo = new TapGo();
+        try {
+            $res = $tapgo->paymentBackEnd($groupOrder['group_order_sn'],$groupOrder['pay_price'],$remark = $groupOrder[''],'S', 'CR');
+        } catch (Exception $e){
+            throw new ValidateException($e);
+        }
+        return app('json')->status('tapgo',['schemes_url' => $res]);
+    }
+    /**
+     * @param User $user
+     * @param StoreGroupOrder $groupOrder
+     * @param $return_url
+     * @return \think\response\Json
+     * @author zhongguanmao
+     * @day 2021/6/1
+     */
+    public function payWeixinApp(User $user, StoreGroupOrder $groupOrder)
+    {
+        $wechat = new Wechat();
+        try {
+            $res = $wechat->unificationOrder();
+        } catch (Exception $e){
+            throw new ValidateException($e);
+        }
+        return app('json')->status('weixinApp',[$res]);
+    }
     /**
      * @return string
      * @author xaboy

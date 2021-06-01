@@ -25,6 +25,7 @@ use crmeb\services\AlipayService;
 use crmeb\services\MiniProgramService;
 use crmeb\services\UploadService;
 use crmeb\services\WechatService;
+use crmeb\tapgo\TapGo;
 use Exception;
 use Joypack\Tencent\Map\Bundle\Location;
 use Joypack\Tencent\Map\Bundle\LocationOption;
@@ -163,7 +164,14 @@ class Common extends BaseController
             Log::info('支付宝回调失败:' . var_export([$e->getMessage(), $e->getFile() . ':' . $e->getLine()], true));
         }
     }
-
+    public function tapgoNotify(){
+        try{
+           $TapGo = new TapGo();
+           $TapGo->notify($this->request->post());
+        } catch (Exception $e) {
+            Log::info('tapgo回调失败:' . var_export([$e->getMessage(), $e->getFile() . ':' . $e->getLine()], true));
+        }
+    }
     /**
      * 获取图片base64
      * @return mixed
