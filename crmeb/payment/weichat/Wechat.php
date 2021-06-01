@@ -24,6 +24,7 @@ class Wechat
             'notify_url' => $this->notify_url,
             'out_trade_no' => $out_trade_no,
             'trade_type' => 'APP',
+            '' => '',
         ];
         $res = httpRequest($payload);
         return $res;
