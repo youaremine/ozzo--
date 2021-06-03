@@ -15,6 +15,7 @@ namespace app\controller\api;
 
 
 use app\common\repositories\system\CacheRepository;
+use app\Request;
 use crmeb\basic\BaseController;
 use app\common\repositories\store\shipping\ExpressRepository;
 use app\common\repositories\store\StoreCategoryRepository;
@@ -25,7 +26,7 @@ use crmeb\services\AlipayService;
 use crmeb\services\MiniProgramService;
 use crmeb\services\UploadService;
 use crmeb\services\WechatService;
-use crmeb\tapgo\TapGo;
+use crmeb\payment\tapgo\TapGo;
 use Exception;
 use Joypack\Tencent\Map\Bundle\Location;
 use Joypack\Tencent\Map\Bundle\LocationOption;
@@ -164,12 +165,31 @@ class Common extends BaseController
             Log::info('支付宝回调失败:' . var_export([$e->getMessage(), $e->getFile() . ':' . $e->getLine()], true));
         }
     }
-    public function tapgoNotify(){
+    /**
+     * tapgo 回調
+     */
+    public function tapgoNotify(Request $request){
+        $test_log =  dirname(dirname(dirname(dirname(__FILE__)))).'/crmeb/payment/log/tapgo/1.txt';
+        $fp = fopen($test_log, 'w');
+        $data = json_encode($this->request->get()) . json_encode($this->request->post());
+        fwrite($fp, json_encode($data));
+        fclose($fp);
         try{
            $TapGo = new TapGo();
            $TapGo->notify($this->request->post());
         } catch (Exception $e) {
             Log::info('tapgo回调失败:' . var_export([$e->getMessage(), $e->getFile() . ':' . $e->getLine()], true));
+        }
+    }
+    /**
+     * 微信App支付 回調
+     */
+    public function weixinAppReturnNotify(){
+        try{
+            $wechat = new \crmeb\payment\wechat\Wechat();
+            $wechat->notice($this->request->post());
+        } catch (Exception $e) {
+            Log::info('微信app支付回調失敗:' . var_export([$e->getMessage(), $e->getFile() . ':' . $e->getLine()], true));
         }
     }
     /**

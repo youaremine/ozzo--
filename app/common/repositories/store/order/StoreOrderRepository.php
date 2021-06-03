@@ -45,7 +45,7 @@ use app\common\repositories\wechat\WechatUserRepository;
 use crmeb\jobs\PayGiveCouponJob;
 use crmeb\jobs\SendSmsJob;
 use crmeb\jobs\SendTemplateMessageJob;
-use crmeb\payment\weichat\Wechat;
+use crmeb\payment\wechat\Wechat;
 use crmeb\services\AlipayService;
 use crmeb\services\ExpressService;
 use crmeb\services\MiniProgramService;
@@ -54,7 +54,7 @@ use crmeb\services\printer\Printer;
 use crmeb\services\SwooleTaskService;
 use crmeb\services\UploadService;
 use crmeb\services\WechatService;
-use crmeb\tapgo\TapGo;
+use crmeb\payment\tapgo\TapGo;
 use Exception;
 use FormBuilder\Factory\Elm;
 use FormBuilder\Form;
@@ -81,7 +81,7 @@ class StoreOrderRepository extends BaseRepository
      * 支付类型
      */
     // const PAY_TYPE = ['balance', 'weixin', 'routine', 'h5', 'alipay', 'alipayQr'];
-    const PAY_TYPE = ['balance', 'weixin', 'routine', 'h5', 'alipay', 'alipayQr','payme','tapgo'];
+    const PAY_TYPE = ['balance', 'weixin', 'routine', 'h5', 'alipay', 'alipayQr','payme','tapgo','weixinAppPay'];
     /**
      * StoreOrderRepository constructor.
      * @param StoreOrderDao $dao
@@ -932,7 +932,7 @@ class StoreOrderRepository extends BaseRepository
     {
         $tapgo = new TapGo();
         try {
-            $res = $tapgo->paymentBackEnd($groupOrder['group_order_sn'],$groupOrder['pay_price'],$remark = $groupOrder[''],'S', 'CR');
+            $res = $tapgo->paymentBackEnd($groupOrder['group_order_sn'],$groupOrder['pay_price'],$remark = '','S', 'CR');
         } catch (Exception $e){
             throw new ValidateException($e);
         }
@@ -944,17 +944,17 @@ class StoreOrderRepository extends BaseRepository
      * @param $return_url
      * @return \think\response\Json
      * @author zhongguanmao
-     * @day 2021/6/1
+     * @day 2021/6/2
      */
-    public function payWeixinApp(User $user, StoreGroupOrder $groupOrder)
+    public function payWeixinAppPay(User $user, StoreGroupOrder $groupOrder)
     {
-        $wechat = new Wechat();
+        $weixin = new Wechat();
         try {
-            $res = $wechat->unificationOrder();
+            $res = $weixin->unificationOrder($groupOrder['group_order_sn'],'ozzo shop pay', $groupOrder['pay_price']);
         } catch (Exception $e){
             throw new ValidateException($e);
         }
-        return app('json')->status('weixinApp',[$res]);
+        return app('json')->status('weixinAppPay',['config' => $res]);
     }
     /**
      * @return string

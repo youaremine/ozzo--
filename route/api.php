@@ -309,6 +309,8 @@ Route::group('api/', function () {
     Route::any('notice/alipay_pay/:type', 'api.Common/alipayNotify')->name('alipayNotify');
     //tapgo支付回调
     Route::any('notice/tapgo', 'api.Common/tapgoNotify')->name('tapgoNotify');
+    //微信App支付回调
+    Route::any('notice/weixin_app_pay', 'api.Common/payWeixinAppPay')->name('payWeixinAppPay');
 
     //城市列表
     Route::get('system/city/lst', 'merchant.store.shipping.City/getlist');
