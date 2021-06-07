@@ -3,8 +3,9 @@
 return [
     'appid' => "wxcfd86c246a46ff84",
     'partnerid ' => "126125418",
-    'apikey' => "RoriN4KyomwaAFL4KyMvjrFuJlbGoNGg",
+    'api_key' => "RoriN4KyomwaAFL4KyMvjrFuJlbGoNGg",
     'mchid' =>  "126125418",
+    'wechatpay_certificate_path' => __DIR__.'/key/wechatpay_447B76563F1BDE4DEAE64000D34758F4378542CC.pem',
     'private_key' => <<<PK
 -----BEGIN PRIVATE KEY-----
 MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCoRu4RogXB1lRd

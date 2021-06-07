@@ -1,0 +1,4 @@
+ --------------- .2021-06-07 01:49:14--------------- 
+params : {"id":"4200001049202106077061227203","appid":"wxcfd86c246a46ff84","mchid":"126125418","out_trade_no":"wx1623001681801477020","payer":{"openid":"oRtLk5zOcj1EEBOFO2MRuh5XNfnw"},"amount":{"total":3,"currency":"HKD","payer_total":2,"payer_currency":"CNY","exchange_rate":{"type":"SETTLEMENT_RATE","rate":100000000}},"trade_type":"APP","trade_state":"SUCCESS","trade_state_desc":"支付成功","bank_type":"CCB_DEBIT","success_time":"2021-06-07T01:49:14+08:00"}
+ --------------- .2021-06-07 01:49:14--------------- 
+

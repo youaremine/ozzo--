@@ -1,0 +1,1 @@
+"{\"tradeNo\":\"210604547522\",\"totalPrice\":\"0.01\",\"tradeStatus\":\"TRADE_FINISHED\",\"sign\":\"e7dc9210f9d84c585a93271d32a541fb76d46ce777e8caae4f06bf268a5aedae\",\"errorCode\":\"000\",\"currency\":\"HKD\",\"merTradeNo\":\"wx1622800772948253400\"}[]"

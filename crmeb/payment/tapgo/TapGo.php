@@ -17,12 +17,12 @@ class TapGo
         $this->config = $config['WEB_APP']['PROD'];
     }
     private function getPublicEncrypt($data){
-        $k = <<<PK
------BEGIN PUBLIC KEY-----
-MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEA9k6Dpk12XPGBuqCKI3HERkeEU0MCBC/h/Ox1mVDuwRVngZvuYDHUxbl5Yup9yNvOFK9Xabqy3D2DX7Q9fIZqhLHAYvLMDTSuSAEza6dW6kfUzNaCnucvRpDgNKbBcxa/EA5LWyrpNaMwRLbaGe4s/l7+o0mRwCEjgEU7dzjaWVtWLH66dzTcB+LIEiwx/nYl69jaDpXEtxMYLZyQeibYRv0Gnaclu3trhe+0GYMT65DXv0aSDDxUsUhs4hL6S6j4646aZ5Yl2nukPZXUalJgv+sOm1IHLrf6Hv8LH4OqA8Vh1uQC65QHRqlwzrypxWY7nGY/40HH2rGLHjgI+Rqhwyu8v3dLHEGBoeupCcvAK9PxPSK2iU0RA/Stk5Wf2XG8m1VDLsZ1usBkdkKXyj60GZAGqN9RzwLH42whOS6Z/JN4HP7O9eUVH+qQ7yVumGH3huW5nvX0St9AFZ7kLUv8RDS6rb4zDvZiTIosGVXIt0GC9cAWEqhh7SZXHEi0CF792qJRhiZTlOS0FPFzJ4tw0sBgF61iqAD3+l9WVE4q+mhJlU4jjt10JGyl08D/7/lnD1QelP3/il3iTyMRNAmLY9PY+AuXo81AdNr1wypB+KEj4A9WyuH739yQnSURPT8fVDC5zcqv97TI72iqCLpkDr+oP3gZX4hZ8Fj3F5MrKaECAwEAAQ==
------END PUBLIC KEY-----
-PK;
-        $publicKey = openssl_pkey_get_public($k);
+//        $k = <<<PK
+//-----BEGIN PUBLIC KEY-----
+//MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEA9k6Dpk12XPGBuqCKI3HERkeEU0MCBC/h/Ox1mVDuwRVngZvuYDHUxbl5Yup9yNvOFK9Xabqy3D2DX7Q9fIZqhLHAYvLMDTSuSAEza6dW6kfUzNaCnucvRpDgNKbBcxa/EA5LWyrpNaMwRLbaGe4s/l7+o0mRwCEjgEU7dzjaWVtWLH66dzTcB+LIEiwx/nYl69jaDpXEtxMYLZyQeibYRv0Gnaclu3trhe+0GYMT65DXv0aSDDxUsUhs4hL6S6j4646aZ5Yl2nukPZXUalJgv+sOm1IHLrf6Hv8LH4OqA8Vh1uQC65QHRqlwzrypxWY7nGY/40HH2rGLHjgI+Rqhwyu8v3dLHEGBoeupCcvAK9PxPSK2iU0RA/Stk5Wf2XG8m1VDLsZ1usBkdkKXyj60GZAGqN9RzwLH42whOS6Z/JN4HP7O9eUVH+qQ7yVumGH3huW5nvX0St9AFZ7kLUv8RDS6rb4zDvZiTIosGVXIt0GC9cAWEqhh7SZXHEi0CF792qJRhiZTlOS0FPFzJ4tw0sBgF61iqAD3+l9WVE4q+mhJlU4jjt10JGyl08D/7/lnD1QelP3/il3iTyMRNAmLY9PY+AuXo81AdNr1wypB+KEj4A9WyuH739yQnSURPT8fVDC5zcqv97TI72iqCLpkDr+oP3gZX4hZ8Fj3F5MrKaECAwEAAQ==
+//-----END PUBLIC KEY-----
+//PK;
+        $publicKey = openssl_pkey_get_public($this->config['publicKey']);
 //        if(!$publicKey) throw new Exception("public key not correct");
         if (!openssl_public_encrypt(json_encode($data), $encryptedWithPublic, $publicKey, OPENSSL_PKCS1_OAEP_PADDING)) {
             echo "error encrypting with public key";
@@ -48,8 +48,8 @@ PK;
             'totalPrice' => $totalPrice,
             'currency' => 'HKD',
             'merTradeNo' => $merTradeNo,
-            'notifyUrl' => '',
-            'returnUrl' => $this->config['returnUrl'],
+            'notifyUrl' => 'https://hklive.ozzotec.com/api/notice/tapgo',
+            'returnUrl' => 'https://hklive.ozzotec.com/api/notice/tapgo',
             'remark' => $remark,
             'lang' => 'en'
         );
@@ -134,7 +134,6 @@ PK;
         curl_setopt($ch, CURLOPT_POSTFIELDS,$pamrmStr);
         $output = curl_exec($ch);
         curl_close($ch);
-
         $is_xml = $this->isXml($output);
         if($is_xml){
             $xml_obj= simplexml_load_string($output);
@@ -157,54 +156,42 @@ PK;
         }
         return $output;
     }
-    public function notify($notifyData){
+    // 回调类型 type  1. return  2. notify
+     public function notify($notifyData,$type = 'return'){
+        $this->setLog('tap go notify');
 //        if(!in_array($notifyData,$this->notify)){
 //            throw new ValidateException('notify error');
 //        }
-
-//        if(!isset($notifyData['sign']) || !$this->checkSign($notifyData,$notifyData['sign'])){
-//            throw new ValidateException('參數簽名不通過');
-//        }
-        $a = 1;
-        $test_log = '/www/wwwroot/hklive.ozzotec.com/crmeb/payment/log/tapgo/2.txt';
-        $fp = fopen($test_log, 'w');
-
-
-
-        if(!empty($notifyData) && $notifyData['resultCode'] == 0){
-            $a = $a + 1;
-//            Log::info('tap go 支付回调' . var_export($notifyData, 1));
-            if (!in_array($notifyData['tradeStatus'], ['TRADE_FINISHED'])){
-                throw new ValidateException('未支付');
-                $a = $a + 1;
-                fwrite($fp,$a);
-                fclose($fp);
-            }
-            // 1. 通知狀態訂單已支付 再次查詢訂單api確認狀態
-            $api_res = $this->paymentStatus($notifyData['merTradeNo']);
-            $a = $a + 1;
-            //  2. 驗證api 返回的參數簽名
-            if(isset($api_res['content']['resultCode']) && $api_res['content']['resultCode'] == 0 && isset($api_res['content']['payload']['tradeStatus']) && $api_res['content']['payload']['tradeStatus'] == 'TRADE_FINISHED' && $api_res['content']['payload']['merTradeNo'] == $notifyData['merTradeNo']){
-                // 3. 支付成功
-                $a = $a + 1;
-                try {
-                    // 4. 傳入訂單號 修改訂單狀態
-                    $a = $a + 1;
-                    fwrite($fp,$a);
-                    fclose($fp);
-                    event('pay_success_order', ['order_sn' => $api_res['merTradeNo'], 'data' => $notifyData]);
-                    return true;
-                } catch (\Exception$e) {
-//                    Log::info('tap go 支付回调失败:' . $e->getMessage());
-                }
-            }
+        if(!isset($notifyData['sign']) || !$this->checkSignSha256($notifyData,$notifyData['sign'],$type)){
+            $this->setLog('參數簽名不通過');
+            return ;
         }
-        fwrite($fp,$a);
-        fclose($fp);
+        if(!empty($notifyData) && $notifyData['resultCode'] == 0){
+            if (!in_array($notifyData['tradeStatus'], ['TRADE_FINISHED'])){
+                // 状态不正确
+                $this->setLog('pay tradeStatus error : '.json_encode($notifyData['tradeStatus']));
+            }
+            // 支付成功逻辑
+            $this->setLog('pay_success_order'.json_encode($notifyData,JSON_UNESCAPED_UNICODE));
+            event('pay_success_order', ['order_sn' => $notifyData['merTradeNo'], 'data' => $notifyData]);
+//            // 1. 通知狀態訂單已支付 再次查詢訂單api確認狀態
+//            $api_res = $this->paymentStatus($notifyData['merTradeNo']);
+//            //  2. 驗證api 返回的參數簽名
+//            if(isset($api_res['content']['resultCode']) && $api_res['content']['resultCode'] == 0 && isset($api_res['content']['payload']['tradeStatus']) && $api_res['content']['payload']['tradeStatus'] == 'TRADE_FINISHED' && $api_res['content']['payload']['merTradeNo'] == $notifyData['merTradeNo']){
+//                // 3. 支付成功
+//                try {
+//                    // 4. 傳入訂單號 修改訂單狀態
+//                    event('pay_success_order', ['order_sn' => $api_res['merTradeNo'], 'data' => $notifyData]);
+//                    return true;
+//                } catch (\Exception$e) {
+//                    $this->setLog('tap go notify error ' . $e->getMessage());
+//                }
+//            }
+        }
         return false;
     }
     // 驗證簽名
-    public function checkSign($data,$sign){
+    public function checkSignSha256($data,$sign,$type = 'notify'){
         if(empty($data) || is_array($data) || $sign) return false;
         ksort($data);
         $string = '';
@@ -212,7 +199,12 @@ PK;
             if($key == 'sign') continue;
             $string = $string . $key ."=" . $value . "&";
         }
-        $stringKey =  base64_encode(hash_hmac('sha256', $string, $this->config['apiKey'], true));
+        if($type == 'notify'){
+            $stringKey =  hash_hmac('sha256', $string, $this->config['apiKey'], true);
+        }
+        if($type == 'return'){
+            $stringKey =  base64_encode(hash_hmac('sha256', $string, $this->config['apiKey'], true));
+        }
         if($stringKey == $sign){
             return true;
         }
@@ -225,5 +217,22 @@ PK;
         $res = xml_parse($xml_parser, $data, true);
         xml_parser_free($xml_parser);
         return $res;
+    }
+    // 回调日志
+    private function setLog($data){
+        $time = time();
+        // 拼接时间目录写入日志
+        $log_path = dirname(__DIR__) . '/log/tapgo/';
+        $now_date = date('Y-m',$time);
+        $path = $log_path . $now_date;
+        // 判断日志路径是否存在，如果不存在则mkdir创建，并写入权限
+        if(!empty($path) && !file_exists($path)){
+            mkdir ($path,0777,true);
+        }
+        $file_path = $path . '/'. date('Y-m-d',$time);
+        $msg = " --------------- ." . date('Y-m-d H:i:s',$time) ."--------------- \n";
+        $data = $msg . $data . "\n" . $msg;
+        $res = file_put_contents($file_path,$data . PHP_EOL,FILE_APPEND );
+        return ;
     }
 }

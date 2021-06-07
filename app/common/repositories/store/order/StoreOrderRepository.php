@@ -936,7 +936,7 @@ class StoreOrderRepository extends BaseRepository
         } catch (Exception $e){
             throw new ValidateException($e);
         }
-        return app('json')->status('tapgo',['schemes_url' => $res]);
+        return app('json')->status('tapgo',['schemes_url' => $res,'order_id' => $groupOrder['group_order_id']]);
     }
     /**
      * @param User $user
@@ -954,7 +954,7 @@ class StoreOrderRepository extends BaseRepository
         } catch (Exception $e){
             throw new ValidateException($e);
         }
-        return app('json')->status('weixinAppPay',['config' => $res]);
+        return app('json')->status('weixinAppPay',['config' => $res,'order_id' => $groupOrder['group_order_id']]);
     }
     /**
      * @return string

@@ -10,7 +10,7 @@
  */
 
 namespace WechatPay\GuzzleMiddleware\Auth;
-//include ('../Credentials.php');
+
 use Psr\Http\Message\RequestInterface;
 use WechatPay\GuzzleMiddleware\Credentials;
 use WechatPay\GuzzleMiddleware\Auth\Signer;

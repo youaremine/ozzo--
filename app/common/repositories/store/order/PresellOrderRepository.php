@@ -21,6 +21,7 @@ use app\common\repositories\BaseRepository;
 use app\common\repositories\store\product\ProductPresellSkuRepository;
 use app\common\repositories\store\product\ProductRepository;
 use app\common\repositories\system\merchant\FinancialRecordRepository;
+use app\common\repositories\system\merchant\MerchantRepository;
 use app\common\repositories\user\UserBillRepository;
 use app\common\repositories\user\UserMerchantRepository;
 use app\common\repositories\user\UserRepository;
@@ -203,23 +204,105 @@ class PresellOrderRepository extends BaseRepository
                 'change_type' => 'presell'
             ];
 
-            $finance = [
+            $i = 1;
+            $finance = [];
+
+            $pay_price = bcadd($order->order->pay_price, $order->pay_price, 2);
+            $sn = app()->make(FinancialRecordRepository::class)->getSn();
+
+            $finance[] = [
                 'order_id' => $order->order_id,
                 'order_sn' => $order->presell_order_sn,
                 'user_info' => $order->user->nickname,
                 'user_id' => $order->uid,
                 'financial_type' => 'presell',
                 'financial_pm' => 1,
+                'type' => 2,
                 'number' => $order->pay_price,
                 'mer_id' => $order->mer_id,
-                'financial_record_sn' => app()->make(FinancialRecordRepository::class)->getSn() . '0'
+                'financial_record_sn' => $sn . ($i++)
             ];
+
+            $finance[] = [
+                'order_id' => $order->order->order_id,
+                'order_sn' => $order->order->order_sn,
+                'user_info' => $order->user->nickname,
+                'user_id' => $order->uid,
+                'financial_type' => 'mer_presell',
+                'financial_pm' => 1,
+                'type' => 0,
+                'number' => $pay_price,
+                'mer_id' => $order->mer_id,
+                'financial_record_sn' => $sn . ($i++)
+            ];
+
+            $pay_price = bcsub($pay_price, bcadd($order->order['extension_one'], $order->order['extension_two'], 3), 2);
+            if ($order->order['extension_one'] > 0) {
+                $finance[] = [
+                    'order_id' => $order->order->order_id,
+                    'order_sn' => $order->order->order_sn,
+                    'user_info' => $order->user->nickname,
+                    'user_id' => $order->uid,
+                    'financial_type' => 'brokerage_one',
+                    'financial_pm' => 0,
+                    'type' => 1,
+                    'number' => $order->order['extension_one'],
+                    'mer_id' => $order->mer_id,
+                    'financial_record_sn' => $sn . ($i++)
+                ];
+            }
+
+            if ($order->order['extension_two'] > 0) {
+                $finance[] = [
+                    'order_id' => $order->order->order_id,
+                    'order_sn' => $order->order->order_sn,
+                    'user_info' => $order->user->nickname,
+                    'user_id' => $order->uid,
+                    'financial_type' => 'brokerage_two',
+                    'financial_pm' => 0,
+                    'type' => 1,
+                    'number' => $order->order['extension_two'],
+                    'mer_id' => $order->mer_id,
+                    'financial_record_sn' => $sn . ($i++)
+                ];
+            }
+
+            if ($order->order->commission_rate > 0) {
+                $commission_rate = ($order->order->commission_rate / 100);
+                $ratePrice = bcmul($pay_price, $commission_rate, 2);
+                $finance[] = [
+                    'order_id' => $order->order->order_id,
+                    'order_sn' => $order->order->order_sn,
+                    'user_info' => $order->user->nickname,
+                    'user_id' => $order->uid,
+                    'financial_type' => 'presell_charge',
+                    'financial_pm' => 1,
+                    'type' => 1,
+                    'number' => $ratePrice,
+                    'mer_id' => $order->mer_id,
+                    'financial_record_sn' => $sn . ($i++)
+                ];
+                $pay_price = bcsub($pay_price, $ratePrice, 2);
+            }
+            $finance[] = [
+                'order_id' => $order->order->order_id,
+                'order_sn' => $order->order->order_sn,
+                'user_info' => $order->user->nickname,
+                'user_id' => $order->uid,
+                'financial_type' => 'presell_true',
+                'financial_pm' => 1,
+                'type' => 2,
+                'number' => $pay_price,
+                'mer_id' => $order->mer_id,
+                'financial_record_sn' => $sn . ($i++)
+            ];
+            app()->make(MerchantRepository::class)->addMoney($order->mer_id, $pay_price);
             app()->make(UserRepository::class)->update($order->uid, [
                 'pay_price' => Db::raw('pay_price+' . $order->pay_price),
             ]);
             app()->make(ProductPresellSkuRepository::class)->incCount($order->order->orderProduct[0]['activity_id'], $order->order->orderProduct[0]['product_sku'], 'two_pay');
             app()->make(UserMerchantRepository::class)->updatePayTime($order->uid, $order->mer_id, $order->pay_price, false);
-            app()->make(FinancialRecordRepository::class)->create($finance);
+            app()->make(FinancialRecordRepository::class)->insertAll($finance);
             app()->make(StoreOrderStatusRepository::class)->create($orderStatus);
         });
     }

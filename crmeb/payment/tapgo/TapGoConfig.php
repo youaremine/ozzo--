@@ -14,7 +14,7 @@ PK",
             'paymentUrl' => 'https://gateway2.tapngo.com.hk/web/payments',
             "recurrentPaymentUrl" => "https://gateway2.tapngo.com.hk/paymentApi/payment/recurrent", //Recurrent Payment URL
             "invalidateTokenUrl" => "https://gateway2.tapngo.com.hk/paymentApi/payment/recurrent/token/invalidation", //Invalidate Recurrent Toke
-            "notifyUrl" => '/testWeb/test_notify.php', // Notify URL - Call after paid by Tap & Go by PSG
+            "notifyUrl" => 'https://hklive.ozzotec.com/api/notice/tapgo', // Notify URL - Call after paid by Tap & Go by PSG
             "returnUrl" => 'https://hklive.ozzotec.com/api/notice/tapgo', // Return URL - Call after paid by Tap & Go or timeout
             "protocol" => 'http',
 

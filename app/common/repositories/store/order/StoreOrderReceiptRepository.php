@@ -172,7 +172,7 @@ class StoreOrderReceiptRepository extends BaseRepository
         $query = $this->dao->getSearch(['order_receipt_ids' => $ids])->with(['storeOrder' => function($query){$query->field('order_id,paid');}]);
         $result = $query->select();
         foreach ($result as $item){
-            if(!$item->storeOrder->paid) throw new ValidateException('订单未支付不可开发票');
+            if(!$item->storeOrder['paid']) throw new ValidateException('订单未支付不可开发票');
         }
         $data = $query->column('receipt_info');
         $arr = array_unique($data);

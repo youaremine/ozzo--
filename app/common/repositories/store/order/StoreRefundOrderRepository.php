@@ -21,6 +21,7 @@ use app\common\model\store\order\StoreRefundProduct;
 use app\common\repositories\BaseRepository;
 use app\common\repositories\store\product\ProductRepository;
 use app\common\repositories\system\merchant\FinancialRecordRepository;
+use app\common\repositories\system\merchant\MerchantRepository;
 use app\common\repositories\user\UserBillRepository;
 use app\common\repositories\user\UserRepository;
 use app\controller\merchant\store\order\RefundOrder;
@@ -156,9 +157,8 @@ class StoreRefundOrderRepository extends BaseRepository
         $data['mer_id'] = $order->mer_id;
         $data['refund_order_sn'] = $this->getNewOrderId();
         $data['refund_num'] = $totalRefundNum;
-        $userBillRepository = app()->make(UserBillRepository::class);
-        $data['extension_one'] = $userBillRepository->existsWhere(['link_id' => $data['order_id'], 'category' => 'brokerage', 'type' => 'order_one', 'status' => 0]) ? $total_extension_one : 0;
-        $data['extension_two'] = $userBillRepository->existsWhere(['link_id' => $data['order_id'], 'category' => 'brokerage', 'type' => 'order_two', 'status' => 0]) ? $total_extension_two : 0;
+        $data['extension_one'] = $total_extension_one;
+        $data['extension_two'] = $total_extension_two;
         return Db::transaction(function () use ($data, $products, $order) {
             $refund = $this->dao->create($data);
             $refundProduct = [];
@@ -216,9 +216,8 @@ class StoreRefundOrderRepository extends BaseRepository
         $data['mer_id'] = app()->make(StoreOrderRepository::class)->getMerId($data['order_id']);
         $data['refund_order_sn'] = $this->getNewOrderId();
         $data['refund_num'] = $totalRefundNum;
-        $userBillRepository = app()->make(UserBillRepository::class);
-        $data['extension_one'] = $userBillRepository->existsWhere(['link_id' => $data['order_id'], 'category' => 'brokerage', 'type' => 'order_one', 'status' => 0]) ? $total_extension_one : 0;
-        $data['extension_two'] = $userBillRepository->existsWhere(['link_id' => $data['order_id'], 'category' => 'brokerage', 'type' => 'order_two', 'status' => 0]) ? $total_extension_two : 0;
+        $data['extension_one'] = $total_extension_one;
+        $data['extension_two'] = $total_extension_two;
         return Db::transaction(function () use ($data, $products, $order) {
             $refund = $this->dao->create($data);
             $refundProduct = [];
@@ -289,12 +288,10 @@ class StoreRefundOrderRepository extends BaseRepository
 
         $total_extension_one = 0;
         $total_extension_two = 0;
-        if ($order->status >= 2) {
-            if ($product['extension_one'] > 0)
-                $total_extension_one = bcmul($num, $product['extension_one'], 2);
-            if ($product['extension_two'] > 0)
-                $total_extension_two = bcmul($num, $product['extension_two'], 2);
-        }
+        if ($product['extension_one'] > 0)
+            $total_extension_one = bcmul($num, $product['extension_one'], 2);
+        if ($product['extension_two'] > 0)
+            $total_extension_two = bcmul($num, $product['extension_two'], 2);
 
         $data['uid'] = $product['uid'];
         $data['mer_id'] = app()->make(StoreOrderRepository::class)->getMerId($data['order_id']);
@@ -573,9 +570,9 @@ class StoreRefundOrderRepository extends BaseRepository
                     [
                         'value' => 1,
                         'rule' => [
-                            Elm::input('mer_delivery_user', '收货人',merchantConfig($res['mer_id'],'mer_refund_user'))->required(),
-                            Elm::input('mer_delivery_address', '收货地址',merchantConfig($res['mer_id'],'mer_refund_address'))->required(),
-                            Elm::input('phone', '手机号',merchantConfig($res['mer_id'],'set_phone'))->required(),
+                            Elm::input('mer_delivery_user', '收货人', merchantConfig($res['mer_id'], 'mer_refund_user'))->required(),
+                            Elm::input('mer_delivery_address', '收货地址', merchantConfig($res['mer_id'], 'mer_refund_address'))->required(),
+                            Elm::input('phone', '手机号', merchantConfig($res['mer_id'], 'set_phone'))->required(),
                         ]
                     ],
                     [
@@ -630,12 +627,12 @@ class StoreRefundOrderRepository extends BaseRepository
         //已退款金额
         $_refund_price = $this->checkRefundPrice($id);
 
-        Db::transaction(function () use ($id, $data, $adminId,$_refund_price) {
+        Db::transaction(function () use ($id, $data, $adminId, $_refund_price) {
             $res = $this->getWhere(['refund_order_id' => $id], '*', ['refundProduct.product']);
             $this->getProductRefundNumber($res, 1);
             if ($res['refund_type'] == 1) {
                 //TODO 退款单同意退款
-                $refund = $this->doRefundPrice($id,$_refund_price);
+                $refund = $this->doRefundPrice($id, $_refund_price);
                 $data['status'] = 3;
                 app()->make(StoreRefundStatusRepository::class)->status($id, 'refund_price', '退款成功');
                 $this->refundAfter($refund);
@@ -676,12 +673,12 @@ class StoreRefundOrderRepository extends BaseRepository
          *   2.2 商品总数小于可退数量 返还可退数 以商品数为准
          *   2.3 是否存在其他图款单,是 ,退款中 ,否, 部分退款
          */
-        $refundId = $this->getRefundCount($res->order_id,$res['refund_order_id']);
+        $refundId = $this->getRefundCount($res->order_id, $res['refund_order_id']);
         $make = app()->make(StoreRefundProductRepository::class);
         foreach ($res['refundProduct'] as $item) {
             $is_refund = $item->product->is_refund;
             if ($status == 1) { //同意
-                if($res['refund_type'] == 1){
+                if ($res['refund_type'] == 1) {
                     $is_refund = ($item->refund_num == $item->product->product_num) ? 3 : 2;
                 }
             } else {  //拒绝
@@ -708,14 +705,14 @@ class StoreRefundOrderRepository extends BaseRepository
      * @param int|null $refundOrderId
      * @return array
      */
-    public function getRefundCount(int $orderId,?int $refundOrderId)
+    public function getRefundCount(int $orderId, ?int $refundOrderId)
     {
         $where = [
             'type' => 1,
             'order_id' => $orderId,
         ];
-        return $this->dao->search($where)->when($refundOrderId,function($query)use($refundOrderId){
-            $query->where('refund_order_id','<>',$refundOrderId);
+        return $this->dao->search($where)->when($refundOrderId, function ($query) use ($refundOrderId) {
+            $query->where('refund_order_id', '<>', $refundOrderId);
         })->column('refund_order_id');
     }
 
@@ -730,9 +727,12 @@ class StoreRefundOrderRepository extends BaseRepository
     public function descBrokerage(StoreRefundOrder $refundOrder)
     {
         $userBillRepository = app()->make(UserBillRepository::class);
+        $userRepository = app()->make(UserRepository::class);
         if ($refundOrder['extension_one'] > 0) {
-            $bill = $userBillRepository->getWhere(['category' => 'brokerage', 'type' => 'order_one', 'link_id' => $refundOrder->order_id, 'status' => 0]);
-            if ($bill) {
+            $bill = $userBillRepository->getWhere(['category' => 'brokerage', 'type' => 'order_one', 'link_id' => $refundOrder->order_id]);
+            $refundOrder->order->extension_one = bcsub($refundOrder->order->extension_one, $refundOrder['extension_one'], 2);
+            if ($bill && $bill->status != 1) {
+                $userRepository->incBrokerage($bill->uid, $refundOrder['extension_one'], '-');
                 $userBillRepository->decBill($bill->uid, 'brokerage', 'refund_one', [
                     'link_id' => $refundOrder->order_id,
                     'status' => 1,
@@ -741,21 +741,24 @@ class StoreRefundOrderRepository extends BaseRepository
                     'mark' => '用户退款扣除推广佣金' . floatval($refundOrder['extension_one']),
                     'balance' => 0
                 ]);
-                $userRepository = app()->make(UserRepository::class);
-                $userRepository->incBrokerage($bill->uid, $refundOrder['extension_one'], '-');
+            }
+            if (!$bill || $bill->status != 1) {
                 app()->make(FinancialRecordRepository::class)->inc([
                     'order_id' => $refundOrder->refund_order_id,
                     'order_sn' => $refundOrder->refund_order_sn,
-                    'user_info' => $userRepository->getUsername($bill->uid),
-                    'user_id' => $bill->uid,
+                    'user_info' => $bill ? $userRepository->getUsername($bill->uid) : '退还一级佣金',
+                    'user_id' => $bill ? $bill->uid : 0,
+                    'type' => 1,
                     'financial_type' => 'refund_brokerage_one',
                     'number' => $refundOrder['extension_one'],
                 ], $refundOrder->mer_id);
             }
         }
         if ($refundOrder['extension_two'] > 0) {
-            $bill = $userBillRepository->getWhere(['category' => 'brokerage', 'type' => 'order_two', 'link_id' => $refundOrder->order_id, 'status' => 0]);
-            if ($bill) {
+            $bill = $userBillRepository->getWhere(['category' => 'brokerage', 'type' => 'order_two', 'link_id' => $refundOrder->order_id]);
+            $refundOrder->order->extension_two = bcsub($refundOrder->order->extension_two, $refundOrder['extension_two'], 2);
+            if ($bill && $bill->status != 1) {
+                $userRepository->incBrokerage($bill->uid, $refundOrder['extension_two'], '-');
                 $userBillRepository->decBill($bill->uid, 'brokerage', 'refund_two', [
                     'link_id' => $refundOrder->order_id,
                     'status' => 1,
@@ -764,18 +767,20 @@ class StoreRefundOrderRepository extends BaseRepository
                     'mark' => '用户退款扣除推广佣金' . floatval($refundOrder['extension_two']),
                     'balance' => 0
                 ]);
-                $userRepository = app()->make(UserRepository::class);
-                $userRepository->incBrokerage($bill->uid, $refundOrder['extension_two'], '-');
+            }
+            if (!$bill || $bill->status != 1) {
                 app()->make(FinancialRecordRepository::class)->inc([
                     'order_id' => $refundOrder->refund_order_id,
                     'order_sn' => $refundOrder->refund_order_sn,
-                    'user_info' => $userRepository->getUsername($bill->uid),
-                    'user_id' => $bill->uid,
+                    'user_info' => $bill ? $userRepository->getUsername($bill->uid) : '退还二级佣金',
+                    'user_id' => $bill ? $bill->uid : 0,
+                    'type' => 1,
                     'financial_type' => 'refund_brokerage_two',
                     'number' => $refundOrder['extension_two'],
                 ], $refundOrder->mer_id);
             }
         }
+        $refundOrder->order->save();
     }
 
     /**
@@ -808,8 +813,35 @@ class StoreRefundOrderRepository extends BaseRepository
             'user_info' => $refundOrder->user->nickname,
             'user_id' => $refundOrder->uid,
             'financial_type' => 'refund_order',
+            'type' => 1,
             'number' => $refundOrder->refund_price,
         ], $refundOrder->mer_id);
+        $extension = bcadd($refundOrder['extension_one'], $refundOrder['extension_two'], 3);
+        $_refundRate = 0;
+        if ($refundOrder->order->commission_rate > 0) {
+            $commission_rate = ($refundOrder->order->commission_rate / 100);
+            $_refundRate = bcmul($commission_rate, bcsub($refundOrder->refund_price, $extension, 2), 2);
+            app()->make(FinancialRecordRepository::class)->inc([
+                'order_id' => $refundOrder->refund_order_id,
+                'order_sn' => $refundOrder->refund_order_sn,
+                'user_info' => $refundOrder->user->nickname,
+                'user_id' => $refundOrder->uid,
+                'type' => 1,
+                'financial_type' => 'refund_charge',
+                'number' => $_refundRate,
+            ], $refundOrder->mer_id);
+        }
+        $truePrice = bcsub(bcsub($refundOrder->refund_price, $extension, 2), $_refundRate, 2);
+        app()->make(FinancialRecordRepository::class)->inc([
+            'order_id' => $refundOrder->refund_order_id,
+            'order_sn' => $refundOrder->refund_order_sn,
+            'user_info' => $refundOrder->user->nickname,
+            'user_id' => $refundOrder->uid,
+            'financial_type' => 'refund_true',
+            'number' => $truePrice,
+            'type' => 1,
+        ], $refundOrder->mer_id);
+        app()->make(MerchantRepository::class)->subMoney($refundOrder->mer_id, $truePrice);
     }
 
 
@@ -827,8 +859,8 @@ class StoreRefundOrderRepository extends BaseRepository
             $data['status_time'] = date('Y-m-d H:i:s');
             app()->make(StoreRefundStatusRepository::class)->status($id, 'refund_price', '退款成功' . ($admin ? '' : '[自动]'));
             $this->dao->update($id, $data);
-            $refund = $this->doRefundPrice($id,0);
-            if($refund) $this->refundAfter($refund);
+            $refund = $this->doRefundPrice($id, 0);
+            if ($refund) $this->refundAfter($refund);
         });
     }
 
@@ -843,20 +875,20 @@ class StoreRefundOrderRepository extends BaseRepository
      * @author Qinii
      * @day 2020-06-13
      */
-    public function doRefundPrice($id,$refundPrice)
+    public function doRefundPrice($id, $refundPrice)
     {
         $res = $this->dao->getWhere(['refund_order_id' => $id], "*", ['order']);
-        if(!$res->order) {
+        if (!$res->order) {
             $res->fail_message = '订单信息不全';
             $res->sataus = -1;
             $res->save();
             return;
         }
-        if($res->order->activity_type == 2){
-           $data = $this->getFinalOrder($res,$refundPrice);
-        }else{
+        if ($res->order->activity_type == 2) {
+            $data = $this->getFinalOrder($res, $refundPrice);
+        } else {
             $data[] = [
-                'type' =>  $res->order->pay_type,
+                'type' => $res->order->pay_type,
                 'sn' => $res->order->groupOrder->group_order_sn,
                 'data' => [
                     'refund_id' => $res->refund_order_sn,
@@ -865,17 +897,17 @@ class StoreRefundOrderRepository extends BaseRepository
                 ]
             ];
         }
-        foreach ($data as $item){
-            if($item['data']['pay_price'] > 0 && $item['data']['refund_price'] > 0){
+        foreach ($data as $item) {
+            if ($item['data']['pay_price'] > 0 && $item['data']['refund_price'] > 0) {
                 //0余额 1微信 2小程序
-                if($item['type'] == 0){
-                    $this->refundBill($item,$res->uid,$id);
-                }else{
-                    if(in_array($item['type'],[1,3])) $server = WechatService::create();
+                if ($item['type'] == 0) {
+                    $this->refundBill($item, $res->uid, $id);
+                } else {
+                    if (in_array($item['type'], [1, 3])) $server = WechatService::create();
 
-                    if(in_array($item['type'],[2]))   $server =  MiniProgramService::create();
+                    if (in_array($item['type'], [2])) $server = MiniProgramService::create();
 
-                    if(in_array($item['type'],[4,5])) $server =  AlipayService::create();
+                    if (in_array($item['type'], [4, 5])) $server = AlipayService::create();
 
                     try {
                         $server->payOrderRefund($item['sn'], $item['data']);
@@ -897,11 +929,11 @@ class StoreRefundOrderRepository extends BaseRepository
      * @author Qinii
      * @day 2020-11-03
      */
-    public function refundBill($data,$uid,$id)
+    public function refundBill($data, $uid, $id)
     {
         try {
             $user = app()->make(UserRepository::class)->get($uid);
-            $balance = bcadd($user->now_money,$data['data']['refund_price'], 2);
+            $balance = bcadd($user->now_money, $data['data']['refund_price'], 2);
             $user->save(['now_money' => $balance]);
 
             app()->make(UserBillRepository::class)->incBill($uid, 'now_money', 'refund', [
@@ -937,9 +969,9 @@ class StoreRefundOrderRepository extends BaseRepository
         $pay_price = $order['pay_price'];
 
         //预售
-        if($order['activity_type'] == 2){
+        if ($order['activity_type'] == 2) {
             $final_price = app()->make(PresellOrderRepository::class)->getSearch(['order_id' => $refund['order_id']])->value('pay_price');
-            $pay_price = bcadd($pay_price,($final_price ? $final_price : 0 ),2);
+            $pay_price = bcadd($pay_price, ($final_price ? $final_price : 0), 2);
         }
 
         //已退金额
@@ -951,7 +983,7 @@ class StoreRefundOrderRepository extends BaseRepository
         return $refund_price;
     }
 
-    public function getFinalOrder(StoreRefundOrder $res,$refundPrice)
+    public function getFinalOrder(StoreRefundOrder $res, $refundPrice)
     {
         /**
          * 1 已退款金额大于定金订单 直接退尾款订单
@@ -961,28 +993,28 @@ class StoreRefundOrderRepository extends BaseRepository
          *   2.2  当前退款金额 小于等于剩余定金金额 退款一次
          */
         $result = [];
-        if(bccomp($res->order->pay_price ,$refundPrice,2) == -1){
+        if (bccomp($res->order->pay_price, $refundPrice, 2) == -1) {
             $final = app()->make(PresellOrderRepository::class)->getSearch(['order_id' => $res['order_id']])->find();
             $result[] = [
                 'type' => $final->pay_type,
-                'sn'   => $final['presell_order_sn'],
+                'sn' => $final['presell_order_sn'],
                 'data' => [
                     'refund_id' => $res->refund_order_sn,
                     'pay_price' => $res->order->pay_price,
                     'refund_price' => $res->refund_price
                 ]
             ];
-        }else{
+        } else {
             //定金金额 - 已退款金额 = 剩余定金
-            $sub_order_price = bcsub($res->order->pay_price,$refundPrice,2);
+            $sub_order_price = bcsub($res->order->pay_price, $refundPrice, 2);
             //剩余定金于此次退款金额对比
-            $sub_comp = bccomp($sub_order_price,$res->refund_price,2);
+            $sub_comp = bccomp($sub_order_price, $res->refund_price, 2);
 
             //定金订单
-            if($sub_comp == 1 || $sub_comp == 0){
+            if ($sub_comp == 1 || $sub_comp == 0) {
                 $result[] = [
                     'type' => $res->order->pay_type,
-                    'sn'   => $res->order->groupOrder->group_order_sn,
+                    'sn' => $res->order->groupOrder->group_order_sn,
                     'data' => [
                         'refund_id' => $res->refund_order_sn,
                         'pay_price' => $res->order->pay_price,
@@ -992,10 +1024,10 @@ class StoreRefundOrderRepository extends BaseRepository
             }
 
             //两个分别计算
-            if($sub_comp == -1){
+            if ($sub_comp == -1) {
                 $result[] = [
                     'type' => $res->order->pay_type,
-                    'sn'   => $res->order->groupOrder->group_order_sn,
+                    'sn' => $res->order->groupOrder->group_order_sn,
                     'data' => [
                         'refund_id' => $res->refund_order_sn,
                         'pay_price' => $res->order->pay_price,
@@ -1007,8 +1039,8 @@ class StoreRefundOrderRepository extends BaseRepository
                     'type' => $final->pay_type,
                     'sn'   => $final['presell_order_sn'],
                     'data' => [
-                        'refund_id' => $res->refund_order_sn,
-                        'pay_price' => $res->order->pay_price,
+                        'refund_id' => $final['presell_order_sn'],
+                        'pay_price' => $final->pay_price,
                         'refund_price' => bcsub($res->refund_price,$sub_order_price,2)
                     ]
                 ];
@@ -1028,7 +1060,7 @@ class StoreRefundOrderRepository extends BaseRepository
     public function autoRefundOrder($id, $refund_type = 1, $message = '')
     {
         $order = app()->make(StoreOrderRepository::class)->get($id);
-        if(!$order) return;
+        if (!$order) return;
         if ($order->status == -1) return;
         if ($order['paid'] == 1) {
             //已支付

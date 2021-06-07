@@ -184,10 +184,13 @@ class Common extends BaseController
     /**
      * 微信App支付 回調
      */
-    public function weixinAppReturnNotify(){
+    public function weixinAppNotify(){
         try{
             $wechat = new \crmeb\payment\wechat\Wechat();
-            $wechat->notice($this->request->post());
+            $http_headers = \think\facade\Request ::header();
+            // file_get_contents("php://input")
+            $params = \think\facade\Request ::param();
+            $wechat->notice($params, $http_headers,$this->request->post());
         } catch (Exception $e) {
             Log::info('微信app支付回調失敗:' . var_export([$e->getMessage(), $e->getFile() . ':' . $e->getLine()], true));
         }

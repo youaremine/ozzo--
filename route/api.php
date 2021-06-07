@@ -310,7 +310,7 @@ Route::group('api/', function () {
     //tapgo支付回调
     Route::any('notice/tapgo', 'api.Common/tapgoNotify')->name('tapgoNotify');
     //微信App支付回调
-    Route::any('notice/weixin_app_pay', 'api.Common/payWeixinAppPay')->name('payWeixinAppPay');
+    Route::any('notice/weixin_app_pay', 'api.Common/weixinAppNotify')->name('weixinAppNotify');
 
     //城市列表
     Route::get('system/city/lst', 'merchant.store.shipping.City/getlist');
