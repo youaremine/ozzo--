@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'appid' => "wxcfd86c246a46ff84",
+    'appid' => "wx8507d8fe31b9e386",
     'partnerid ' => "126125418",
     'api_key' => "RoriN4KyomwaAFL4KyMvjrFuJlbGoNGg",
     'mchid' =>  "126125418",

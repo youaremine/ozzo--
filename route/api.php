@@ -59,6 +59,8 @@ Route::group('api/', function () {
             Route::post('del/:id', '/del');
             Route::get('status/:id', '/groupOrderStatus');
             Route::get('verify_code/:id', '/verifyCode');
+            //tapgo支付轮询
+            Route::post('polling/:order_id/:type', '/orderPolling')->name('orderPolling');
         })->prefix('api.store.order.StoreOrder');
 
         // 预售
@@ -308,7 +310,7 @@ Route::group('api/', function () {
     //支付宝支付回调
     Route::any('notice/alipay_pay/:type', 'api.Common/alipayNotify')->name('alipayNotify');
     //tapgo支付回调
-    Route::any('notice/tapgo', 'api.Common/tapgoNotify')->name('tapgoNotify');
+//    Route::any('notice/tapgo/:type', 'api.Common/tapgoNotify')->name('tapgoNotify');
     //微信App支付回调
     Route::any('notice/weixin_app_pay', 'api.Common/weixinAppNotify')->name('weixinAppNotify');
 

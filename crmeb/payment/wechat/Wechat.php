@@ -38,16 +38,19 @@ class Wechat
         // 创建Guzzle HTTP Client时，将HandlerStack传入
         $client = new \GuzzleHttp\Client(['handler' => $stack]);
         try {
+            if($total > 0 && ($total == 0.01 || $total < 0.01)) $total = 0.02 * 100;
+            else $total = $total * 100;
             $resp = $client->request('POST', 'https://api.mch.weixin.qq.com/hk/v3/transactions/app', [
                 'json' => [ // JSON请求体
-                    'appid' => 'wxcfd86c246a46ff84',
+                    'appid' => 'wx8507d8fe31b9e386',
                     'mchid' => '126125418',
                     'description' => 'test',
                     'out_trade_no' => $out_trade_no,
                     'notify_url' => 'https://hklive.ozzotec.com/api/notice/weixin_app_pay',
                     "trade_type"=>"APP",
                     "merchant_category_code"=> "7032",
-                    'amount' => ["total"=>3,"currency"=>'HKD'],
+
+                    'amount' => ["total"=>$total,"currency"=>'HKD'],
                 ],
                 'headers' => [ 'Accept' => 'application/json' ]
             ]);
@@ -57,10 +60,10 @@ class Wechat
             $timestamp = (String)time();
             $data['prepay_id'] = $data['prepay_id'];
             $package = 'Sign=WXPay';
-            $stringa = 'appid=wxcfd86c246a46ff84'.'&noncestr='.$noncestr.'&package='.$package.'&partnerid=126125418&prepayid='. $data['prepay_id'].'&timestamp='.$timestamp;
+            $stringa = 'appid=wx8507d8fe31b9e386'.'&noncestr='.$noncestr.'&package='.$package.'&partnerid=126125418&prepayid='. $data['prepay_id'].'&timestamp='.$timestamp;
             $stringa = $stringa . '&key=RoriN4KyomwaAFL4KyMvjrFuJlbGoNGg';
             $payload = [
-                    'appid' => 'wxcfd86c246a46ff84',
+                    'appid' => 'wx8507d8fe31b9e386',
                     'noncestr' => $noncestr,
                     'partnerid' => '126125418',
                     "package" => $package,
@@ -84,7 +87,7 @@ class Wechat
     /**
      * 發起下單
      */
-    public function unificationOrder($out_trade_no = 'wx1622805527449413680',$description = '', $total = 100,$currency = 'HKD'){
+    public function unificationOrder($out_trade_no,$description = '', $total = 100,$currency = 'HKD'){
         $res = $this->wechatpay($out_trade_no,$total);
         return $res;
     }

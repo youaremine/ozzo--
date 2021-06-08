@@ -19,9 +19,11 @@ use crmeb\basic\BaseController;
 use app\common\repositories\store\order\StoreCartRepository;
 use app\common\repositories\store\order\StoreGroupOrderRepository;
 use app\common\repositories\store\order\StoreOrderRepository;
+use crmeb\payment\tapgo\TapGo;
 use crmeb\services\ExpressService;
 use think\App;
 use think\exception\ValidateException;
+use think\facade\Db;
 
 /**
  * Class StoreOrder
@@ -287,5 +289,17 @@ class StoreOrder extends BaseController
         $this->repository->userDel($id, $this->request->uid());
         return app('json')->success('删除成功');
     }
-
+    public function orderPolling($order_id,$pay_type = 'tapgo'){
+        switch ($pay_type){
+            case 'tapgo':
+                $payment = new TapGo();
+                $group_order_sn = Db::name('store_group_order')->where('group_order_id',$order_id)->value('group_order_sn');
+                if(!empty($group_order_sn)){
+                    $res = $payment->orderStatus($group_order_sn);
+                    if($res) return app('json')->success('pay ok');
+                }
+            break;
+        }
+        return app('json')->fail('not pay');
+    }
 }

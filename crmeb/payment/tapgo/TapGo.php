@@ -5,16 +5,23 @@ namespace crmeb\payment\tapgo;
 use think\Exception;
 use think\exception\ValidateException;
 use think\facade\Log;
+//use Redis;
 
 class TapGo
 {
     private $config = [];
     private $notify_type = ['return','notify'];
+    private $redis;
 
     public function __construct()
     {
         $config = include('TapGoConfig.php');
         $this->config = $config['WEB_APP']['PROD'];
+
+//        if(!$this->redis){
+//            $this->redis = new Redis();
+//            $this->redis->connect('127.0.0.1',6379);
+//        }
     }
     private function getPublicEncrypt($data){
 //        $k = <<<PK
@@ -48,10 +55,11 @@ class TapGo
             'totalPrice' => $totalPrice,
             'currency' => 'HKD',
             'merTradeNo' => $merTradeNo,
-            'notifyUrl' => 'https://hklive.ozzotec.com/api/notice/tapgo',
-            'returnUrl' => 'https://hklive.ozzotec.com/api/notice/tapgo',
+            'notifyUrl' => 'https://www.xiaomaoz.top/log/notifi.php',
+            'returnUrl' => 'https://www.xiaomaoz.top/log/return.php',
             'remark' => $remark,
             'lang' => 'en'
+
         );
         // 1. get openssl public key
         $b64_encryptedWithPublic = $this->getPublicEncrypt($data);
@@ -113,7 +121,7 @@ class TapGo
     }
     // 查詢狀態
     public function paymentStatus($merTradeNo){
-        echo 'payment status';
+        $merTradeNo = 'TEST20210607200319';
         $timestamp = round(microtime(true) * 1000);
         $sign = $this->getStatusSign($this->config['appId'],$merTradeNo,$timestamp,$this->config['apiKey']);
         $pamrmStr = 'appId=' . $this->config['appId'] . '&merTradeNo=' . $merTradeNo . '&timestamp=' . $timestamp;
@@ -190,7 +198,23 @@ class TapGo
         }
         return false;
     }
-    // 驗證簽名
+    public function orderStatus($merTradeNo){
+        $api_res = $this->paymentStatus($merTradeNo);
+        //  2. 驗證api 返回的參數簽名
+        if(isset($api_res['content']['resultCode']) && $api_res['content']['resultCode'] == 0 && isset($api_res['content']['payload']['tradeStatus']) && $api_res['content']['payload']['tradeStatus'] == 'TRADE_FINISHED' && $api_res['content']['payload']['merTradeNo'] == $merTradeNo){
+            // 3. 支付成功
+            try {
+                // 4. 傳入訂單號 修改訂單狀態
+                event('pay_success_order', ['order_sn' => $api_res['merTradeNo'], 'data' => $api_res]);
+                return true;
+            } catch (\Exception$e) {
+                $this->setLog('tap go notify error ' . $e->getMessage());
+                return false;
+            }
+        }
+        return false;
+    }
+    // 驗證簽名  1. notify (SHA256 Hex (not SHA256 Base64)) 2. return ()
     public function checkSignSha256($data,$sign,$type = 'notify'){
         if(empty($data) || is_array($data) || $sign) return false;
         ksort($data);
@@ -210,7 +234,6 @@ class TapGo
         }
         return false;
     }
-
     public function isXml($data){
         //判断返回的内容是不是 xml 格式
         $xml_parser = xml_parser_create();
