@@ -45,6 +45,7 @@ use app\common\repositories\wechat\WechatUserRepository;
 use crmeb\jobs\PayGiveCouponJob;
 use crmeb\jobs\SendSmsJob;
 use crmeb\jobs\SendTemplateMessageJob;
+use crmeb\payment\stripe\sdk\Stripe;
 use crmeb\payment\wechat\Wechat;
 use crmeb\services\AlipayService;
 use crmeb\services\ExpressService;
@@ -936,7 +937,7 @@ class StoreOrderRepository extends BaseRepository
         } catch (Exception $e){
             throw new ValidateException($e);
         }
-        return app('json')->status('tapgo',['schemes_url' => $res,'order_id' => $groupOrder['group_order_id']]);
+        return app('json')->status('tapgo',['schemes_url' => $res,'order_id' => $groupOrder['group_order_id'],'order_sn' => $groupOrder['group_order_sn']]);
     }
     /**
      * @param User $user
@@ -955,6 +956,24 @@ class StoreOrderRepository extends BaseRepository
             throw new ValidateException($e);
         }
         return app('json')->status('weixinAppPay',['config' => $res,'order_id' => $groupOrder['group_order_id']]);
+    }
+    /**
+     * @param User $user
+     * @param StoreGroupOrder $groupOrder
+     * @return \think\response\Json
+     * @author zhongguanmao
+     * @day 2021/6/8
+     */
+    public function payStripe(User $user, StoreGroupOrder $groupOrder)
+    {
+        try {
+            $stripe = new Stripe();
+            $goods = ['imgUrl' => 'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fimg.juimg.com%2Ftuku%2Fyulantu%2F140703%2F330746-140F301555752.jpg&refer=http%3A%2F%2Fimg.juimg.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1625735871&t=a2af2fb51c348a9e88e91140fc5593b7'];
+            $session_id = $stripe->create_session($goods,$groupOrder['group_order_sn']);
+        } catch (Exception $e){
+            throw new ValidateException($e);
+        }
+        return app('json')->status('stripe',['config' => $session_id,'order_id' => $groupOrder['group_order_id']]);
     }
     /**
      * @return string

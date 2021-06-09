@@ -23,6 +23,7 @@ class TapGo
 //            $this->redis->connect('127.0.0.1',6379);
 //        }
     }
+
     private function getPublicEncrypt($data){
 //        $k = <<<PK
 //-----BEGIN PUBLIC KEY-----
@@ -50,7 +51,8 @@ class TapGo
         return $b64_sign;
     }
     public function paymentBackEnd($merTradeNo = '',$totalPrice = '',$remark = '',$paymentType = 'S',$transactionType = 'CR'){
-//        if(empty($totalPrice) || $totalPrice <= 0) throw Exception('total price param error');
+        if(empty($totalPrice) || $totalPrice <= 0) throw Exception('total price param error');
+
         $data = array(
             'totalPrice' => $totalPrice,
             'currency' => 'HKD',
@@ -89,6 +91,9 @@ class TapGo
         return '';
 
     }
+    public function time(){
+
+    }
     public function postRequest($url = '',$array = []){
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL,'https://gateway2.tapngo.com.hk/web/payments');
@@ -121,7 +126,6 @@ class TapGo
     }
     // 查詢狀態
     public function paymentStatus($merTradeNo){
-        $merTradeNo = 'TEST20210607200319';
         $timestamp = round(microtime(true) * 1000);
         $sign = $this->getStatusSign($this->config['appId'],$merTradeNo,$timestamp,$this->config['apiKey']);
         $pamrmStr = 'appId=' . $this->config['appId'] . '&merTradeNo=' . $merTradeNo . '&timestamp=' . $timestamp;
@@ -213,6 +217,10 @@ class TapGo
             }
         }
         return false;
+    }
+    // 验证签名
+    public function checkSignHaml_512(){
+
     }
     // 驗證簽名  1. notify (SHA256 Hex (not SHA256 Base64)) 2. return ()
     public function checkSignSha256($data,$sign,$type = 'notify'){

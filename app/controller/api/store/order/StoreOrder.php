@@ -289,14 +289,22 @@ class StoreOrder extends BaseController
         $this->repository->userDel($id, $this->request->uid());
         return app('json')->success('删除成功');
     }
-    public function orderPolling($order_id,$pay_type = 'tapgo'){
-        switch ($pay_type){
+    public function orderPolling(){
+        $post = $this->request->post();
+        $data = ['order_sn' => $post['order_sn']];
+        switch ($post['pay_type']){
             case 'tapgo':
-                $payment = new TapGo();
-                $group_order_sn = Db::name('store_group_order')->where('group_order_id',$order_id)->value('group_order_sn');
-                if(!empty($group_order_sn)){
-                    $res = $payment->orderStatus($group_order_sn);
-                    if($res) return app('json')->success('pay ok');
+//                $payment = new TapGo();
+//                $group_order_sn = Db::name('store_group_order')->where('group_order_id',$order_id)->value('group_order_sn');
+//                if(!empty($group_order_sn)){
+//                    $res = $payment->orderStatus($group_order_sn);
+//                    if($res) return app('json')->success('pay ok');
+//                }
+                if($post['code'] == 200){
+                    event('pay_success_order', ['order_sn' => $data['order_sn'], 'data' => $data]);
+                    return app('json')->success('pay ok');
+                }else{
+                    return app('json')->fail('not pay');
                 }
             break;
         }
