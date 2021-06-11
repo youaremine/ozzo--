@@ -38,6 +38,7 @@ class Wechat
         // 创建Guzzle HTTP Client时，将HandlerStack传入
         $client = new \GuzzleHttp\Client(['handler' => $stack]);
         try {
+            //測試
             if($total > 0 && ($total == 0.01 || $total < 0.01)) $total = 0.02 * 100;
             else $total = $total * 100;
             $resp = $client->request('POST', 'https://api.mch.weixin.qq.com/hk/v3/transactions/app', [
@@ -47,6 +48,7 @@ class Wechat
                     'description' => 'test',
                     'out_trade_no' => $out_trade_no,
                     'notify_url' => 'https://hklive.ozzotec.com/api/notice/weixin_app_pay',
+//                    'notify_url' => 'https://www.hklivearcade.com.hk/api/notice/weixin_app_pay',
                     "trade_type"=>"APP",
                     "merchant_category_code"=> "7032",
 

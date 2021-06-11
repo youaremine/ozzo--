@@ -82,7 +82,7 @@ class StoreOrderRepository extends BaseRepository
      * 支付类型
      */
     // const PAY_TYPE = ['balance', 'weixin', 'routine', 'h5', 'alipay', 'alipayQr'];
-    const PAY_TYPE = ['balance', 'weixin', 'routine', 'h5', 'alipay', 'alipayQr','payme','tapgo','weixinAppPay'];
+    const PAY_TYPE = ['balance', 'weixin', 'routine', 'h5', 'alipay', 'alipayQr','payme','tapgo','weixinAppPay','stripe'];
     /**
      * StoreOrderRepository constructor.
      * @param StoreOrderDao $dao
@@ -968,12 +968,24 @@ class StoreOrderRepository extends BaseRepository
     {
         try {
             $stripe = new Stripe();
-            $goods = ['imgUrl' => 'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fimg.juimg.com%2Ftuku%2Fyulantu%2F140703%2F330746-140F301555752.jpg&refer=http%3A%2F%2Fimg.juimg.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1625735871&t=a2af2fb51c348a9e88e91140fc5593b7'];
-            $session_id = $stripe->create_session($goods,$groupOrder['group_order_sn']);
+            $goods = ['img_url' => 'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fimg.juimg.com%2Ftuku%2Fyulantu%2F140703%2F330746-140F301555752.jpg&refer=http%3A%2F%2Fimg.juimg.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1625735871&t=a2af2fb51c348a9e88e91140fc5593b7'];
+            $session_id = $stripe->create_session($goods,$groupOrder);
+            if(isset($session_id) && !empty($session_id) && !empty($groupOrder['group_order_sn'])){
+                // 保存繪話號和訂單號
+                // redis
+                $row = Db::table('shop_store_stripe_order')->where('group_order_sn',$groupOrder['group_order_sn'])->field('id')->find();
+                $payment_intent = $stripe->getPaymentIntend($session_id);
+                if($row){
+                    Db::table('shop_store_stripe_order')->where('group_order_sn',$groupOrder['group_order_sn'])->update(['stripe_payment_intent' => $payment_intent]);
+                }else{
+                    Db::table('shop_store_stripe_order')->insert(['group_order_sn' => $groupOrder['group_order_sn'],'stripe_payment_intent' => $payment_intent,'create_time' => date('Y-m-d H:i:s')]);
+                }
+            }
         } catch (Exception $e){
             throw new ValidateException($e);
         }
-        return app('json')->status('stripe',['config' => $session_id,'order_id' => $groupOrder['group_order_id']]);
+        // 返回会话id
+        return app('json')->status('stripe',['config' => ['session_id' => $session_id,'url' => 'https://hklive.ozzotec.com/api/stripe/pay'],'order_id' => $groupOrder['group_order_id']]);
     }
     /**
      * @return string

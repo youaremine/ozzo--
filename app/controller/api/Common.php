@@ -22,6 +22,7 @@ use app\common\repositories\store\StoreCategoryRepository;
 use app\common\repositories\system\groupData\GroupDataRepository;
 use app\common\repositories\user\UserVisitRepository;
 use app\common\repositories\wechat\TemplateMessageRepository;
+use crmeb\payment\stripe\sdk\Stripe;
 use crmeb\services\AlipayService;
 use crmeb\services\MiniProgramService;
 use crmeb\services\UploadService;
@@ -194,6 +195,43 @@ class Common extends BaseController
         } catch (Exception $e) {
             Log::info('微信app支付回調失敗:' . var_export([$e->getMessage(), $e->getFile() . ':' . $e->getLine()], true));
         }
+    }
+    /**
+     * stripe支付 回調
+     */
+    public function stripeNotify(){
+        try {
+            $stripe = new \crmeb\payment\stripe\sdk\Stripe;
+            $http_headers = \think\facade\Request ::header();
+            $params = \think\facade\Request ::param();
+            $stripe->notice($http_headers,request()->getInput());
+        } catch (Exception $e){
+            Log::info('stripe支付回調失敗:' . var_export([$e->getMessage(), $e->getFile() . ':' . $e->getLine()], true));
+        }
+
+//        switch ($type){
+//                // 支付成功通知
+//            case "checkout_payment_success":
+//                try{
+//                    $stripe = new \crmeb\payment\stripe\sdk\Stripe;
+//                    $http_headers = \think\facade\Request ::header();
+//                    $params = \think\facade\Request ::param();
+//                    $stripe->pay_success_notice($http_headers,$params);
+//                } catch (Exception $e) {
+//                    Log::info('stripe支付回調失敗:' . var_export([$e->getMessage(), $e->getFile() . ':' . $e->getLine()], true));
+//                }
+//            break;
+//                // 支付失敗通知
+//            case "checkout_payment_failed" : $b = 1;
+//            break;
+//                // completed
+//            case "checkout_completed" :
+//            break;
+//            default:
+//                echo json(['code' => 400,'msg' => '参数错误']);
+//                break;
+//        }
+
     }
     /**
      * 获取图片base64

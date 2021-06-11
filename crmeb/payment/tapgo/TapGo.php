@@ -15,6 +15,7 @@ class TapGo
 
     public function __construct()
     {
+
         $config = include('TapGoConfig.php');
         $this->config = $config['WEB_APP']['PROD'];
 
@@ -151,57 +152,44 @@ class TapGo
             $xml_obj= simplexml_load_string($output);
             $xml_json = json_encode($xml_obj);
             $data_array = json_decode($xml_json,true);
-            return [
-                'content' => [
-                    'chiMessage' => '請求完成',
-                    'engMessage' => 'Request Success',
-                    'internal' => 'Request Success',
-                    'payload' => [
-                        'merTradeNo' => 'TEST20210602160329',
-                        'tradeNo' => '210602224861',
-                        'tradeStatus' => 'TRADE_FINISHED',
-                    ],
-                    'resultCode' => 0,
-                ]
-            ];
             return $data_array;
         }
         return $output;
     }
     // 回调类型 type  1. return  2. notify
-     public function notify($notifyData,$type = 'return'){
-        $this->setLog('tap go notify');
-//        if(!in_array($notifyData,$this->notify)){
-//            throw new ValidateException('notify error');
+//     public function notify($notifyData,$type = 'return'){
+//        $this->setLog('tap go notify');
+////        if(!in_array($notifyData,$this->notify)){
+////            throw new ValidateException('notify error');
+////        }
+//        if(!isset($notifyData['sign']) || !$this->checkSignSha256($notifyData,$notifyData['sign'],$type)){
+//            $this->setLog('參數簽名不通過');
+//            return ;
 //        }
-        if(!isset($notifyData['sign']) || !$this->checkSignSha256($notifyData,$notifyData['sign'],$type)){
-            $this->setLog('參數簽名不通過');
-            return ;
-        }
-        if(!empty($notifyData) && $notifyData['resultCode'] == 0){
-            if (!in_array($notifyData['tradeStatus'], ['TRADE_FINISHED'])){
-                // 状态不正确
-                $this->setLog('pay tradeStatus error : '.json_encode($notifyData['tradeStatus']));
-            }
-            // 支付成功逻辑
-            $this->setLog('pay_success_order'.json_encode($notifyData,JSON_UNESCAPED_UNICODE));
-            event('pay_success_order', ['order_sn' => $notifyData['merTradeNo'], 'data' => $notifyData]);
-//            // 1. 通知狀態訂單已支付 再次查詢訂單api確認狀態
-//            $api_res = $this->paymentStatus($notifyData['merTradeNo']);
-//            //  2. 驗證api 返回的參數簽名
-//            if(isset($api_res['content']['resultCode']) && $api_res['content']['resultCode'] == 0 && isset($api_res['content']['payload']['tradeStatus']) && $api_res['content']['payload']['tradeStatus'] == 'TRADE_FINISHED' && $api_res['content']['payload']['merTradeNo'] == $notifyData['merTradeNo']){
-//                // 3. 支付成功
-//                try {
-//                    // 4. 傳入訂單號 修改訂單狀態
-//                    event('pay_success_order', ['order_sn' => $api_res['merTradeNo'], 'data' => $notifyData]);
-//                    return true;
-//                } catch (\Exception$e) {
-//                    $this->setLog('tap go notify error ' . $e->getMessage());
-//                }
+//        if(!empty($notifyData) && $notifyData['resultCode'] == 0){
+//            if (!in_array($notifyData['tradeStatus'], ['TRADE_FINISHED'])){
+//                // 状态不正确
+//                $this->setLog('pay tradeStatus error : '.json_encode($notifyData['tradeStatus']));
 //            }
-        }
-        return false;
-    }
+//            // 支付成功逻辑
+//            $this->setLog('pay_success_order'.json_encode($notifyData,JSON_UNESCAPED_UNICODE));
+//            event('pay_success_order', ['order_sn' => $notifyData['merTradeNo'], 'data' => $notifyData]);
+////            // 1. 通知狀態訂單已支付 再次查詢訂單api確認狀態
+////            $api_res = $this->paymentStatus($notifyData['merTradeNo']);
+////            //  2. 驗證api 返回的參數簽名
+////            if(isset($api_res['content']['resultCode']) && $api_res['content']['resultCode'] == 0 && isset($api_res['content']['payload']['tradeStatus']) && $api_res['content']['payload']['tradeStatus'] == 'TRADE_FINISHED' && $api_res['content']['payload']['merTradeNo'] == $notifyData['merTradeNo']){
+////                // 3. 支付成功
+////                try {
+////                    // 4. 傳入訂單號 修改訂單狀態
+////                    event('pay_success_order', ['order_sn' => $api_res['merTradeNo'], 'data' => $notifyData]);
+////                    return true;
+////                } catch (\Exception$e) {
+////                    $this->setLog('tap go notify error ' . $e->getMessage());
+////                }
+////            }
+//        }
+//        return false;
+//    }
     public function orderStatus($merTradeNo){
         $api_res = $this->paymentStatus($merTradeNo);
         //  2. 驗證api 返回的參數簽名
@@ -209,7 +197,7 @@ class TapGo
             // 3. 支付成功
             try {
                 // 4. 傳入訂單號 修改訂單狀態
-                event('pay_success_order', ['order_sn' => $api_res['merTradeNo'], 'data' => $api_res]);
+                event('pay_success_order', ['order_sn' => $api_res['content']['payload']['merTradeNo']]);
                 return true;
             } catch (\Exception$e) {
                 $this->setLog('tap go notify error ' . $e->getMessage());

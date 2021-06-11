@@ -311,10 +311,14 @@ Route::group('api/', function () {
     Route::any('notice/alipay_pay/:type', 'api.Common/alipayNotify')->name('alipayNotify');
     //tapgo支付回调
 //    Route::any('notice/tapgo/:type', 'api.Common/tapgoNotify')->name('tapgoNotify');
+    Route::any('tapgo/status','api.payment.TapGo/orderStatus')->name('orderStatus');
+
     //微信App支付回调
     Route::any('notice/weixin_app_pay', 'api.Common/weixinAppNotify')->name('weixinAppNotify');
-    //stripe测试
-    Route::any('test/stripe','api.test.Payment/stripe');
+    //stripe
+    Route::any('stripe/pay','api.payment.Stripe/pay'); // stripe 支付h5
+    Route::any('stripe/redirect','api.payment.Stripe/redirectNotice'); // stripe 支付成功后重定向
+    Route::any('notice/stripe','api.Common/stripeNotify')->name('stripeNotify'); // stripe Webhook 回調
 
     //城市列表
     Route::get('system/city/lst', 'merchant.store.shipping.City/getlist');

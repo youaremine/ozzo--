@@ -90,7 +90,6 @@ class StoreOrder extends BaseController
             return app('json')->fail('请选择正确的支付方式');
         if (!in_array($order_type, [0, 1, 2, 3, 4]))
             return app('json')->fail('订单类型错误');
-
         $validate = app()->make(UserReceiptValidate::class);
 
         foreach ($receipt_data as $receipt) {
@@ -103,6 +102,13 @@ class StoreOrder extends BaseController
             return app('json')->fail('数据无效');
         if (!$addressId)
             return app('json')->fail('请选择地址');
+        // 判斷金額 1. 微信不能低於0.02  2. stripe不能低於 4
+//        if($payType == 'stripe' && 0){
+//            return app('json')->fail('金額未滿4元');
+//        }
+//        if($payType == 'weixinAppPay' && 0){
+//            return app('json')->fail('金額不能小于0.02元');
+//        }
         makeLock()->lock();
         try {
             if ($order_type == 2) {
