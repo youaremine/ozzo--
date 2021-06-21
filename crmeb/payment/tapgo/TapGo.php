@@ -15,23 +15,13 @@ class TapGo
 
     public function __construct()
     {
-
-        $config = include('TapGoConfig.php');
-        $this->config = $config['WEB_APP']['PROD'];
-
-//        if(!$this->redis){
-//            $this->redis = new Redis();
-//            $this->redis->connect('127.0.0.1',6379);
-//        }
+        $config = systemConfig(['tap_go_appid', 'tap_go_apikey', 'tap_go_publicKey']);
+        $config['tap_go_publicKey'] = root_path() .'public'. $config['tap_go_publicKey'];
+        $this->config = $config;
     }
 
     private function getPublicEncrypt($data){
-//        $k = <<<PK
-//-----BEGIN PUBLIC KEY-----
-//MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEA9k6Dpk12XPGBuqCKI3HERkeEU0MCBC/h/Ox1mVDuwRVngZvuYDHUxbl5Yup9yNvOFK9Xabqy3D2DX7Q9fIZqhLHAYvLMDTSuSAEza6dW6kfUzNaCnucvRpDgNKbBcxa/EA5LWyrpNaMwRLbaGe4s/l7+o0mRwCEjgEU7dzjaWVtWLH66dzTcB+LIEiwx/nYl69jaDpXEtxMYLZyQeibYRv0Gnaclu3trhe+0GYMT65DXv0aSDDxUsUhs4hL6S6j4646aZ5Yl2nukPZXUalJgv+sOm1IHLrf6Hv8LH4OqA8Vh1uQC65QHRqlwzrypxWY7nGY/40HH2rGLHjgI+Rqhwyu8v3dLHEGBoeupCcvAK9PxPSK2iU0RA/Stk5Wf2XG8m1VDLsZ1usBkdkKXyj60GZAGqN9RzwLH42whOS6Z/JN4HP7O9eUVH+qQ7yVumGH3huW5nvX0St9AFZ7kLUv8RDS6rb4zDvZiTIosGVXIt0GC9cAWEqhh7SZXHEi0CF792qJRhiZTlOS0FPFzJ4tw0sBgF61iqAD3+l9WVE4q+mhJlU4jjt10JGyl08D/7/lnD1QelP3/il3iTyMRNAmLY9PY+AuXo81AdNr1wypB+KEj4A9WyuH739yQnSURPT8fVDC5zcqv97TI72iqCLpkDr+oP3gZX4hZ8Fj3F5MrKaECAwEAAQ==
-//-----END PUBLIC KEY-----
-//PK;
-        $publicKey = openssl_pkey_get_public($this->config['publicKey']);
+        $publicKey = openssl_pkey_get_public(file_get_contents($this->config['tap_go_publicKey']));
 //        if(!$publicKey) throw new Exception("public key not correct");
         if (!openssl_public_encrypt(json_encode($data), $encryptedWithPublic, $publicKey, OPENSSL_PKCS1_OAEP_PADDING)) {
             echo "error encrypting with public key";
@@ -67,11 +57,11 @@ class TapGo
         // 1. get openssl public key
         $b64_encryptedWithPublic = $this->getPublicEncrypt($data);
         // 2. send sign
-        $sign = $this->getSign($this->config['appId'],$merTradeNo,$b64_encryptedWithPublic,'S','CR',$this->config['apiKey']);
+        $sign = $this->getSign($this->config['tap_go_appid'],$merTradeNo,$b64_encryptedWithPublic,'S','CR',$this->config['tap_go_apikey']);
         // 3. return data
         $res = $this->postRequest('',
             [
-                'appId' => $this->config['appId'],
+                'appId' => $this->config['tap_go_appid'],
                 'merTradeNo' => $merTradeNo,
                 'paymentType' => $paymentType,
                 'transactionType' => $transactionType,
@@ -128,8 +118,8 @@ class TapGo
     // 查詢狀態
     public function paymentStatus($merTradeNo){
         $timestamp = round(microtime(true) * 1000);
-        $sign = $this->getStatusSign($this->config['appId'],$merTradeNo,$timestamp,$this->config['apiKey']);
-        $pamrmStr = 'appId=' . $this->config['appId'] . '&merTradeNo=' . $merTradeNo . '&timestamp=' . $timestamp;
+        $sign = $this->getStatusSign($this->config['tap_go_appid'],$merTradeNo,$timestamp,$this->config['tap_go_apikey']);
+        $pamrmStr = 'appId=' . $this->config['tap_go_appid'] . '&merTradeNo=' . $merTradeNo . '&timestamp=' . $timestamp;
         $pamrmStr = $pamrmStr . '&sign=' . $sign;
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL,'https://gateway2.tapngo.com.hk/paymentApi/payment/status');
@@ -197,7 +187,6 @@ class TapGo
             // 3. 支付成功
             try {
                 // 4. 傳入訂單號 修改訂單狀態
-                event('pay_success_order', ['order_sn' => $api_res['content']['payload']['merTradeNo']]);
                 return true;
             } catch (\Exception$e) {
                 $this->setLog('tap go notify error ' . $e->getMessage());
@@ -211,25 +200,25 @@ class TapGo
 
     }
     // 驗證簽名  1. notify (SHA256 Hex (not SHA256 Base64)) 2. return ()
-    public function checkSignSha256($data,$sign,$type = 'notify'){
-        if(empty($data) || is_array($data) || $sign) return false;
-        ksort($data);
-        $string = '';
-        foreach ($data as $key => $value){
-            if($key == 'sign') continue;
-            $string = $string . $key ."=" . $value . "&";
-        }
-        if($type == 'notify'){
-            $stringKey =  hash_hmac('sha256', $string, $this->config['apiKey'], true);
-        }
-        if($type == 'return'){
-            $stringKey =  base64_encode(hash_hmac('sha256', $string, $this->config['apiKey'], true));
-        }
-        if($stringKey == $sign){
-            return true;
-        }
-        return false;
-    }
+//    public function checkSignSha256($data,$sign,$type = 'notify'){
+//        if(empty($data) || is_array($data) || $sign) return false;
+//        ksort($data);
+//        $string = '';
+//        foreach ($data as $key => $value){
+//            if($key == 'sign') continue;
+//            $string = $string . $key ."=" . $value . "&";
+//        }
+//        if($type == 'notify'){
+//            $stringKey =  hash_hmac('sha256', $string, $this->config['apiKey'], true);
+//        }
+//        if($type == 'return'){
+//            $stringKey =  base64_encode(hash_hmac('sha256', $string, $this->config['apiKey'], true));
+//        }
+//        if($stringKey == $sign){
+//            return true;
+//        }
+//        return false;
+//    }
     public function isXml($data){
         //判断返回的内容是不是 xml 格式
         $xml_parser = xml_parser_create();

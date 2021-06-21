@@ -8,16 +8,13 @@ require(__DIR__ . '/vendor/autoload.php');
 
 class Stripe
 {
-    // tips : html key 和這裏的key 不同
-    public $stripe_test_key = 'sk_test_51IBweYKfjMsC8JpVz6GDo5KWc9OrKQx1nJx1xQhndcLcQ7nPBdH0VMHfYABSxofUPjLTB2OH5PHUvNQZjngMEMn9007tcNpG4X';
-    public $stripe_live_key = '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';
-    public $mode = 'test';
-    public $host_name = 'http://hklive.ozzotec.com/';
-    protected $stripe_endpoint_secret_test = 'whsec_5gBUevqVZTXBcX45wXhYLwQ8LbAiGqcw';
-    protected $stripe_endpoint_secret_live = 'whsec_7A2Hxo147REXNzST8vun8taLNhPNLpxw';
-
+    private $config = [];
+    public function __construct(){
+        $config = systemConfig(['stripe_key', 'stripe_endpoint_secret']);
+        $this->config = $config;
+    }
     public function create_session($goods,$groupOrder){
-        $key = $this->mode == 'live' ? $this->stripe_live_key : $this->stripe_test_key;
+        $key = $this->config['stripe_key'];
         \Stripe\Stripe::setApiKey($key);
 //        $images = $this->get_images_url($goods->img_url);
         $checkout_session = \Stripe\Checkout\Session::create([
@@ -36,8 +33,8 @@ class Stripe
             ]],
             'locale'=>'zh-HK',
             'mode' => 'payment',
-            'success_url' =>  'https://hklive.ozzotec.com/api/stripe/redirect?notice_type=success&order_id='.$groupOrder['group_order_id'],
-            'cancel_url' => 'https://hklive.ozzotec.com/api/stripe/redirect?notice_type=cancel&order_id='.$groupOrder['group_order_id'],
+            'success_url' =>  request()->domain() . '/api/stripe/redirect?notice_type=success&order_id='.$groupOrder['group_order_id'],
+            'cancel_url' => request()->domain() . '/api/stripe/redirect?notice_type=cancel&order_id='.$groupOrder['group_order_id'],
         ]);
         return $checkout_session->id;
     }
@@ -58,23 +55,36 @@ class Stripe
     public function notice($header,$notifyData){
         // 请求头的签名
         $stripe_signature = $header['stripe-signature'];
-        $endpoint_secret = $this->stripe_endpoint_secret_test;
+//        $endpoint_secret = $this->stripe_endpoint_secret_test;
+        $endpoint_secret = $this->config['stripe_endpoint_secret'];
+//        $endpoint_secret = 'whsec_5gBUevqVZTXBcX45wXhYLwQ8LbAiGqcw';
         $event = null;
+//        try {
+//            // 驗證是否為stripe回調
+//            $event = \Stripe\Webhook::constructEvent(
+//                $notifyData,$stripe_signature,$endpoint_secret
+//            );
+//        } catch(\UnexpectedValueException $e) {
+//            // Invalid payload
+//            $this->setLog('\UnexpectedValueException http_response_code 400'.json_encode($e->getMessage()));
+////            http_response_code(400);
+////            throw new ValidateException('UnexpectedValueException 系统错误');
+//            return ;
+//        } catch(\Stripe\Exception\SignatureVerificationException $e) {
+//            // Invalid signature
+//            $this->setLog('\SignatureVerificationException http_response_code 400 '.json_encode($e->getMessage()));
+////            http_response_code(400);
+////            throw new ValidateException('驗簽失敗');
+//            return ;
+//        }
         try {
-            // 驗證是否為stripe回調
-            $event = \Stripe\Webhook::constructEvent(
-                $notifyData,$stripe_signature,$endpoint_secret
+            $event = \Stripe\Event::constructFrom(
+                json_decode($notifyData, true)
             );
         } catch(\UnexpectedValueException $e) {
             // Invalid payload
-            $this->setLog('\UnexpectedValueException http_response_code 400'.json_encode($e->getMessage()));
-//            http_response_code(400);
-            throw new ValidateException('UnexpectedValueException 系统错误');
-        } catch(\Stripe\Exception\SignatureVerificationException $e) {
-            // Invalid signature
-            $this->setLog('\SignatureVerificationException http_response_code 400 '.json_encode($e->getMessage()));
-//            http_response_code(400);
-            throw new ValidateException('驗簽失敗');
+            http_response_code(400);
+            exit();
         }
         switch ($event->type) {
             // 支付成功
@@ -131,7 +141,7 @@ class Stripe
         return ;
     }
     public function getPaymentIntend($session_id){
-        $key = $this->mode == 'live' ? $this->stripe_live_key : $this->stripe_test_key;
+        $key = $this->config['stripe_key'];
         \Stripe\Stripe::setApiKey($key);
         $session = \Stripe\Checkout\Session::retrieve($session_id);
         return  $session['payment_intent'];

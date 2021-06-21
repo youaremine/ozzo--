@@ -203,34 +203,10 @@ class Common extends BaseController
         try {
             $stripe = new \crmeb\payment\stripe\sdk\Stripe;
             $http_headers = \think\facade\Request ::header();
-            $params = \think\facade\Request ::param();
             $stripe->notice($http_headers,request()->getInput());
         } catch (Exception $e){
             Log::info('stripe支付回調失敗:' . var_export([$e->getMessage(), $e->getFile() . ':' . $e->getLine()], true));
         }
-
-//        switch ($type){
-//                // 支付成功通知
-//            case "checkout_payment_success":
-//                try{
-//                    $stripe = new \crmeb\payment\stripe\sdk\Stripe;
-//                    $http_headers = \think\facade\Request ::header();
-//                    $params = \think\facade\Request ::param();
-//                    $stripe->pay_success_notice($http_headers,$params);
-//                } catch (Exception $e) {
-//                    Log::info('stripe支付回調失敗:' . var_export([$e->getMessage(), $e->getFile() . ':' . $e->getLine()], true));
-//                }
-//            break;
-//                // 支付失敗通知
-//            case "checkout_payment_failed" : $b = 1;
-//            break;
-//                // completed
-//            case "checkout_completed" :
-//            break;
-//            default:
-//                echo json(['code' => 400,'msg' => '参数错误']);
-//                break;
-//        }
 
     }
     /**

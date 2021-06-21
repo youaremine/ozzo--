@@ -312,7 +312,7 @@ Route::group('api/', function () {
     //tapgo支付回调
 //    Route::any('notice/tapgo/:type', 'api.Common/tapgoNotify')->name('tapgoNotify');
     Route::any('tapgo/status','api.payment.TapGo/orderStatus')->name('orderStatus');
-
+    Route::any('tapgo/test','api.payment.TapGo/test')->name('test');;
     //微信App支付回调
     Route::any('notice/weixin_app_pay', 'api.Common/weixinAppNotify')->name('weixinAppNotify');
     //stripe

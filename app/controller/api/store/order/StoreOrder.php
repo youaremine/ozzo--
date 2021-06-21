@@ -246,6 +246,12 @@ class StoreOrder extends BaseController
         $type = $this->request->param('type');
         if (!in_array($type, StoreOrderRepository::PAY_TYPE))
             return app('json')->fail('请选择正确的支付方式');
+        if($type == 'tapgo'){
+            // tapgo 支付需要不同订单号
+            Db::table('shop_store_group_order')->where('group_order_id',$id)->update([
+                'group_order_sn' => $this->repository->getNewOrderId() . '0'
+            ]);
+        }
         $groupOrder = $groupOrderRepository->detail($this->request->uid(), (int)$id, false);
         if (!$groupOrder)
             return app('json')->fail('订单不存在或已支付');

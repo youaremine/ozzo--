@@ -786,14 +786,14 @@ class StoreOrderRepository extends BaseRepository
                     'financial_record_sn' => $financeSn . ($_k + 1)
                 ];
                 $userMerchantRepository->updatePayTime($uid, $order->mer_id, $order->pay_price);
-                SwooleTaskService::merchant('notice', [
-                    'type' => 'new_order',
-                    'data' => [
-                        'title' => '新订单',
-                        'message' => '您有一个新的订单',
-                        'id' => $order->order_id
-                    ]
-                ], $order->mer_id);
+//                SwooleTaskService::merchant('notice', [
+//                    'type' => 'new_order',
+//                    'data' => [
+//                        'title' => '新订单',
+//                        'message' => '您有一个新的订单',
+//                        'id' => $order->order_id
+//                    ]
+//                ], $order->mer_id);
                 //自动打印订单
                 $this->autoPrinter($order->order_id, $order->mer_id);
             }
@@ -985,7 +985,7 @@ class StoreOrderRepository extends BaseRepository
             throw new ValidateException($e);
         }
         // 返回会话id
-        return app('json')->status('stripe',['config' => ['session_id' => $session_id,'url' => 'https://hklive.ozzotec.com/api/stripe/pay'],'order_id' => $groupOrder['group_order_id']]);
+        return app('json')->status('stripe',['config' => ['session_id' => $session_id,'url' => request()->domain() . '/api/stripe/pay'],'order_id' => $groupOrder['group_order_id']]);
     }
     /**
      * @return string

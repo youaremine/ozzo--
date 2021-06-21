@@ -18,12 +18,13 @@ class Wechat
 
     public function __construct()
     {
-        $config = include('WechatConfig.php');
+//        $config = include('WechatConfig.php');
+        $config = systemConfig(['weixin_app_appid', 'weixin_app_mchid', 'weixin_app_apikey','weixin_app_private_key','weixin_app_api_certificate_number']);
         $this->config = $config;
     }
     public function wechatpay($out_trade_no,$total){
-        $merchantId = '126125418'; // 商户号
-        $merchantSerialNumber = '76709B83E5A0494EA3F25ADBC38939778B7B94F2'; // 商户API证书序列号
+        $merchantId = $this->config['weixin_app_mchid']; // 商户号
+        $merchantSerialNumber = $this->config['weixin_app_api_certificate_number']; // 商户API证书序列号
         $merchantPrivateKey = PemUtil::loadPrivateKey(__DIR__.'/key/apiclient_key.pem'); // 商户私钥
         // 微信支付平台配置
         $wechatpayCertificate = PemUtil::loadCertificate(__DIR__.'/key/wechatpay_447B76563F1BDE4DEAE64000D34758F4378542CC.pem'); // 微信支付平台证书
@@ -43,11 +44,11 @@ class Wechat
             else $total = $total * 100;
             $resp = $client->request('POST', 'https://api.mch.weixin.qq.com/hk/v3/transactions/app', [
                 'json' => [ // JSON请求体
-                    'appid' => 'wx8507d8fe31b9e386',
-                    'mchid' => '126125418',
+                    'appid' => $this->config['weixin_app_appid'],
+                    'mchid' => $this->config['weixin_app_mchid'],
                     'description' => 'test',
                     'out_trade_no' => $out_trade_no,
-                    'notify_url' => 'https://hklive.ozzotec.com/api/notice/weixin_app_pay',
+                    'notify_url' => request()->domain() . '/api/notice/weixin_app_pay',
 //                    'notify_url' => 'https://www.hklivearcade.com.hk/api/notice/weixin_app_pay',
                     "trade_type"=>"APP",
                     "merchant_category_code"=> "7032",
@@ -62,12 +63,12 @@ class Wechat
             $timestamp = (String)time();
             $data['prepay_id'] = $data['prepay_id'];
             $package = 'Sign=WXPay';
-            $stringa = 'appid=wx8507d8fe31b9e386'.'&noncestr='.$noncestr.'&package='.$package.'&partnerid=126125418&prepayid='. $data['prepay_id'].'&timestamp='.$timestamp;
+            $stringa = 'appid='.$this->config['weixin_app_appid'].'&noncestr='.$noncestr.'&package='.$package.'&partnerid='.$this->config['weixin_app_mchid'].'&prepayid='. $data['prepay_id'].'&timestamp='.$timestamp;
             $stringa = $stringa . '&key=RoriN4KyomwaAFL4KyMvjrFuJlbGoNGg';
             $payload = [
-                    'appid' => 'wx8507d8fe31b9e386',
+                    'appid' => $this->config['weixin_app_appid'],
                     'noncestr' => $noncestr,
-                    'partnerid' => '126125418',
+                    'partnerid' => $this->config['weixin_app_mchid'],
                     "package" => $package,
                     'prepayid' => $data['prepay_id'],
                     'timestamp' => $timestamp,
