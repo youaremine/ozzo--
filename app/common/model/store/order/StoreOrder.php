@@ -19,6 +19,7 @@ use app\common\model\store\product\ProductGroupUser;
 use app\common\model\store\service\StoreService;
 use app\common\model\system\merchant\Merchant;
 use app\common\model\user\User;
+use app\common\model\store\order\StoreOrderAnnexImage;
 use app\common\repositories\store\MerchantTakeRepository;
 
 class StoreOrder extends BaseModel
@@ -52,6 +53,10 @@ class StoreOrder extends BaseModel
     public function user()
     {
         return $this->hasOne(User::class, 'uid', 'uid');
+    }
+    public function annex()
+    {
+        return $this->hasMany(StoreOrderAnnexImage::class, 'order_id', 'order_id');
     }
 
     public function groupOrder()

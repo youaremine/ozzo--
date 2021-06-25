@@ -271,14 +271,14 @@ class Auth extends BaseController
     public function smsLogin(UserAuthValidate $validate, UserRepository $repository)
     {
         $data = $this->request->params(['phone', 'sms_code', 'spread']);
-        
+
         //TODO 删掉测试用的用户登陆数据
         if($data['phone'] != '13888888888'){
             $validate->sceneSmslogin()->check($data);
             if (!(YunxinSmsService::create())->checkSmsCode($data['phone'], $data['sms_code'], 'login'))
                 return app('json')->fail('验证码不正确');
         }
-        
+
         $user = $repository->accountByUser($data['phone']);
         if (!$user) $user = $repository->registr($data['phone'], null);
         $user = $repository->mainUser($user);

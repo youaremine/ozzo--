@@ -271,6 +271,8 @@ class StoreOrder extends BaseController
     public function take($id)
     {
         $this->repository->takeOrder($id, $this->request->userInfo());
+        //TODO 訂單收貨成功 發送一条信息
+        $this->repository->chatBoxNotice( $this->repository->getDetail($id),5,0,3);
         return app('json')->success('确认收货成功');
     }
 
