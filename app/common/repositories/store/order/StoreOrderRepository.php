@@ -724,7 +724,7 @@ class StoreOrderRepository extends BaseRepository
     {
         $groupOrder->append(['user']);
         //修改订单状态
-//        Db::transaction(function () use ($groupOrder) {
+        Db::transaction(function () use ($groupOrder) {
             $time = date('Y-m-d H:i:s');
             $groupOrder->paid = 1;
             $groupOrder->pay_time = $time;
@@ -809,7 +809,7 @@ class StoreOrderRepository extends BaseRepository
             if (count($groupOrder['give_coupon_ids']) > 0)
                 $groupOrder['give_coupon_ids'] = app()->make(StoreCouponRepository::class)->getGiveCoupon($groupOrder['give_coupon_ids'])->column('coupon_id');
             $groupOrder->save();
-//        });
+        });
 
         if (count($groupOrder['give_coupon_ids']) > 0) {
             try {

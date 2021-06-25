@@ -130,7 +130,6 @@ class UserHandler
     // 客服發消息給用戶
     public function service_chat(array $result)
     {
-        Db::table('shop_text')->insert(['text' => json_encode($result).'service_chat']);
         $data = $result['data'];
         $frame = $result['frame'];
         if (!isset($data['msn_type']) || !isset($data['msn']) || !isset($data['uid']))
@@ -173,7 +172,6 @@ class UserHandler
     // 用戶發消息給客服
     public function send_chat(array $result)
     {
-        Db::table('shop_text')->insert(['text' => json_encode($result).'send_chat']);
         $data = $result['data'];
         $frame = $result['frame'];
         if (!isset($data['msn_type']) || !isset($data['msn']) || !isset($data['mer_id']))
