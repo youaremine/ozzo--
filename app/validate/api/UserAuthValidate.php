@@ -20,7 +20,7 @@ class UserAuthValidate extends Validate
     protected $failException = true;
 
     protected $rule = [
-        'phone|手机号' => 'require|mobile',
+        'phone|手机号' => 'require',
         'pwd|密码' => 'require|min:6',
         'sms_code|短信验证码' => 'require|max:4',
     ];

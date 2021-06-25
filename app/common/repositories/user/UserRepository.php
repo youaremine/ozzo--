@@ -460,7 +460,7 @@ class UserRepository extends BaseRepository
             'account' => $phone,
             'pwd' => $pwd,
             'nickname' => substr($phone, 0, 3) . '****' . substr($phone, 7, 4),
-            'avatar' => '/static/images/f.png',
+            'avatar' => '/static/f.png',
             'phone' => $phone,
             'last_ip' => app('request')->ip()
         ];
@@ -693,10 +693,14 @@ class UserRepository extends BaseRepository
      */
     public function bindSpread(User $user, int $spreadUid)
     {
-        if ($spreadUid && !$user->spread_uid && $user->uid != $spreadUid) {
-            Db::transaction(function () use ($spreadUid, $user) {
+        if ($spreadUid && !$user->spread_uid && $user->uid != $spreadUid && $this->dao->exists($spreadUid)) {
+            $config = systemConfig(['extension_limit', 'extension_limit_day']);
+            Db::transaction(function () use ($spreadUid, $user, $config) {
                 $user->spread_uid = $spreadUid;
                 $user->spread_time = date('Y-m-d H:i:s');
+                if ($config['extension_limit'] && $config['extension_limit_day']) {
+                    $user->spread_limit = date('Y-m-d H:i:s', strtotime('+ ' . $config['extension_limit_day'] . ' day'));
+                }
                 $this->dao->update($spreadUid, [
                     'spread_count' => Db::raw('spread_count +1')
                 ]);
@@ -808,7 +812,7 @@ class UserRepository extends BaseRepository
         }
         $query = $this->search($where);
         $count = $query->count();
-        $list = $query->setOption('field', [])->field('uid,avatar,nickname,is_promoter,pay_count,pay_price,spread_count,create_time')->page($page, $limit)->select();
+        $list = $query->setOption('field', [])->field('uid,avatar,nickname,is_promoter,pay_count,pay_price,spread_count,create_time,spread_time,spread_limit')->page($page, $limit)->select();
         return compact('list', 'count');
     }
 
@@ -847,11 +851,15 @@ class UserRepository extends BaseRepository
         if (!count($all)) return ['count' => 0, 'list' => []];
         $query = app()->make(StoreOrderRepository::class)->usersOrderQuery($where, $all);
         $count = $query->count();
-        $list = $query->page($page, $limit)->field('uid,order_sn,pay_time,extension_one,extension_two')->with(['user' => function ($query) {
+        $list = $query->page($page, $limit)->field('uid,order_sn,pay_time,extension_one,extension_two,is_selfbuy')->with(['user' => function ($query) {
             $query->field('avatar,nickname,uid');
         }])->select()->toArray();
         foreach ($list as $k => $item) {
-            $list[$k]['brokerage'] = in_array($item['uid'], $ids) ? $item['extension_one'] : $item['extension_two'];
+            if ($item['is_selfbuy']) {
+                $list[$k]['brokerage'] = in_array($item['uid'], $ids) ? $item['extension_two'] : 0;
+            } else {
+                $list[$k]['brokerage'] = in_array($item['uid'], $ids) ? $item['extension_one'] : $item['extension_two'];
+            }
             unset($list[$k]['extension_one'], $list[$k]['extension_two']);
         }
         return compact('count', 'list');
@@ -959,11 +967,23 @@ class UserRepository extends BaseRepository
         $user = $this->dao->get($uid);
         if ($user->spread_uid == $spread_id)
             return;
-        Db::transaction(function () use ($user, $spreadLogRepository, $spread_id, $admin) {
+        $config = systemConfig(['extension_limit', 'extension_limit_day']);
+        Db::transaction(function () use ($config, $user, $spreadLogRepository, $spread_id, $admin) {
             $old = $user->spread_uid ?: 0;
             $spreadLogRepository->add($user->uid, $spread_id, $old, $admin);
+            $user->spread_time = date('Y-m-d H:i:s');
+            if ($config['extension_limit'] && $config['extension_limit_day']) {
+                $user->spread_limit = date('Y-m-d H:i:s', strtotime('+ ' . $config['extension_limit_day'] . ' day'));
+            }
             $user->spread_uid = $spread_id;
             $user->save();
         });
+    }
+
+    public function syncSpreadStatus()
+    {
+        if (systemConfig('extension_limit')) {
+            $this->dao->syncSpreadStatus();
+        }
     }
 }

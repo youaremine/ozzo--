@@ -13,17 +13,18 @@
 
 namespace crmeb\listens;
 
+use crmeb\services\TimerService;
 use Swoole\Timer;
 use think\facade\Log;
 use crmeb\interfaces\ListenerInterface;
 use app\common\repositories\store\product\ProductGroupBuyingRepository;
 
-class ProductGroupStatusCheckListen implements ListenerInterface
+class ProductGroupStatusCheckListen extends TimerService implements ListenerInterface
 {
     public function handle($event): void
     {
-        $make = app()->make(ProductGroupBuyingRepository::class);
-        Timer::tick(1000 * 60, function () use ($make) {
+        $this->tick(1000 * 60, function () {
+            $make = app()->make(ProductGroupBuyingRepository::class);
             try {
                 $make->checkStatus(null);
             } catch (\Exception $e) {

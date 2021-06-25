@@ -77,6 +77,7 @@ class Product extends BaseController
         $this->repository->check($data,$this->request->merId());
         $data['status'] = $this->request->merchant()->is_audit ? 0 : 1;
         $data['mer_status'] = ($merchant['is_del'] || !$merchant['mer_state'] || !$merchant['status']) ? 0 : 1;
+        $data['rate'] = 3;
         $this->repository->create($data,0);
         return app('json')->success('添加成功');
     }

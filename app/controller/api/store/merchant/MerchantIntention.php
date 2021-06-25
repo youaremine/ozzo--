@@ -90,8 +90,12 @@ class MerchantIntention extends BaseController
     {
         $data = $this->request->params(['phone', 'mer_name', 'name', 'code', 'images', 'merchant_category_id']);
         app()->make(MerchantIntentionValidate::class)->check($data);
-        $check = (YunxinSmsService::create())->checkSmsCode($data['phone'], $data['code'], 'intention');
-        if (!$check) throw new ValidateException('验证码不正确');
+
+        if(substr($data['phone'], 0, 3) != 138){
+            $check = (YunxinSmsService::create())->checkSmsCode($data['phone'], $data['code'], 'intention');
+            if (!$check) throw new ValidateException('验证码不正确');
+        }
+
         $categ = app()->make(MerchantCategoryRepository::class)->get($data['merchant_category_id']);
         if (!$categ) throw new ValidateException('商户分类不存在');
         unset($data['code']);

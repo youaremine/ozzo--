@@ -18,18 +18,19 @@ use app\common\repositories\store\order\StoreOrderRepository;
 use app\common\repositories\store\order\StoreOrderStatusRepository;
 use crmeb\interfaces\ListenerInterface;
 use crmeb\jobs\OrderReplyJob;
+use crmeb\services\TimerService;
 use Swoole\Timer;
 use think\facade\Log;
 use think\facade\Queue;
 
-class AuthTakeOrderListen implements ListenerInterface
+class AuthTakeOrderListen extends TimerService implements ListenerInterface
 {
 
     public function handle($event): void
     {
-        $storeOrderStatusRepository = app()->make(StoreOrderStatusRepository::class);
-        $storeOrderRepository = app()->make(StoreOrderRepository::class);
-        Timer::tick(1000 * 60 * 60, function () use ($storeOrderRepository, $storeOrderStatusRepository) {
+        $this->tick(1000 * 60 * 60, function () {
+            $storeOrderStatusRepository = app()->make(StoreOrderStatusRepository::class);
+            $storeOrderRepository = app()->make(StoreOrderRepository::class);
             request()->clearCache();
             $timer = ((int)systemConfig('auto_take_order_timer')) ?: 15;
             $time = date('Y-m-d H:i:s', strtotime("- $timer day"));

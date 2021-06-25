@@ -13,6 +13,7 @@ namespace app\common\dao\store\product;
 use app\common\dao\BaseDao;
 use app\common\model\store\product\Spu;
 use app\common\model\store\StoreCategory;
+use app\common\repositories\store\StoreCategoryRepository;
 use crmeb\services\VicWordService;
 
 class SpuDao extends  BaseDao
@@ -24,7 +25,7 @@ class SpuDao extends  BaseDao
 
     public function search($where)
     {
-        $order = 'P.sort DESC';
+        $order = 'P.sort DESC,S.create_time DESC';
         if(isset($where['order'])){
             if(in_array($where['order'], ['is_new', 'price_asc', 'price_desc', 'rate', 'sales'])){
                 if ($where['order'] == 'price_asc') {
@@ -37,7 +38,7 @@ class SpuDao extends  BaseDao
             }elseif($where['order'] == 'star'){
                 $order = 'S.star DESC,S.rank DESC,S.create_time DESC';
             }else{
-                $order = 'S.'.$where['order'].' DESC';
+                $order = 'S.'.$where['order'].' DESC,S.create_time DESC';
             }
         }
         $query = Spu::getDB()->alias('S')->join('StoreProduct P','S.product_id = P.product_id');
@@ -49,7 +50,7 @@ class SpuDao extends  BaseDao
             })
             ->when(isset($where['keyword']) && $where['keyword'] !== '',function($query)use($where){
                 if (is_numeric($where['keyword'])) {
-                    $query->whereLike("S.store_name|S.keyword|S.bar_code|S.product_id", "%{$where['keyword']}%");
+                    $query->whereLike("S.store_name|S.keyword|S.product_id", "%{$where['keyword']}%");
                 } else {
                     $word = app()->make(VicWordService::class)->getWord($where['keyword']);
                     $query->where(function ($query) use ($word) {
@@ -59,8 +60,16 @@ class SpuDao extends  BaseDao
                     });
                 }
             })
-            ->when(isset($where['cate_id']) && $where['cate_id'] !== '',function($query)use($where){
-                $query->where('P.cate_id',$where['cate_id']);
+            ->when(isset($where['cate_pid']) && $where['cate_pid'], function ($query) use ($where) {
+                $storeCategoryRepository = app()->make(StoreCategoryRepository::class);
+                $cate = array_merge($storeCategoryRepository->findChildrenId((int)$where['cate_pid']), [(int)$where['cate_pid']]);
+                $query->whereIn('P.cate_id', $cate);
+            })
+            ->when(isset($where['cate_id']) && $where['cate_id'] !== '', function ($query) use ($where) {
+                is_array($where['cate_id']) ? $query->whereIn('P.cate_id', $where['cate_id']) : $query->where('P.cate_id', $where['cate_id']);
+            })
+            ->when(isset($where['common']) && $where['common'] !== '', function ($query) use ($where) {
+                $query->whereIn('P.product_type', [0, 1]);
             })
             ->when(isset($where['price_on']) && $where['price_on'] !== '',function($query)use($where){
                 $query->where('P.price','>=',$where['price_on']);
@@ -68,8 +77,8 @@ class SpuDao extends  BaseDao
             ->when(isset($where['price_off']) && $where['price_off'] !== '',function($query)use($where){
                 $query->where('P.price','<=',$where['price_off']);
             })
-            ->when(isset($where['brand_id']) && $where['brand_id'] !== '',function($query)use($where){
-                $query->where('P.brand_id',$where['brand_id']);
+            ->when(isset($where['brand_id']) && $where['brand_id'] !== '', function ($query) use ($where) {
+                $query->whereIn('P.brand_id', array_map('intval', explode(',', $where['brand_id'])));
             })
             ->when(isset($where['is_gift_bag']) && $where['is_gift_bag'] !== '',function($query)use($where){
                 $query->where('P.is_gift_bag',$where['is_gift_bag']);

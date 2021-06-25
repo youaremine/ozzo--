@@ -26,7 +26,7 @@ return [
             'host'       => env('redis.redis_hostname','127.0.0.1'),
             'port'       => env('redis.port', '6379'),
             'password'   => env('redis.redis_password', ''),
-            'select'     => env('redis.select', 0),
+            'select'     => (int)env('redis.select', 0),
             'timeout'    => 0,
             'persistent' => false,
         ],

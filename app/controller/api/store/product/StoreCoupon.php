@@ -97,7 +97,8 @@ class StoreCoupon extends BaseController
      */
     public function merCoupon($id, StoreCouponRepository $repository)
     {
-        $coupon = $repository->validMerCoupon($id, $this->uid)->toArray();
+        $all = (int)$this->request->param('all');
+        $coupon = $repository->validMerCoupon($id, $this->uid, $all === 1 ? null : 0)->toArray();
         return app('json')->success($coupon);
     }
 

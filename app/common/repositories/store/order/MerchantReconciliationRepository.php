@@ -263,25 +263,25 @@ class MerchantReconciliationRepository extends BaseRepository
         $res = $this->dao->get($id);
         $mer = app()->make(MerchantRepository::class)->get($res['mer_id']);
         if(isset($data['is_accounts']) && $data['is_accounts']){
-            $make = app()->make(FinancialRecordRepository::class);
-
-            $make->dec([
-                'order_id' => $id,
-                'order_sn' => $id,
-                'user_info' => $mer['mer_name'],
-                'user_id' => $res['mer_id'],
-                'financial_type' => 'sys_accoubts',
-                'number' => $res->price,
-            ],0);
-
-            $make->inc([
-                'order_id' => $id,
-                'order_sn' => $id,
-                'user_info' => '总平台',
-                'user_id' => 0,
-                'financial_type' => 'mer_accoubts',
-                'number' => $res->price,
-            ],$res->mer_id);
+//            $make = app()->make(FinancialRecordRepository::class);
+//
+//            $make->dec([
+//                'order_id' => $id,
+//                'order_sn' => $id,
+//                'user_info' => $mer['mer_name'],
+//                'user_id' => $res['mer_id'],
+//                'financial_type' => 'sys_accoubts',
+//                'number' => $res->price,
+//            ],0);
+//
+//            $make->inc([
+//                'order_id' => $id,
+//                'order_sn' => $id,
+//                'user_info' => '总平台',
+//                'user_id' => 0,
+//                'financial_type' => 'mer_accoubts',
+//                'number' => $res->price,
+//            ],$res->mer_id);
 
             SwooleTaskService::merchant('notice', [
                 'type' => 'accoubts',

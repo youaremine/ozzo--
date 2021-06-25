@@ -19,9 +19,11 @@ use crmeb\basic\BaseController;
 use app\common\repositories\store\order\StoreCartRepository;
 use app\common\repositories\store\order\StoreGroupOrderRepository;
 use app\common\repositories\store\order\StoreOrderRepository;
+use crmeb\payment\tapgo\TapGo;
 use crmeb\services\ExpressService;
 use think\App;
 use think\exception\ValidateException;
+use think\facade\Db;
 
 /**
  * Class StoreOrder
@@ -88,7 +90,6 @@ class StoreOrder extends BaseController
             return app('json')->fail('请选择正确的支付方式');
         if (!in_array($order_type, [0, 1, 2, 3, 4]))
             return app('json')->fail('订单类型错误');
-
         $validate = app()->make(UserReceiptValidate::class);
 
         foreach ($receipt_data as $receipt) {
@@ -101,6 +102,13 @@ class StoreOrder extends BaseController
             return app('json')->fail('数据无效');
         if (!$addressId)
             return app('json')->fail('请选择地址');
+        // 判斷金額 1. 微信不能低於0.02  2. stripe不能低於 4
+//        if($payType == 'stripe' && 0){
+//            return app('json')->fail('金額未滿4元');
+//        }
+//        if($payType == 'weixinAppPay' && 0){
+//            return app('json')->fail('金額不能小于0.02元');
+//        }
         makeLock()->lock();
         try {
             if ($order_type == 2) {
@@ -238,6 +246,12 @@ class StoreOrder extends BaseController
         $type = $this->request->param('type');
         if (!in_array($type, StoreOrderRepository::PAY_TYPE))
             return app('json')->fail('请选择正确的支付方式');
+        if($type == 'tapgo'){
+            // tapgo 支付需要不同订单号
+            Db::table('shop_store_group_order')->where('group_order_id',$id)->update([
+                'group_order_sn' => $this->repository->getNewOrderId() . '0'
+            ]);
+        }
         $groupOrder = $groupOrderRepository->detail($this->request->uid(), (int)$id, false);
         if (!$groupOrder)
             return app('json')->fail('订单不存在或已支付');
@@ -257,6 +271,8 @@ class StoreOrder extends BaseController
     public function take($id)
     {
         $this->repository->takeOrder($id, $this->request->userInfo());
+        //TODO 訂單收貨成功 發送一条信息
+        $this->repository->chatBoxNotice( $this->repository->getDetail($id),5,0,3);
         return app('json')->success('确认收货成功');
     }
 
@@ -287,5 +303,25 @@ class StoreOrder extends BaseController
         $this->repository->userDel($id, $this->request->uid());
         return app('json')->success('删除成功');
     }
-
+    public function orderPolling(){
+        $post = $this->request->post();
+        $data = ['order_sn' => $post['order_sn']];
+        switch ($post['pay_type']){
+            case 'tapgo':
+//                $payment = new TapGo();
+//                $group_order_sn = Db::name('store_group_order')->where('group_order_id',$order_id)->value('group_order_sn');
+//                if(!empty($group_order_sn)){
+//                    $res = $payment->orderStatus($group_order_sn);
+//                    if($res) return app('json')->success('pay ok');
+//                }
+                if($post['code'] == 200){
+                    event('pay_success_order', ['order_sn' => $data['order_sn'], 'data' => $data]);
+                    return app('json')->success('pay ok');
+                }else{
+                    return app('json')->fail('not pay');
+                }
+            break;
+        }
+        return app('json')->fail('not pay');
+    }
 }

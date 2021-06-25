@@ -1,0 +1,52 @@
+ --------------- .2021-06-07 01:49:14--------------- 
+params : {"id":"4200001049202106077061227203","appid":"wxcfd86c246a46ff84","mchid":"126125418","out_trade_no":"wx1623001681801477020","payer":{"openid":"oRtLk5zOcj1EEBOFO2MRuh5XNfnw"},"amount":{"total":3,"currency":"HKD","payer_total":2,"payer_currency":"CNY","exchange_rate":{"type":"SETTLEMENT_RATE","rate":100000000}},"trade_type":"APP","trade_state":"SUCCESS","trade_state_desc":"支付成功","bank_type":"CCB_DEBIT","success_time":"2021-06-07T01:49:14+08:00"}
+ --------------- .2021-06-07 01:49:14--------------- 
+
+ --------------- .2021-06-07 10:31:03--------------- 
+appid not equal 
+ --------------- .2021-06-07 10:31:03--------------- 
+
+ --------------- .2021-06-07 10:41:33--------------- 
+appid not equal 
+ --------------- .2021-06-07 10:41:33--------------- 
+
+ --------------- .2021-06-07 10:44:52--------------- 
+params : {"id":"4200001035202106077075741347","appid":"wx8507d8fe31b9e386","mchid":"126125418","out_trade_no":"wx1623033882914415510","payer":{"openid":"o97OL6TPjRHJ2TJ3Kxrp8jNgIk-k"},"amount":{"total":3,"currency":"HKD","payer_total":2,"payer_currency":"CNY","exchange_rate":{"type":"SETTLEMENT_RATE","rate":100000000}},"trade_type":"APP","trade_state":"SUCCESS","trade_state_desc":"支付成功","bank_type":"CCB_DEBIT","success_time":"2021-06-07T10:44:51+08:00"}
+ --------------- .2021-06-07 10:44:52--------------- 
+
+ --------------- .2021-06-07 11:00:38--------------- 
+params : {"id":"4200001037202106075489362691","appid":"wx8507d8fe31b9e386","mchid":"126125418","out_trade_no":"wx1623034814897457860","payer":{"openid":"o97OL6SezpVfi-X8NPonhql2Umns"},"amount":{"total":2,"currency":"HKD","payer_total":1,"payer_currency":"CNY","exchange_rate":{"type":"SETTLEMENT_RATE","rate":100000000}},"trade_type":"APP","trade_state":"SUCCESS","trade_state_desc":"支付成功","bank_type":"OTHERS","success_time":"2021-06-07T11:00:37+08:00"}
+ --------------- .2021-06-07 11:00:38--------------- 
+
+ --------------- .2021-06-07 12:13:22--------------- 
+params : {"id":"4200001033202106076030431639","appid":"wx8507d8fe31b9e386","mchid":"126125418","out_trade_no":"wx1623039159949882670","payer":{"openid":"o97OL6TPjRHJ2TJ3Kxrp8jNgIk-k"},"amount":{"total":2,"currency":"HKD","payer_total":1,"payer_currency":"CNY","exchange_rate":{"type":"SETTLEMENT_RATE","rate":100000000}},"trade_type":"APP","trade_state":"SUCCESS","trade_state_desc":"支付成功","bank_type":"CCB_DEBIT","success_time":"2021-06-07T12:13:21+08:00"}
+ --------------- .2021-06-07 12:13:22--------------- 
+
+ --------------- .2021-06-07 15:18:39--------------- 
+params : {"id":"4200001045202106072055303484","appid":"wx8507d8fe31b9e386","mchid":"126125418","out_trade_no":"wx1623050290186977340","payer":{"openid":"o97OL6TPjRHJ2TJ3Kxrp8jNgIk-k"},"amount":{"total":2,"currency":"HKD","payer_total":1,"payer_currency":"CNY","exchange_rate":{"type":"SETTLEMENT_RATE","rate":100000000}},"trade_type":"APP","trade_state":"SUCCESS","trade_state_desc":"支付成功","bank_type":"CCB_DEBIT","success_time":"2021-06-07T15:18:38+08:00"}
+ --------------- .2021-06-07 15:18:39--------------- 
+
+ --------------- .2021-06-07 20:10:29--------------- 
+params : {"id":"4200001041202106071692674594","appid":"wx8507d8fe31b9e386","mchid":"126125418","out_trade_no":"wx1623067819109105130","payer":{"openid":"o97OL6Z7-Etgb26GwFwyU2GEKK5o"},"amount":{"total":2,"currency":"HKD","payer_total":1,"payer_currency":"CNY","exchange_rate":{"type":"SETTLEMENT_RATE","rate":100000000}},"trade_type":"APP","trade_state":"SUCCESS","trade_state_desc":"支付成功","bank_type":"OTHERS","success_time":"2021-06-07T20:10:28+08:00"}
+ --------------- .2021-06-07 20:10:29--------------- 
+
+ --------------- .2021-06-07 20:11:28--------------- 
+params : {"id":"4200001046202106079585787232","appid":"wx8507d8fe31b9e386","mchid":"126125418","out_trade_no":"wx1623067879697104480","payer":{"openid":"o97OL6Z7-Etgb26GwFwyU2GEKK5o"},"amount":{"total":2,"currency":"HKD","payer_total":1,"payer_currency":"CNY","exchange_rate":{"type":"SETTLEMENT_RATE","rate":100000000}},"trade_type":"APP","trade_state":"SUCCESS","trade_state_desc":"支付成功","bank_type":"OTHERS","success_time":"2021-06-07T20:11:27+08:00"}
+ --------------- .2021-06-07 20:11:28--------------- 
+
+ --------------- .2021-06-07 20:12:24--------------- 
+params : {"id":"4200001148202106079036409312","appid":"wx8507d8fe31b9e386","mchid":"126125418","out_trade_no":"wx1623067917912710790","payer":{"openid":"o97OL6TPjRHJ2TJ3Kxrp8jNgIk-k"},"amount":{"total":2,"currency":"HKD","payer_total":1,"payer_currency":"CNY","exchange_rate":{"type":"SETTLEMENT_RATE","rate":100000000}},"trade_type":"APP","trade_state":"SUCCESS","trade_state_desc":"支付成功","bank_type":"CCB_DEBIT","success_time":"2021-06-07T20:12:23+08:00"}
+ --------------- .2021-06-07 20:12:24--------------- 
+
+ --------------- .2021-06-07 20:17:36--------------- 
+params : {"id":"4200001044202106074997314455","appid":"wx8507d8fe31b9e386","mchid":"126125418","out_trade_no":"wx1623068246309163100","payer":{"openid":"o97OL6YLYklN5iWwB-o8du0yOx1M"},"amount":{"total":2,"currency":"HKD","payer_total":1,"payer_currency":"CNY","exchange_rate":{"type":"SETTLEMENT_RATE","rate":100000000}},"trade_type":"APP","trade_state":"SUCCESS","trade_state_desc":"支付成功","bank_type":"OTHERS","success_time":"2021-06-07T20:17:35+08:00"}
+ --------------- .2021-06-07 20:17:36--------------- 
+
+ --------------- .2021-06-07 20:34:17--------------- 
+params : {"id":"4200001043202106077254130614","appid":"wx8507d8fe31b9e386","mchid":"126125418","out_trade_no":"wx1623069247580574290","payer":{"openid":"o97OL6Z7-Etgb26GwFwyU2GEKK5o"},"amount":{"total":2,"currency":"HKD","payer_total":1,"payer_currency":"CNY","exchange_rate":{"type":"SETTLEMENT_RATE","rate":100000000}},"trade_type":"APP","trade_state":"SUCCESS","trade_state_desc":"支付成功","bank_type":"OTHERS","success_time":"2021-06-07T20:34:17+08:00"}
+ --------------- .2021-06-07 20:34:17--------------- 
+
+ --------------- .2021-06-07 20:34:41--------------- 
+params : {"id":"4200001049202106070736929328","appid":"wx8507d8fe31b9e386","mchid":"126125418","out_trade_no":"wx1623069272425947930","payer":{"openid":"o97OL6Z7-Etgb26GwFwyU2GEKK5o"},"amount":{"total":2,"currency":"HKD","payer_total":1,"payer_currency":"CNY","exchange_rate":{"type":"SETTLEMENT_RATE","rate":100000000}},"trade_type":"APP","trade_state":"SUCCESS","trade_state_desc":"支付成功","bank_type":"OTHERS","success_time":"2021-06-07T20:34:41+08:00"}
+ --------------- .2021-06-07 20:34:41--------------- 
+

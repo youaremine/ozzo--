@@ -50,13 +50,20 @@ class Excel extends BaseController
      * @author Qinii
      * @day 2020-07-30
      */
-    public function download()
+    public function download($id)
     {
         try{
-            $id = $this->request->param('id');
+            if($id == 'express'){
+                $file['name'] = 'express';
+                $path = app()->getRootPath().'extend/express.xlsx';
+                if(!$file || !file_exists($path)) return app('json')->fail('文件不存在');
+                return download($path,$file['name']);
+            }
+
             $file = $this->repository->getWhere(['excel_id' => $id,'mer_id' => $this->request->merId()]);
             $path = app()->getRootPath().'public'.$file['path'];
-            if(!$file || !file_exists($path))return app('json')->fail('文件不存在');
+            if(!$file || !file_exists($path)) return app('json')->fail('文件不存在');
+
             return download($path,$file['name']);
         }catch (UploadException $e){
             return app('json')->fail('下载失败');

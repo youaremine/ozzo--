@@ -19,5 +19,7 @@ return [
         'spu' => 'app\command\updateSpu',
         'menu:format' => 'app\command\FormatMenuPath',
         'clear:attachment' => 'app\command\ClearCacheAttachment',
+        'version:update' => 'app\command\VersionUpdate',
+        'clear:merchant' => 'app\command\ClearMerchantData',
     ],
 ];

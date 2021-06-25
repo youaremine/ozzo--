@@ -138,7 +138,7 @@ class StoreCart extends BaseModel
         switch ($this->product_type)
         {
             case 0: //普通商品
-                if ($this->product->product_type !==  0 || $this->product->is_show !== 1 || $this->productAttr->stock < $this->cart_num) {
+                if ($this->product->product_type !==  0 || $this->product->is_show !== 1 || $this->productAttr->stock < $this->cart_num || $this->product->is_used !== 1) {
                     return false;
                 }
                 break;

@@ -17,6 +17,7 @@ use app\common\model\system\merchant\Merchant;
 use app\common\repositories\store\coupon\StoreCouponRepository;
 use app\common\repositories\store\order\StoreOrderProductRepository;
 use app\common\repositories\store\order\StoreOrderRepository;
+use app\common\repositories\store\product\SpuRepository;
 use crmeb\jobs\ChangeSpuStatusJob;
 
 class ProductPresell extends BaseModel
@@ -85,7 +86,8 @@ class ProductPresell extends BaseModel
                 $this->action_status = -1;
                 $this->save();
             }
-            queue(ChangeSpuStatusJob::class,['product_type' => 2,'id' => $this->product_presell_id]);
+            queue(ChangeSpuStatusJob::class, ['id' => $this->product_presell_id, 'product_type' => 2]);
+            //app()->make(SpuRepository::class)->changeStatus($this->product_presell_id,2);
             return 2;
         }
     }

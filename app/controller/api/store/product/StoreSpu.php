@@ -10,7 +10,7 @@
 // +----------------------------------------------------------------------
 namespace app\controller\api\store\product;
 
-use app\common\repositories\user\UserVisitRepository;
+use app\common\repositories\user\UserHistoryRepository;
 use think\App;
 use crmeb\basic\BaseController;
 use app\common\repositories\store\product\SpuRepository;
@@ -37,10 +37,10 @@ class StoreSpu extends BaseController
     {
         [$page, $limit] = $this->getPage();
         $where = $this->request->params([
-            'keyword', 'cate_id', 'order', 'price_on', 'price_off', 'brand_id', 'pid','mer_cate_id','product_type','action'
+            'keyword', 'cate_id', 'cate_pid', 'order', 'price_on', 'price_off', 'brand_id', 'pid','mer_cate_id','product_type','action', 'common'
         ]);
         $where['is_gift_bag'] = 0;
-        $where['order'] = $where['order'] ? $where['order'] : 'rank';
+        $where['order'] = $where['order'] ? $where['order'] : 'star';
         $data = $this->repository->getApiSearch($where, $page, $limit, $this->userInfo);
         return app('json')->success($data);
     }
@@ -56,7 +56,7 @@ class StoreSpu extends BaseController
     {
         [$page, $limit] = $this->getPage();
         $where = $this->request->params([
-            'keyword', 'cate_id','order', 'price_on', 'price_off', 'brand_id', 'pid','mer_cate_id','product_type','action'
+            'keyword', 'cate_id','order', 'price_on', 'price_off', 'brand_id', 'pid','mer_cate_id','product_type','action','common'
         ]);
         $where['mer_id'] = $id;
         $where['is_gift_bag'] = 0;
@@ -74,12 +74,12 @@ class StoreSpu extends BaseController
     public function recommend()
     {
         [$page, $limit] = $this->getPage();
-        $where = ['order' => 'sales'];
-        if (!is_null( $this->userInfo)) {
-            $cate_ids = app()->make(UserVisitRepository::class)->getRecommend($this->userInfo->uid);
-            if ($cate_ids) $where = ['cate_ids' => $cate_ids];
-        }
+        $where = $this->request->params(['common']);
+        $where['order'] = 'sales';
         $where['is_gift_bag'] = 0;
+        if (!is_null( $this->userInfo)) {
+            $where['cate_id'] = app()->make(UserHistoryRepository::class)->getRecommend($this->userInfo->uid);
+        }
         $data = $this->repository->getApiSearch($where, $page, $limit, $this->userInfo);
         return app('json')->success($data);
     }
@@ -93,10 +93,11 @@ class StoreSpu extends BaseController
     public function hot($type)
     {
         [$page, $limit] = $this->getPage();
+        $where = $this->request->params(['common']);
         $where['hot_type'] = $type;
         $where['is_gift_bag'] = 0;
         $where['order'] = 'star';
-        $data = $this->repository->getApiSearch($where, $page, $limit,null);
+        $data = $this->repository->getApiSearch($where, $page, $limit, null);
         return app('json')->success($data);
     }
 
@@ -125,7 +126,7 @@ class StoreSpu extends BaseController
     {
         [$page, $limit] = $this->getPage();
         $where['is_gift_bag'] = 1;
-        $where['best'] = 'is_best';
+        $where['hot_type'] = 'best';
         $data = $this->repository->getApiSearch($where, $page, $limit,null);
         return app('json')->success($data);
     }

@@ -77,6 +77,7 @@ class ProductPresellRepository extends BaseRepository
             $data['price'] = $res['price'];
             app()->make(SpuRepository::class)->create($data, $data['product_id'], $resultData->product_presell_id, 2);
             queue(ChangeSpuStatusJob::class, ['id' => $presell['product_id'], 'product_type' => 0]);
+            //app()->make(SpuRepository::class)->changeStatus($presell['product_id'],0);
             SwooleTaskService::admin('notice', [
                 'type' => 'new_presell',
                 'data' => [
@@ -249,7 +250,11 @@ class ProductPresellRepository extends BaseRepository
         $where = $this->dao->presellShow();
         $where['product_presell_id'] = $id;
         $data = $this->dao->search($where)->append(['presell_status', 'tattend_one', 'tattend_two', 'seles'])->find();
-        if (!$data) throw new ValidateException('商品已下架');
+        if (!$data){
+            //app()->make(SpuRepository::class)->changeStatus($id,2);
+            queue(ChangeSpuStatusJob::class, ['id' => $id, 'product_type' => 2]);
+            throw new ValidateException('商品已下架');
+        }
         if ($data['pay_count'] && $uid) {
             $_count = app()->make(StoreOrderRepository::class)->getTattendCount([
                 'activity_id' => $id,
@@ -364,7 +369,8 @@ class ProductPresellRepository extends BaseRepository
             $data->save();
             $data->product->product_type = 0;
             $data->product->save();
-            queue(ChangeSpuStatusJob::class, ['product_type' => 2, 'id' => $data[$this->getPk()]]);
+            queue(ChangeSpuStatusJob::class, ['id' => $data[$this->getPk()], 'product_type' => 2]);
+            //app()->make(SpuRepository::class)->changeStatus($data[$this->getPk()],2);
         });
     }
 
@@ -457,7 +463,8 @@ class ProductPresellRepository extends BaseRepository
                 $item->save();
                 $item->product->product_type = 0;
                 $item->product->save();
-                app()->make(SpuRepository::class)->changeStatus($item->product_presell_id, 2);
+                queue(ChangeSpuStatusJob::class, ['id' => $item->product_presell_id, 'product_type' => 2]);
+               // app()->make(SpuRepository::class)->changeStatus($item->product_presell_id, 2);
             }
         });
     }

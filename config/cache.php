@@ -16,7 +16,7 @@
 
 return [
     // 默认缓存驱动
-    'default' => env('cache.driver', 'redis'),
+    'default' => env('INSTALLED', false) ? env('cache.driver', 'redis') : 'file',
 
     // 缓存连接方式配置
     'stores'  => [
@@ -44,7 +44,7 @@ return [
             // 密码
             'password'   => env('redis.redis_password', ''),
             // 数据库 0号数据库
-            'select'     => env('redis.select', 0),
+            'select'     => (int)env('redis.select', 0),
         ],
         // 更多的缓存连接
     ],

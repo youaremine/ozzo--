@@ -44,8 +44,10 @@ class Excel extends BaseModel
     {
         return $this->hasOne(MerchantAdmin::class,'merchant_admin_id','admin_id');
     }
-    public function sys_admin()
-    {
 
+    public function getPathAttr($value)
+    {
+        return systemConfig('site_url').$value;
     }
+
 }

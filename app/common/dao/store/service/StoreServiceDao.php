@@ -137,8 +137,9 @@ class StoreServiceDao extends BaseDao
     {
         $services = StoreService::getDB()->where('mer_id', $merId)->where('is_del', 0)->where('status', 1)->order('status DESC, sort DESC, create_time ASC')
             ->hidden(['is_del'])->select();
-        if (!$services) return null;
-        return $services[random_int(0, count($services) - 1)];
+        if (!$services || !count($services)) return null;
+        if (count($services) === 1) $services[0];
+        return $services[max(random_int(0, count($services) - 1), 0)];
     }
 
     /**

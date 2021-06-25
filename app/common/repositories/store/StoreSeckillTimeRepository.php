@@ -97,13 +97,22 @@ class StoreSeckillTimeRepository extends BaseRepository
         $seckillEndTime = time();
         $seckillTime = [];
         foreach($list as $k => $item){
-            if($item['end_time'] <= $_h) $item['state'] = '已结束';
-            if($item['start_time'] > $_h ) $item['state'] = '待开始';
+            $item['stop'] = strtotime((date('Y-m-d ',time()).$item['end_time'].':00:00'));
+            if($item['end_time'] <= $_h) {
+                $item['pc_status'] = 0;
+                $item['state'] = '已结束';
+            }
+            if($item['start_time'] > $_h ) {
+                $item['pc_status'] = 2;
+                $item['state'] = '待开始';
+            }
             if($item['start_time'] <= $_h && $_h < $item['end_time']){
+                $item['pc_status'] = 1;
                 $item['state'] = '抢购中';
                 $seckillTimeIndex = $k;
                 $seckillEndTime = strtotime((date('Y-m-d ',time()).$item['end_time'].':00:00'));
             }
+
             $seckillTime[$k] = $item;
         }
         return  compact('seckillTime','seckillTimeIndex','seckillEndTime');

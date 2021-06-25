@@ -50,7 +50,7 @@ class ProductGroupUser extends BaseModel
 
     public function getAvatarAttr($value)
     {
-        return $value ? $value : '/static/images/f.png';
+        return $value ? $value : '/static/f.png';
     }
 
     public function searchProductGroupIdAttr($query,$value)

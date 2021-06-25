@@ -14,6 +14,7 @@ namespace app\controller\api\store\product;
 
 use app\common\repositories\store\product\ProductGroupBuyingRepository;
 use app\common\repositories\store\product\ProductGroupUserRepository;
+use crmeb\jobs\ChangeSpuStatusJob;
 use think\App;
 use crmeb\basic\BaseController;
 use app\common\repositories\store\product\ProductGroupRepository;
@@ -45,7 +46,10 @@ class StoreProductGroup extends BaseController
     public function detail($id)
     {
         $data = $this->repository->apiDetail($id);
-        if(!$data) return app('json')->fail('商品已下架');
+        if(!$data){
+            queue(ChangeSpuStatusJob::class,['id' => $id,'product_type' => 4]);
+            return app('json')->fail('商品已下架');
+        }
         return app('json')->success($data);
     }
 

@@ -52,6 +52,7 @@ class Spu extends BaseModel
      */
     public function getMinExtensionAttr($value)
     {
+        if(!isset($this->product)) return 0;
         if($this->product->extension_type){
             return  ($this->product->attrValue()->order('extension_two ASC')->value('extension_two'));
         } else {
@@ -61,6 +62,7 @@ class Spu extends BaseModel
 
     public function getMaxExtensionAttr($value)
     {
+        if(!isset($this->product)) return 0;
         if($this->product->extension_type){
             return  ($this->product->attrValue()->order('extension_two DESC')->value('extension_one'));
         } else {

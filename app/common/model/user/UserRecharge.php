@@ -50,4 +50,8 @@ class UserRecharge extends BaseModel
         return $this->hasOne(User::class, 'uid', 'uid');
     }
 
+    public function searchDateAttr($query,$value)
+    {
+        getModelTime($query, $value);
+    }
 }

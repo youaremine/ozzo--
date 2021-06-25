@@ -48,13 +48,13 @@ class ExcelRepository extends BaseRepository
      */
     public function create(array $where ,int $admin_id, string $type,int $merId)
     {
-        //app()->make(ExcelService::class)->order($where,1);
         $excel = $this->dao->create([
             'mer_id'    => $merId,
             'admin_id'  => $admin_id,
             'type'      => $type
         ]);
         $data = ['where' => $where,'type' => $type,'excel_id' => $excel->excel_id];
+        //app()->make(ExcelService::class)->$type($where,$excel->excel_id);
         Queue::push(SpreadsheetExcelJob::class,$data);
     }
 
@@ -73,15 +73,14 @@ class ExcelRepository extends BaseRepository
         $sys_make = app()->make(AdminRepository::class);
         $query = $this->dao->search($where);
         $count = $query->count();
-        $list = $query->page($page,$limit)->hidden(['path'])->select()
+        $list = $query->page($page,$limit)->select()
             ->each(function($item) use ($mer_make,$sys_make){
                 if($item['mer_id']){
                     $admin = $mer_make->get($item['admin_id']);
                 }else{
                     $admin = $sys_make->get($item['admin_id']);
                 }
-                $real_name = $admin['real_name'];
-                return $item['real_name'] = $real_name;
+                return $item['admin_id'] = $admin['real_name'];
             });
 
         return compact('count','list');

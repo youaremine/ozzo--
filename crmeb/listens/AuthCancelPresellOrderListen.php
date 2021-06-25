@@ -16,17 +16,17 @@ namespace crmeb\listens;
 
 use app\common\repositories\store\order\PresellOrderRepository;
 use crmeb\interfaces\ListenerInterface;
+use crmeb\services\TimerService;
 use Swoole\Timer;
 use think\facade\Log;
 
-class AuthCancelPresellOrderListen implements ListenerInterface
+class AuthCancelPresellOrderListen extends TimerService implements ListenerInterface
 {
 
     public function handle($event): void
     {
-        // TODO: Implement handle() method.
-        $presellOrderRepository = app()->make(PresellOrderRepository::class);
-        Timer::tick(1000 * 60 * 1.5, function () use ($presellOrderRepository) {
+        $this->tick(1000 * 60 * 1.5, function () {
+            $presellOrderRepository = app()->make(PresellOrderRepository::class);
             $ids = $presellOrderRepository->getTimeOutIds(date('Y-m-d H:i:s'));
             foreach ($ids as $id) {
                 try {

@@ -110,4 +110,6 @@ class Merchant extends BaseController
         $repository->set($this->request->merId(), $data);
         return app('json')->success('设置成功');
     }
+
+
 }

@@ -323,7 +323,8 @@ class ProductAssistRepository extends BaseRepository
         Db::transaction(function()use($data){
             $data->is_del = 1;
             $data->save();
-            queue(ChangeSpuStatusJob::class,['product_type' => 3,'id' => $data[$this->getPk()]]);
+            queue(ChangeSpuStatusJob::class, ['id' => $data[$this->getPk()], 'product_type' => 3]);
+            //app()->make(SpuRepository::class)->changeStatus($data[$this->getPk()],3);
         });
     }
 

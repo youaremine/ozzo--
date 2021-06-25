@@ -35,6 +35,20 @@ class UserBillRepository extends BaseRepository
      */
     protected $dao;
 
+    const TYPE_INFO = [
+        'presell' => '支付预售尾款',
+        'pay_product' => '购买商品',
+        'order_one' => '获得一级推广佣金',
+        'order_two' => '获得二级推广佣金',
+        'refund_one' => '退回一级推广佣金',
+        'refund_two' => '退回二级推广佣金',
+        'refund' => '商品退款',
+        'recharge' => '余额充值',
+        'sys_inc_money' => '系统增加余额',
+        'sys_dec_money' => '系统减少余额',
+        'brokerage' => '佣金转入余额',
+    ];
+
     /**
      * UserBillRepository constructor.
      * @param UserBillDao $dao
@@ -111,5 +125,14 @@ class UserBillRepository extends BaseRepository
     public function decBill(int $uid, string $category, string $type, array $data)
     {
         return $this->bill($uid, $category, $type, 0, $data);
+    }
+
+    public function type()
+    {
+        $data = [];
+        foreach (self::TYPE_INFO as $type => $title) {
+            $data[] = compact('type', 'title');
+        }
+        return $data;
     }
 }

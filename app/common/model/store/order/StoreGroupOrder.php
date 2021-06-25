@@ -54,6 +54,12 @@ class StoreGroupOrder extends BaseModel
         return date('m-d H:i', strtotime("+ $timer minutes", strtotime($this->create_time)));
     }
 
+    public function getCancelUnixAttr()
+    {
+        $timer = ((int)systemConfig('auto_close_order_timer')) ?: 15;
+        return strtotime("+ $timer minutes", strtotime($this->create_time));
+    }
+
     public function getGiveCouponIdsAttr($value)
     {
         return $value ? explode(',', $value) : [];

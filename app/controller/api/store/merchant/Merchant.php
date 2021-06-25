@@ -42,8 +42,8 @@ class Merchant extends BaseController
     public function lst()
     {
         [$page, $limit] = $this->getPage();
-        $where = $this->request->params(['keyword','order','is_best', 'location']);
-        return app('json')->success($this->repository->getList($where, $page,$limit,$this->userInfo));
+        $where = $this->request->params(['keyword', 'order', 'is_best', 'location', 'category_id']);
+        return app('json')->success($this->repository->getList($where, $page, $limit, $this->userInfo));
     }
 
     /**

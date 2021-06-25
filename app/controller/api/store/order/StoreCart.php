@@ -92,7 +92,7 @@ class StoreCart extends BaseController
                 $data['source_id'] = $data['product_id'];
                 $data['product_id'] = $result['product']['product_id'];
                 break;
-            case 4: //助力商品
+            case 4: //拼团商品
                 $result = app()->make(ProductGroupRepository::class)->cartCheck($data,$this->request->userInfo());
                 $data['source'] = $data['product_type'];
                 $data['source_id'] = $data['group_buying_id'];

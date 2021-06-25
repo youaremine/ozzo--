@@ -19,6 +19,7 @@ use app\common\repositories\store\order\StoreCartRepository;
 use app\common\repositories\store\order\StoreOrderRepository;
 use app\common\repositories\store\StoreSeckillActiveRepository;
 use app\common\repositories\store\StoreSeckillTimeRepository;
+use app\common\repositories\system\merchant\MerchantRepository;
 use app\common\repositories\user\UserRelationRepository;
 use app\common\repositories\user\UserVisitRepository;
 use crmeb\services\QrcodeService;
@@ -44,7 +45,8 @@ class ProductRepository extends BaseRepository
 {
 
     protected $dao;
-    protected $filed = 'Product.product_id,Product.mer_id,brand_id,unit_name,mer_status,rate,reply_count,store_info,cate_id,Product.image,slider_image,Product.store_name,Product.keyword,Product.sort,Product.rank,Product.is_show,sales,Product.price,extension_type,refusal,cost,ot_price,stock,is_gift_bag,care_count,Product.status,is_used,Product.create_time,Product.product_type,old_product_id';
+    protected $admin_filed = 'Product.product_id,Product.mer_id,brand_id,unit_name,mer_status,rate,reply_count,store_info,cate_id,Product.image,slider_image,Product.store_name,Product.keyword,Product.sort,U.rank,Product.is_show,Product.sales,Product.price,extension_type,refusal,cost,ot_price,stock,is_gift_bag,Product.care_count,Product.status,is_used,Product.create_time,Product.product_type,old_product_id,star';
+    protected $filed = 'Product.product_id,Product.mer_id,brand_id,unit_name,mer_status,rate,reply_count,store_info,cate_id,Product.image,slider_image,Product.store_name,Product.keyword,Product.sort,Product.is_show,Product.sales,Product.price,extension_type,refusal,cost,ot_price,stock,is_gift_bag,Product.care_count,Product.status,is_used,Product.create_time,Product.product_type,old_product_id';
 
     /**
      * ProductRepository constructor.
@@ -201,6 +203,7 @@ class ProductRepository extends BaseRepository
             $product['mer_id'] = $merId;
             app()->make(SpuRepository::class)->update($product, $id, 0, $productType);
             queue(ChangeSpuStatusJob::class, ['id' => $id, 'product_type' => $productType]);
+            //app()->make(SpuRepository::class)->changeStatus($id,$productType);
         });
     }
 
@@ -265,7 +268,7 @@ class ProductRepository extends BaseRepository
             ]);
         }
 
-        if($productType == 0)queue(ChangeSpuStatusJob::class, ['product_type' => 0, 'id' => $id]);
+        if($productType == 0)  queue(ChangeSpuStatusJob::class, ['id' => $id, 'product_type' => 0]); //app()->make(SpuRepository::class)->changeStatus($id,0);
         return $this->dao->update($id, $data);
     }
 
@@ -337,7 +340,7 @@ class ProductRepository extends BaseRepository
             'unit_name' => $data['unit_name'],
             'sort' => $data['sort'],
             'is_show' => $data['is_show'] ?? 0,
-            'is_used' => $data['is_used'] ?? 0,
+            'is_used' =>  (isset($data['status']) && $data['status'] == 1) ? 1 : 0,
             'is_good' => $data['is_good'],
             'video_link' => $data['video_link'],
             'temp_id' => $data['temp_id'],
@@ -506,6 +509,7 @@ class ProductRepository extends BaseRepository
         if ($data['product_type'] == 2) $make = app()->make(ProductPresellSkuRepository::class);
         if ($data['product_type'] == 3) $make = app()->make(ProductAssistSkuRepository::class);
         if ($data['product_type'] == 4) $make = app()->make(ProductGroupSkuRepository::class);
+
         $spu = $spu_make->getSearch(['activity_id' => $activeId, 'product_type' => $data['product_type'], 'product_id' => $id])->find();
         $data['star'] = $spu['star'];
         $data->append($append);
@@ -725,7 +729,7 @@ class ProductRepository extends BaseRepository
             'merchant',
         ]);
         $count = $query->count();
-        $list = $query->page($page, $limit)->setOption('field', [])->field($this->filed)->select();
+        $list = $query->page($page, $limit)->setOption('field', [])->field($this->admin_filed)->select();
         $list->append(['max_extension', 'min_extension', 'us_status']);
         return compact('count', 'list');
     }
@@ -781,8 +785,8 @@ class ProductRepository extends BaseRepository
         if ($userInfo && isset($where['keyword']) && !empty($where['keyword']))
             app()->make(UserVisitRepository::class)->searchProduct($userInfo['uid'], $where['keyword']);
         $query = $this->dao->search($merId, $where)->with(['merchant', 'issetCoupon']);
-        $count = $query->count($this->dao->getPk());
-        $list = $query->page($page, $limit)->setOption('field', [])->field($this->filed)->select();
+        $count = $query->count();
+        $list = $query->page($page, $limit)->setOption('field', [])->field($this->admin_filed)->select();
         $append[] = 'max_extension';
         if ($this->getUserIsPromoter($userInfo)) $list->append($append);
         return compact('count', 'list');
@@ -892,7 +896,7 @@ class ProductRepository extends BaseRepository
 
     public function apiProductDetail(array $where, int $productType, ?int $activityId, $userInfo = null)
     {
-        $field = 'is_show,product_id,mer_id,image,slider_image,store_name,store_info,unit_name,price,cost,ot_price,stock,sales,video_link,product_type,extension_type,old_product_id';
+        $field = 'is_show,product_id,mer_id,image,slider_image,store_name,store_info,unit_name,price,cost,ot_price,stock,sales,video_link,product_type,extension_type,old_product_id,rate';
         $with = [
             'attr',
             'content',
@@ -938,6 +942,12 @@ class ProductRepository extends BaseRepository
             $sku  = $this->detailAttrValue($attrValue, $userInfo, $productType, $activityId);
 
             $res['isRelation'] = $isRelation ?? false;
+            $care = false;
+            if ($userInfo) {
+                $care = app()->make(MerchantRepository::class)->getCareByUser($res['mer_id'], $userInfo->uid);
+            }
+            $res['merchant']['top_banner'] = merchantConfig($res['mer_id'], 'mer_pc_top');
+            $res['merchant']['care'] = $care;
             $res['replayData'] = app()->make(ProductReplyRepository::class)->getReplyRate($res['product_id']);
             unset($res['attr'], $res['attrValue'], $res['oldAttrValue'], $res['seckillActive']);
             $res['attr'] = $attr;
@@ -1032,6 +1042,9 @@ class ProductRepository extends BaseRepository
                 'unique' => $value['unique'],
                 'bar_code' => $value['bar_code'],
             ];
+            if($productType == 0 ){
+                $_value['ot_price'] = $value['ot_price'];
+            }
             //            //秒杀
             //            if ($productType == 1 && $flag) {
             //                $_value['stock'] = $value['stock'] - $make->seckillSkuOrderCounut($value['unique']); //获取sku的销量
@@ -1160,6 +1173,7 @@ class ProductRepository extends BaseRepository
                 if (!$make->checkExtensionById($i)) throw new ValidateException('设置佣金不能低于系统比例');
             }
             queue(ChangeSpuStatusJob::class, ['id' => $i, 'product_type' => $product['product_type']]);
+            //app()->make(SpuRepository::class)->changeStatus($i,$product['product_type']);
             if (isset($data['status'])) {
                 $title = ($data['status'] == -2) ? '下架提醒' : '审核结果';
                 if($product_type ){
@@ -1199,7 +1213,7 @@ class ProductRepository extends BaseRepository
                 ], $product['mer_id']);
             }
         }
-        if (in_array($status, [-1, -2])) $data['is_used'] = 0;
+        $data['is_used'] =  ($status == 1) ? 1 : 0;
         $this->dao->updates($id, $data);
     }
 
@@ -1220,6 +1234,8 @@ class ProductRepository extends BaseRepository
                         $item->status = -2;
                         $item->refusal = '因佣金比例调整，商品佣金低于系统比例';
                         $item->save();
+                        queue(ChangeSpuStatusJob::class, ['id' => $item['product_id'], 'product_type' => $item['product_type']]);
+                        //app()->make(SpuRepository::class)->changeStatus($item['product_id'],$item['product_type']);
                     }
                 }
             });
@@ -1429,8 +1445,7 @@ class ProductRepository extends BaseRepository
         $where['product_id'] = $data['product_id'];
         $product = $this->dao->search(null, $where)->find();
         if (!$product) throw new ValidateException('商品已下架');
-        if ($product->end_time < time()) throw new ValidateException('秒杀活动已结束');
-
+        if ($product->seckill_status !== 1) throw new ValidateException('该商品不在秒杀时间段内');
         $order_make = app()->make(StoreOrderRepository::class);
         $count = $order_make->seckillOrderCounut($data['product_id']);
 

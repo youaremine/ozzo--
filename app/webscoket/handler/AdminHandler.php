@@ -16,6 +16,7 @@ namespace app\webscoket\handler;
 
 use app\common\repositories\system\admin\AdminRepository;
 use crmeb\services\JwtTokenService;
+use Firebase\JWT\ExpiredException;
 use Swoole\Server;
 use think\db\exception\DataNotFoundException;
 use think\db\exception\DbException;
@@ -76,6 +77,9 @@ class AdminHandler
         $service = new JwtTokenService();
         try {
             $payload = $service->parseToken($token);
+        } catch (ExpiredException $e) {
+            $repository->checkToken($token);
+            $payload = $service->decode($token);
         } catch (Throwable $e) {//Token 过期
             return app('json')->fail('token 已过期');
         }

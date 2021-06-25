@@ -51,20 +51,15 @@ class Install //extends BaseController
      */
     public $configFile;
 
-    protected  $compiled = [
-        '7.1' => 'compiled71',
-        '7.2' => 'compiled72',
-        '7.3' => 'compiled73',
-        '7.4' => 'compiled74',
-    ];
     public $env;
+
     public function __construct(App $app)
     {
-        $this->app     = $app;
+        $this->app = $app;
         $this->request = $this->app->request;
         $this->sqlFile = 'crmeb_merchant.sql';
         $this->configFile = '.env';
-        $this->env     =  [];
+        $this->env = [];
         if (file_exists(__DIR__ . '/../../install/install.lock')) {
             throw new ValidateException('你已经安装过该系统，如果想重新安装，请先删除install目录下的 install.lock 文件，然后再安装。');
         }
@@ -124,9 +119,9 @@ class Install //extends BaseController
             $session = '<span class="correct_span error_span">&radic;</span> 不支持';
             $err++;
         }
-        if(extension_loaded('zip')){
+        if (extension_loaded('zip')) {
             $zip = '<font color=green>[√]支持</font> ';
-        }else{
+        } else {
             $zip = '<font color=red>[×]不支持</font>';
             $err++;
         }
@@ -255,8 +250,7 @@ class Install //extends BaseController
         $ip = $this->get_client_ip();
         $server = $this->request->server();
         $host = $server['HTTP_HOST'];
-        $curent_version = $this->getversion();
-        $version = trim($curent_version['version']);
+        $version = get_crmeb_version('未知');
         $this->installlog();
         @touch(__DIR__ . '/../../install/install.lock');
         $this->unzip();
@@ -452,13 +446,13 @@ class Install //extends BaseController
         $dbName = strtolower(trim($data['dbname']));
         $conn = @mysqli_connect($data['dbhost'], $data['dbuser'], $data['dbpw'], NULL, $data['dbport']);
         if (mysqli_connect_errno($conn)) return 0;
-        $result = mysqli_query($conn, "SELECT @@global.sql_mode");
-        $result = $result->fetch_array();
+//        $result = mysqli_query($conn, "SELECT @@global.sql_mode");
+//        $result = $result->fetch_array();
         $version = mysqli_get_server_info($conn);
         if ($version < 5.6) return (json_encode(-4));
 
-        if (strstr($result[0], 'STRICT_TRANS_TABLES') || strstr($result[0], 'STRICT_ALL_TABLES') || strstr($result[0], 'TRADITIONAL') || strstr($result[0], 'ANSI'))
-            return ($version < 8.0) ? -1 : -2;
+//        if (strstr($result[0], 'STRICT_TRANS_TABLES') || strstr($result[0], 'STRICT_ALL_TABLES') || strstr($result[0], 'TRADITIONAL') || strstr($result[0], 'ANSI'))
+//            return ($version < 8.0) ? -1 : -2;
 
         $result = mysqli_query($conn, "select count(table_name) as c from information_schema.`TABLES` where table_schema='$dbName'");
         $result = $result->fetch_array();
@@ -548,7 +542,7 @@ class Install //extends BaseController
         $sql = str_replace("\r", "\n", $sql);
         $ret = array();
         $num = 0;
-        $queriesarray = explode(";\n", trim($sql));
+        $queriesarray = explode(";\n", trim($sql, "\xEF\xBB\xBF"));
         unset($sql);
         foreach ($queriesarray as $query) {
             $ret[$num] = '';
@@ -581,49 +575,13 @@ class Install //extends BaseController
     }
 
     /**
-     * TODO 获取版本号
-     * @return array
-     * @author Qinii
-     * @day 2020-07-16
-     */
-    public function getversion()
-    {
-        $version_arr = [];
-        $curent_version = @file(__DIR__ . '/../../.version');
-        foreach ($curent_version as $val) {
-            list($k, $v) = explode('=', $val);
-            $version_arr[$k] = $v;
-        }
-        return $version_arr;
-    }
-
-    /**
      *  生成基础文件
      * @Author:Qinii
      * @Date: 2020/8/31
      */
     public function unzip()
     {
-        if(is_dir(__DIR__.'/../../crmeb/basic')) return true;
-        $phpv = @ phpversion();
-        $phpvs = substr($phpv,0,3);
-        $key = $this->compiled[$phpvs];
-        $file = __DIR__ . '/../../install/compiled/'.$key.'.zip';
-        try {
-            if (file_exists($file)) {
-                $zip = new ZipArchive();
-                if ($zip->open($file) === true) {
-                    $zip->extractTo( __DIR__ . '/../../install/compiled/');
-                    $zip->close();
-                }
-                $mv ='mv '.__DIR__ .'/../../install/compiled/'.$key.'/basic '.__DIR__.'/../../crmeb/basic '.
-                    ' && rm -rf '.__DIR__.'/../../install/compiled/'.$key .
-                    ' && rm -rf '.__DIR__.'/../../install/compiled/__MACOSX';
-                shell_exec($mv);
-            }
-        }catch (\Exception $exception){
-            throw new Exception($exception->getMessage());
-        }
+        update_crmeb_compiled();
     }
 
 
@@ -706,7 +664,7 @@ class Install //extends BaseController
      * 页面输出内容
      * @Author:Qinii
      * @Date: 2020/9/10
-     * @param $this->>env
+     * @param $this ->>env
      * @param $sysInfo
      */
     public function html($sysInfo)

@@ -13,17 +13,18 @@
 
 namespace crmeb\listens;
 
+use crmeb\services\TimerService;
 use Swoole\Timer;
 use think\facade\Log;
 use crmeb\interfaces\ListenerInterface;
 use app\common\repositories\store\order\StoreRefundOrderRepository;
 
-class RefundOrderAgreeListen implements ListenerInterface
+class RefundOrderAgreeListen extends TimerService implements ListenerInterface
 {
     public function handle($event): void
     {
-        $make = app()->make(StoreRefundOrderRepository::class);
-        Timer::tick(1000 * 60 * 5, function () use ($make) {
+        $this->tick(1000 * 60 * 5, function () {
+            $make = app()->make(StoreRefundOrderRepository::class);
             request()->clearCache();
             $merAgree = systemConfig('mer_refund_order_agree') ?? 7;
             $time = date('Y-m-d H:i:s', strtotime('-' . $merAgree . ' day'));

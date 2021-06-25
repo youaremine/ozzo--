@@ -187,7 +187,7 @@ if (!function_exists('getUniqueListByArray')) {
 if (!function_exists('isPhone')) {
     function isPhone($test)
     {
-        return !preg_match("/^1[3456789]{1}\d{9}$/", $test);
+        return !preg_match("/^[13456789]{1}\d{7,9}$/", $test);
     }
 }
 

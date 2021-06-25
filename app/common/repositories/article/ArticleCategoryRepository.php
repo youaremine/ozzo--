@@ -97,7 +97,7 @@ class ArticleCategoryRepository extends BaseRepository
             Elm::number('sort', '排序', 0),
         ]);
 
-        return $form->setTitle(is_null($id) ? '添加文字配置' : '编辑文字分类')->formData($formData);
+        return $form->setTitle(is_null($id) ? '添加文章配置' : '编辑文章分类')->formData($formData);
     }
 
     /**

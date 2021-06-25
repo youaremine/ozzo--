@@ -14,6 +14,7 @@
 namespace app\controller\api\store\product;
 
 use app\common\repositories\store\StoreSeckillTimeRepository;
+use crmeb\jobs\ChangeSpuStatusJob;
 use think\App;
 use crmeb\basic\BaseController;
 use app\common\repositories\store\product\ProductRepository as repository;
@@ -62,7 +63,10 @@ class StoreProductSeckill extends BaseController
     public function detail($id)
     {
         $data = $this->repository->seckillDetail($id);
-        if (!$data) return app('json')->fail('商品不存在');
+        if (!$data) {
+            queue(ChangeSpuStatusJob::class,['id' => $id,'product_type' => 1]);
+            return app('json')->fail('商品不存在');
+        }
         return app('json')->success($data);
     }
 

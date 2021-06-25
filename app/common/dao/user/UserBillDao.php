@@ -111,11 +111,11 @@ class UserBillDao extends BaseDao
     {
         return UserBill::getDB()->when(isset($where['now_money']) && in_array($where['now_money'], [0, 1, 2]), function ($query) use ($where) {
             if ($where['now_money'] == 0)
-                $query->where('category', 'now_money')->whereIn('type', ['pay_product', 'recharge', 'sys_inc_money', 'sys_dec_money', 'brokerage', 'presell']);
+                $query->where('category', 'now_money')->whereIn('type', ['pay_product', 'recharge', 'sys_inc_money', 'sys_dec_money', 'brokerage', 'presell', 'refund']);
             else if ($where['now_money'] == 1)
                 $query->where('category', 'now_money')->whereIn('type', ['pay_product', 'sys_dec_money', 'presell']);
             else if ($where['now_money'] == 2)
-                $query->where('category', 'now_money')->whereIn('type', ['recharge', 'sys_inc_money', 'brokerage']);
+                $query->where('category', 'now_money')->whereIn('type', ['recharge', 'sys_inc_money', 'brokerage', 'refund']);
         })->when(isset($where['uid']) && $where['uid'] !== '', function ($query) use ($where) {
             $query->where('uid', $where['uid']);
         })->when(isset($where['pm']) && $where['pm'] !== '', function ($query) use ($where) {
@@ -124,6 +124,12 @@ class UserBillDao extends BaseDao
             $query->where('category', $where['category']);
         })->when(isset($where['status']) && $where['status'] !== '', function ($query) use ($where) {
             $query->where('status', $where['status']);
+        })->when(isset($where['date']) && $where['date'] !== '', function ($query) use ($where) {
+            getModelTime($query, $where['date'], 'create_time');
+        })->when(isset($where['day']) && $where['day'] !== '', function ($query) use ($where) {
+            $query->whereDay('create_time',$where['day']);
+        })->when(isset($where['month']) && $where['month'] !== '', function ($query) use ($where) {
+            $query->whereMonth('create_time',$where['month']);
         });
     }
 
@@ -150,10 +156,4 @@ class UserBillDao extends BaseDao
         return UserBill::getDB()->where('link_id', $order_id)->where('uid', $uid)
             ->where('category', 'brokerage')->whereIn('type', ['refund_two', 'refund_one'])->sum('number');
     }
-
-    public function type()
-    {
-        return UserBill::getDB()->group('type')->column('title,type');
-    }
-
 }

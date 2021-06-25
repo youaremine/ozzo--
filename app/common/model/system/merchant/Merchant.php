@@ -61,8 +61,8 @@ class Merchant extends BaseModel
         return $this->hasMany(Product::class, 'mer_id', 'mer_id')
             ->where((new ProductDao())->productShow())
             ->where('is_good', 1)
-            ->field('mer_id,product_id,store_name,image,price,is_show,status,is_gift_bag,is_good')
-            ->order('is_good DESC')
+            ->field('mer_id,product_id,store_name,image,price,is_show,status,is_gift_bag,is_good,sales,create_time')
+            ->order('is_good DESC,sort DESC,create_time DESC')
             ->limit(3);
     }
 
@@ -102,5 +102,18 @@ class Merchant extends BaseModel
     public function searchKeywordAttr($query,$value)
     {
         $query->whereLike('mer_name|mer_keyword',"%{$value}%");
+    }
+
+    public function getFinancialAlipayAttr($value)
+    {
+        return $value ? json_decode($value) : $value;
+    }
+    public function getFinancialWechatAttr($value)
+    {
+        return $value ? json_decode($value) : $value;
+    }
+    public function getFinancialBankAttr($value)
+    {
+        return $value ? json_decode($value) : $value;
     }
 }

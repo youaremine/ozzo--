@@ -75,7 +75,7 @@ class GroupData extends BaseController
     {
         if (!app()->make(GroupRepository::class)->exists($groupId))
             return app('json')->fail('组合数据不存在!');
-        return app('json')->success(formToData($this->repository->form($groupId)));
+        return app('json')->success(formToData($this->repository->form($groupId, null, $this->request->merId())));
     }
 
     /**

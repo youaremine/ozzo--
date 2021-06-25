@@ -661,7 +661,24 @@ Route::group(config('admin.api_admin_prefix') . '/', function () {
         Route::group('financial_record', function () {
             Route::get('list', '/lst')->name('systemFinancialRecordList');
             Route::get('export', '/export')->name('systemFinancialRecordExport');
+            Route::get('lst', '/getList')->name('systemFinancialRecordLst');
+            Route::get('title', '/getTitle')->name('systemFinancialRecordTitle');
+            Route::get('count', '/title')->name('systemFinancialCount');
+            Route::get('detail/:type', '/detail')->name('systemFinancialRecordDetail');
+            Route::get('detail_export/:type', '/exportDetail')->name('systemFinancialRecordDetailExport');
         })->prefix('admin.system.merchant.FinancialRecord');
+
+        //财务
+        Route::group('financial', function () {
+            //申请转账
+            Route::get('lst', 'Financial/lst')->name('systemFinancialList');
+            Route::get('detail/:id', 'Financial/detail')->name('systemFinancialDetail');
+            Route::post('update/:id', 'Financial/update')->name('systemFinancialUpdate');
+            Route::post('status/:id', 'Financial/switchStatus')->name('systemFinancialSwitchStatus');
+            Route::get('mark/:id/form', 'Financial/markForm')->name('systemFinancialMarkForm');
+            Route::post('mark/:id', 'Financial/mark')->name('systemFinancialMark');
+            Route::get('title', 'Financial/title')->name('systemFinancialTitle');
+        })->prefix('admin.system.financial.');
 
         //客服
 //        Route::group('service',function(){
@@ -698,6 +715,8 @@ Route::group(config('admin.api_admin_prefix') . '/', function () {
         Route::get('system/city/lst', 'merchant.store.shipping.City/lst');
         //退出登陆
         Route::get('logout', 'admin.system.admin.Login/logout');
+        //获取版本号
+        Route::get('version', 'admin.Common/version');
         //授权
         Route::post('auth_apply', 'admin.Common/auth_apply');
         Route::get('check_auth', 'admin.Common/check_auth');

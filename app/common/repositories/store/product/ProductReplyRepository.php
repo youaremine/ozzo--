@@ -104,7 +104,9 @@ class ProductReplyRepository extends BaseRepository
             'negative' => $this->dao->search($product)->where($this->switchType('negative'))->count(),
         ];
         $rate = ($stat['count'] > 0) ? bcdiv($stat['best'], $stat['count'], 2) * 100 . '%' : 100 . '%';
-        return compact('rate', 'count', 'stat', 'list');
+        $ret = app()->make(ProductRepository::class)->get($where['product_id']);
+        $star = (($ret['rate'] == 0) ? 0 : ($ret['rate'] / 5) * 100  ).'%';
+        return compact('rate', 'star','count', 'stat', 'list');
     }
 
     /**
@@ -208,7 +210,6 @@ class ProductReplyRepository extends BaseRepository
         $count = $res->count();
         $rate = '';
         if ($best && $count) $rate = bcdiv($best, $count, 2) * 100 . '%';
-
         return compact('best', 'rate', 'count');
     }
 

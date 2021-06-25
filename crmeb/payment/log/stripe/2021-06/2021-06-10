@@ -1,0 +1,960 @@
+ --------------- .2021-06-10 16:29:43--------------- 
+$payload:{"id":"evt_1J0jGkKfjMsC8JpVAXoNSV2S","object":"event","api_version":"2020-08-27","created":1623313782,"data":{"object":{"id":"pi_1J0jGkKfjMsC8JpV9SmI6b7N","object":"payment_intent","amount":11800,"amount_capturable":0,"amount_received":0,"application":null,"application_fee_amount":null,"canceled_at":null,"cancellation_reason":null,"capture_method":"automatic","charges":{"object":"list","data":[],"has_more":false,"total_count":0,"url":"/v1/charges?payment_intent=pi_1J0jGkKfjMsC8JpV9SmI6b7N"},"client_secret":"pi_1J0jGkKfjMsC8JpV9SmI6b7N_secret_MqVv20UAWi3ReBJPyThobUG3s","confirmation_method":"automatic","created":1623313782,"currency":"hkd","customer":null,"description":null,"invoice":null,"last_payment_error":null,"livemode":false,"metadata":[],"next_action":null,"on_behalf_of":null,"payment_method":null,"payment_method_options":{"alipay":[],"card":{"installments":null,"network":null,"request_three_d_secure":"automatic"}},"payment_method_types":["card","alipay"],"receipt_email":null,"review":null,"setup_future_usage":null,"shipping":null,"source":null,"statement_descriptor":null,"statement_descriptor_suffix":null,"status":"requires_payment_method","transfer_data":null,"transfer_group":null}},"livemode":false,"pending_webhooks":2,"request":{"id":"req_MMco3dtHzXhtnW","idempotency_key":null},"type":"payment_intent.created"}
+ --------------- .2021-06-10 16:29:43--------------- 
+
+ --------------- .2021-06-10 16:29:43--------------- 
+$stripe_signature:t=1623313782,v1=041dc860aa814b48051615c4ade7585d7e4a75e28171c335b6db9ebdc5b9f22f,v0=94fcfd01f3c1b4884d7046d7400fed1b6635d7911608e31588f795d13c00ee5f
+ --------------- .2021-06-10 16:29:43--------------- 
+
+ --------------- .2021-06-10 16:29:43--------------- 
+$endpoint_secret:whsec_5gBUevqVZTXBcX45wXhYLwQ8LbAiGqcw
+ --------------- .2021-06-10 16:29:43--------------- 
+
+ --------------- .2021-06-10 16:29:43--------------- 
+\SignatureVerificationException http_response_code 400
+ --------------- .2021-06-10 16:29:43--------------- 
+
+ --------------- .2021-06-10 16:29:55--------------- 
+$payload:{"id":"evt_3J0MnMKfjMsC8JpV0xJICft2","object":"event","api_version":"2020-08-27","created":1623313793,"data":{"object":{"id":"pi_3J0MnMKfjMsC8JpV09px5Obv","object":"payment_intent","amount":400,"amount_capturable":0,"amount_received":0,"application":null,"application_fee_amount":null,"canceled_at":1623313793,"cancellation_reason":"automatic","capture_method":"automatic","charges":{"object":"list","data":[],"has_more":false,"total_count":0,"url":"/v1/charges?payment_intent=pi_3J0MnMKfjMsC8JpV09px5Obv"},"client_secret":"pi_3J0MnMKfjMsC8JpV09px5Obv_secret_7xywLOEwr16QKha82JNpb1O1m","confirmation_method":"automatic","created":1623227392,"currency":"hkd","customer":null,"description":null,"invoice":null,"last_payment_error":null,"livemode":false,"metadata":[],"next_action":null,"on_behalf_of":null,"payment_method":null,"payment_method_options":{"alipay":[],"card":{"installments":null,"network":null,"request_three_d_secure":"automatic"}},"payment_method_types":["card","alipay"],"receipt_email":null,"review":null,"setup_future_usage":null,"shipping":null,"source":null,"statement_descriptor":null,"statement_descriptor_suffix":null,"status":"canceled","transfer_data":null,"transfer_group":null}},"livemode":false,"pending_webhooks":2,"request":{"id":null,"idempotency_key":null},"type":"payment_intent.canceled"}
+ --------------- .2021-06-10 16:29:55--------------- 
+
+ --------------- .2021-06-10 16:29:55--------------- 
+$stripe_signature:t=1623313794,v1=75095ea42ae42af5f32998d7fd1fd78e438790d54d69a05991a1faa027c904b3,v0=8de6f568ce1399b89b8ec2d1270823e71c5eb4364fd3bf3f490e6db60194901c
+ --------------- .2021-06-10 16:29:55--------------- 
+
+ --------------- .2021-06-10 16:29:55--------------- 
+$endpoint_secret:whsec_5gBUevqVZTXBcX45wXhYLwQ8LbAiGqcw
+ --------------- .2021-06-10 16:29:55--------------- 
+
+ --------------- .2021-06-10 16:29:55--------------- 
+\SignatureVerificationException http_response_code 400
+ --------------- .2021-06-10 16:29:55--------------- 
+
+ --------------- .2021-06-10 16:30:09--------------- 
+$payload:{"id":"evt_1J0jHAKfjMsC8JpVHJfdt9Np","object":"event","api_version":"2020-08-27","created":1623313807,"data":{"object":{"id":"cus_Je1JM2ECXQYX9y","object":"customer","address":null,"balance":0,"created":1623313807,"currency":null,"default_source":null,"delinquent":false,"description":null,"discount":null,"email":"1@qq.com","invoice_prefix":"AD700A3B","invoice_settings":{"custom_fields":null,"default_payment_method":null,"footer":null},"livemode":false,"metadata":[],"name":null,"next_invoice_sequence":1,"phone":null,"preferred_locales":[],"shipping":null,"tax_exempt":"none"}},"livemode":false,"pending_webhooks":2,"request":{"id":"req_Rb0hOSrKO4IcLx","idempotency_key":null},"type":"customer.created"}
+ --------------- .2021-06-10 16:30:09--------------- 
+
+ --------------- .2021-06-10 16:30:09--------------- 
+$stripe_signature:t=1623313808,v1=57db8208787be6a021b941d26995ec96ac0ef2b1bd4871e768280da0d733cee5,v0=023fe4233d516bfef7e7ae28effaa38d8ee45db1a81fbaf378136196e5a891b5
+ --------------- .2021-06-10 16:30:09--------------- 
+
+ --------------- .2021-06-10 16:30:09--------------- 
+$endpoint_secret:whsec_5gBUevqVZTXBcX45wXhYLwQ8LbAiGqcw
+ --------------- .2021-06-10 16:30:09--------------- 
+
+ --------------- .2021-06-10 16:30:09--------------- 
+\SignatureVerificationException http_response_code 400
+ --------------- .2021-06-10 16:30:09--------------- 
+
+ --------------- .2021-06-10 16:30:09--------------- 
+$payload:{"id":"evt_1J0jHAKfjMsC8JpVSvvD03se","object":"event","api_version":"2020-08-27","created":1623313808,"data":{"object":{"id":"pi_1J0jGkKfjMsC8JpV9SmI6b7N","object":"payment_intent","amount":11800,"amount_capturable":0,"amount_received":0,"application":null,"application_fee_amount":null,"canceled_at":null,"cancellation_reason":null,"capture_method":"automatic","charges":{"object":"list","data":[],"has_more":false,"total_count":0,"url":"/v1/charges?payment_intent=pi_1J0jGkKfjMsC8JpV9SmI6b7N"},"client_secret":"pi_1J0jGkKfjMsC8JpV9SmI6b7N_secret_MqVv20UAWi3ReBJPyThobUG3s","confirmation_method":"automatic","created":1623313782,"currency":"hkd","customer":"cus_Je1JM2ECXQYX9y","description":null,"invoice":null,"last_payment_error":null,"livemode":false,"metadata":[],"next_action":{"alipay_handle_redirect":{"native_data":null,"native_url":null,"return_url":"https://checkout.stripe.com/pay/cs_test_a198vWN7GAJJUzPuMvWFfd0DXmrqG4qWIbr6EfqrIwofE9Sit772CCPKFd?redirect_pm_type=alipay&lid=2e5b6ff6-b244-40da-8e90-e3dcb777b637#fidkdWxOYHwnPyd1blpxYHZxWjA0TEdyYFxOY29IdkY9T3VTXGQzPEs2QEJoZjBIXUtkYmFJYzZSNl9PdVQ2R2p1TWE8M041aFFUR3RyVHFUb0dEVHVdc0w3cGdwUUlEYEN9dmhIUFE3VWddNTVzZHNHRFdHdScpJ2hsYXYnP34nYnBsYSc%2FJ0tEJyknaHBsYSc%2FJzU0ZGBhZzZhKDQ9PDMoMT1kNyhkM2MyKGdnNTxhMDwzYzExPDwxM2BmMScpJ3ZsYSc%2FJ0tEJ3gpJ2dgcWR2Jz9eWCknaWR8anBxUXx1YCc%2FJ3Zsa2JpYFpscWBoJyknd2BjYHd3YHdKd2xibGsnPydtcXF1dj8qKm1uaWxzYCtqf39qcWBmK2ZqaCd4JSUl","url":"https://hooks.stripe.com/redirect/authenticate/src_1J0jHAKfjMsC8JpV8V3bIvT8?client_secret=src_client_secret_Y810VVTPX8zLZ7MgXYmpIHrt"},"type":"alipay_handle_redirect"},"on_behalf_of":null,"payment_method":"pm_1J0jH9KfjMsC8JpV9eO9wIGs","payment_method_options":{"alipay":[],"card":{"installments":null,"network":null,"request_three_d_secure":"automatic"}},"payment_method_types":["card","alipay"],"receipt_email":null,"review":null,"setup_future_usage":null,"shipping":null,"source":null,"statement_descriptor":null,"statement_descriptor_suffix":null,"status":"requires_action","transfer_data":null,"transfer_group":null}},"livemode":false,"pending_webhooks":2,"request":{"id":"req_Rb0hOSrKO4IcLx","idempotency_key":null},"type":"payment_intent.requires_action"}
+ --------------- .2021-06-10 16:30:09--------------- 
+
+ --------------- .2021-06-10 16:30:09--------------- 
+$stripe_signature:t=1623313808,v1=9b8679339e83ac6f3e6b4c99645d84a566ea6a944dfedbe9d3176fccdb6ca61d,v0=2b208df6fc4e87b0ae74d98ccce1e51179743c284846b71ac481ccfe6027331e
+ --------------- .2021-06-10 16:30:09--------------- 
+
+ --------------- .2021-06-10 16:30:09--------------- 
+$endpoint_secret:whsec_5gBUevqVZTXBcX45wXhYLwQ8LbAiGqcw
+ --------------- .2021-06-10 16:30:09--------------- 
+
+ --------------- .2021-06-10 16:30:09--------------- 
+\SignatureVerificationException http_response_code 400
+ --------------- .2021-06-10 16:30:09--------------- 
+
+ --------------- .2021-06-10 16:30:16--------------- 
+$payload:{"id":"evt_1J0jHHKfjMsC8JpVoaqnoEI4","object":"event","api_version":"2020-08-27","created":1623313815,"data":{"object":{"id":"py_1J0jHGKfjMsC8JpV7tg7HqaS","object":"charge","amount":11800,"amount_captured":11800,"amount_refunded":0,"application":null,"application_fee":null,"application_fee_amount":null,"balance_transaction":"txn_1J0jHHKfjMsC8JpVa0JSVRD9","billing_details":{"address":{"city":null,"country":null,"line1":null,"line2":null,"postal_code":null,"state":null},"email":"1@qq.com","name":null,"phone":null},"calculated_statement_descriptor":null,"captured":true,"created":1623313814,"currency":"hkd","customer":"cus_Je1JM2ECXQYX9y","description":null,"destination":null,"dispute":null,"disputed":false,"failure_code":null,"failure_message":null,"fraud_details":[],"invoice":null,"livemode":false,"metadata":[],"on_behalf_of":null,"order":null,"outcome":{"network_status":"approved_by_network","reason":null,"risk_level":"not_assessed","seller_message":"Payment complete.","type":"authorized"},"paid":true,"payment_intent":"pi_1J0jGkKfjMsC8JpV9SmI6b7N","payment_method":"pm_1J0jH9KfjMsC8JpV9eO9wIGs","payment_method_details":{"alipay":{"fingerprint":null,"transaction_id":null},"type":"alipay"},"receipt_email":null,"receipt_number":null,"receipt_url":"https://pay.stripe.com/receipts/acct_1IBweYKfjMsC8JpV/py_1J0jHGKfjMsC8JpV7tg7HqaS/rcpt_Je1JGsrYl5O3cJLXSlvRPpg3aH4ct1Z","refunded":false,"refunds":{"object":"list","data":[],"has_more":false,"total_count":0,"url":"/v1/charges/py_1J0jHGKfjMsC8JpV7tg7HqaS/refunds"},"review":null,"shipping":null,"source":null,"source_transfer":null,"statement_descriptor":null,"statement_descriptor_suffix":null,"status":"succeeded","transfer_data":null,"transfer_group":null}},"livemode":false,"pending_webhooks":2,"request":{"id":null,"idempotency_key":"pi_1J0jGkKfjMsC8JpV9SmI6b7N-src_1J0jHAKfjMsC8JpV8V3bIvT8"},"type":"charge.succeeded"}
+ --------------- .2021-06-10 16:30:16--------------- 
+
+ --------------- .2021-06-10 16:30:16--------------- 
+$stripe_signature:t=1623313815,v1=089dbdfd35733812aa44c30e022369303508a54dd82444ae48c932f777eb419e,v0=b1205d947d532bc9827316bb488fd8f41df5c3571f5c9525bd441c7ca7138f13
+ --------------- .2021-06-10 16:30:16--------------- 
+
+ --------------- .2021-06-10 16:30:16--------------- 
+$endpoint_secret:whsec_5gBUevqVZTXBcX45wXhYLwQ8LbAiGqcw
+ --------------- .2021-06-10 16:30:16--------------- 
+
+ --------------- .2021-06-10 16:30:16--------------- 
+\SignatureVerificationException http_response_code 400
+ --------------- .2021-06-10 16:30:16--------------- 
+
+ --------------- .2021-06-10 16:30:16--------------- 
+$payload:{"id":"evt_1J0jHHKfjMsC8JpV0HNbhNbL","object":"event","api_version":"2020-08-27","created":1623313815,"data":{"object":{"id":"pi_1J0jGkKfjMsC8JpV9SmI6b7N","object":"payment_intent","amount":11800,"amount_capturable":0,"amount_received":11800,"application":null,"application_fee_amount":null,"canceled_at":null,"cancellation_reason":null,"capture_method":"automatic","charges":{"object":"list","data":[{"id":"py_1J0jHGKfjMsC8JpV7tg7HqaS","object":"charge","amount":11800,"amount_captured":11800,"amount_refunded":0,"application":null,"application_fee":null,"application_fee_amount":null,"balance_transaction":"txn_1J0jHHKfjMsC8JpVa0JSVRD9","billing_details":{"address":{"city":null,"country":null,"line1":null,"line2":null,"postal_code":null,"state":null},"email":"1@qq.com","name":null,"phone":null},"calculated_statement_descriptor":null,"captured":true,"created":1623313814,"currency":"hkd","customer":"cus_Je1JM2ECXQYX9y","description":null,"destination":null,"dispute":null,"disputed":false,"failure_code":null,"failure_message":null,"fraud_details":[],"invoice":null,"livemode":false,"metadata":[],"on_behalf_of":null,"order":null,"outcome":{"network_status":"approved_by_network","reason":null,"risk_level":"not_assessed","seller_message":"Payment complete.","type":"authorized"},"paid":true,"payment_intent":"pi_1J0jGkKfjMsC8JpV9SmI6b7N","payment_method":"pm_1J0jH9KfjMsC8JpV9eO9wIGs","payment_method_details":{"alipay":{"fingerprint":null,"transaction_id":null},"type":"alipay"},"receipt_email":null,"receipt_number":null,"receipt_url":"https://pay.stripe.com/receipts/acct_1IBweYKfjMsC8JpV/py_1J0jHGKfjMsC8JpV7tg7HqaS/rcpt_Je1JGsrYl5O3cJLXSlvRPpg3aH4ct1Z","refunded":false,"refunds":{"object":"list","data":[],"has_more":false,"total_count":0,"url":"/v1/charges/py_1J0jHGKfjMsC8JpV7tg7HqaS/refunds"},"review":null,"shipping":null,"source":null,"source_transfer":null,"statement_descriptor":null,"statement_descriptor_suffix":null,"status":"succeeded","transfer_data":null,"transfer_group":null}],"has_more":false,"total_count":1,"url":"/v1/charges?payment_intent=pi_1J0jGkKfjMsC8JpV9SmI6b7N"},"client_secret":"pi_1J0jGkKfjMsC8JpV9SmI6b7N_secret_MqVv20UAWi3ReBJPyThobUG3s","confirmation_method":"automatic","created":1623313782,"currency":"hkd","customer":"cus_Je1JM2ECXQYX9y","description":null,"invoice":null,"last_payment_error":null,"livemode":false,"metadata":[],"next_action":null,"on_behalf_of":null,"payment_method":"pm_1J0jH9KfjMsC8JpV9eO9wIGs","payment_method_options":{"alipay":[],"card":{"installments":null,"network":null,"request_three_d_secure":"automatic"}},"payment_method_types":["card","alipay"],"receipt_email":null,"review":null,"setup_future_usage":null,"shipping":null,"source":null,"statement_descriptor":null,"statement_descriptor_suffix":null,"status":"succeeded","transfer_data":null,"transfer_group":null}},"livemode":false,"pending_webhooks":2,"request":{"id":null,"idempotency_key":"pi_1J0jGkKfjMsC8JpV9SmI6b7N-src_1J0jHAKfjMsC8JpV8V3bIvT8"},"type":"payment_intent.succeeded"}
+ --------------- .2021-06-10 16:30:16--------------- 
+
+ --------------- .2021-06-10 16:30:16--------------- 
+$stripe_signature:t=1623313815,v1=e0500d60b0957d2e6d8f82f7daa3d7c35ffeb2066350a14033c963de90c67634,v0=fc5c50658cef3afbfbcc8d5d41ce576ab80f136c7a2a14bb107c5c5afe71237a
+ --------------- .2021-06-10 16:30:16--------------- 
+
+ --------------- .2021-06-10 16:30:16--------------- 
+$endpoint_secret:whsec_5gBUevqVZTXBcX45wXhYLwQ8LbAiGqcw
+ --------------- .2021-06-10 16:30:16--------------- 
+
+ --------------- .2021-06-10 16:30:16--------------- 
+\SignatureVerificationException http_response_code 400
+ --------------- .2021-06-10 16:30:16--------------- 
+
+ --------------- .2021-06-10 16:30:16--------------- 
+$payload:{"id":"evt_1J0jHHKfjMsC8JpVR5tgM69H","object":"event","api_version":"2020-08-27","created":1623313815,"data":{"object":{"id":"cs_test_a198vWN7GAJJUzPuMvWFfd0DXmrqG4qWIbr6EfqrIwofE9Sit772CCPKFd","object":"checkout.session","allow_promotion_codes":null,"amount_subtotal":11800,"amount_total":11800,"billing_address_collection":null,"cancel_url":"http://www.baidu.com","client_reference_id":"wx1623313781951565960","currency":"hkd","customer":"cus_Je1JM2ECXQYX9y","customer_details":{"email":"1@qq.com","tax_exempt":"none","tax_ids":[]},"customer_email":null,"livemode":false,"locale":"zh-HK","metadata":[],"mode":"payment","payment_intent":"pi_1J0jGkKfjMsC8JpV9SmI6b7N","payment_method_options":[],"payment_method_types":["card","alipay"],"payment_status":"paid","setup_intent":null,"shipping":null,"shipping_address_collection":null,"submit_type":null,"subscription":null,"success_url":"http://www.baidu.com","total_details":{"amount_discount":0,"amount_shipping":0,"amount_tax":0}}},"livemode":false,"pending_webhooks":2,"request":{"id":null,"idempotency_key":null},"type":"checkout.session.completed"}
+ --------------- .2021-06-10 16:30:16--------------- 
+
+ --------------- .2021-06-10 16:30:16--------------- 
+$stripe_signature:t=1623313815,v1=6c73f404e99744bdcb4d1a16fdb98d57ac447a29dce2556db6cff1a362fc5ad4,v0=2e1a43d4a5635fb3854e10d0a74538910888d6379e76c4316c7e4648fd868127
+ --------------- .2021-06-10 16:30:16--------------- 
+
+ --------------- .2021-06-10 16:30:16--------------- 
+$endpoint_secret:whsec_5gBUevqVZTXBcX45wXhYLwQ8LbAiGqcw
+ --------------- .2021-06-10 16:30:16--------------- 
+
+ --------------- .2021-06-10 16:30:16--------------- 
+\SignatureVerificationException http_response_code 400
+ --------------- .2021-06-10 16:30:16--------------- 
+
+ --------------- .2021-06-10 16:32:59--------------- 
+\SignatureVerificationException http_response_code 400
+ --------------- .2021-06-10 16:32:59--------------- 
+
+ --------------- .2021-06-10 16:33:01--------------- 
+\SignatureVerificationException http_response_code 400
+ --------------- .2021-06-10 16:33:01--------------- 
+
+ --------------- .2021-06-10 16:33:09--------------- 
+\SignatureVerificationException http_response_code 400
+ --------------- .2021-06-10 16:33:09--------------- 
+
+ --------------- .2021-06-10 16:33:19--------------- 
+\SignatureVerificationException http_response_code 400
+ --------------- .2021-06-10 16:33:19--------------- 
+
+ --------------- .2021-06-10 16:33:35--------------- 
+\SignatureVerificationException http_response_code 400
+ --------------- .2021-06-10 16:33:35--------------- 
+
+ --------------- .2021-06-10 16:34:01--------------- 
+\SignatureVerificationException http_response_code 400
+ --------------- .2021-06-10 16:34:01--------------- 
+
+ --------------- .2021-06-10 16:34:06--------------- 
+\SignatureVerificationException http_response_code 400
+ --------------- .2021-06-10 16:34:06--------------- 
+
+ --------------- .2021-06-10 16:34:17--------------- 
+\SignatureVerificationException http_response_code 400
+ --------------- .2021-06-10 16:34:17--------------- 
+
+ --------------- .2021-06-10 16:34:45--------------- 
+\SignatureVerificationException http_response_code 400
+ --------------- .2021-06-10 16:34:45--------------- 
+
+ --------------- .2021-06-10 16:35:53--------------- 
+\SignatureVerificationException http_response_code 400
+ --------------- .2021-06-10 16:35:53--------------- 
+
+ --------------- .2021-06-10 16:36:00--------------- 
+\SignatureVerificationException http_response_code 400
+ --------------- .2021-06-10 16:36:00--------------- 
+
+ --------------- .2021-06-10 16:36:08--------------- 
+\SignatureVerificationException http_response_code 400
+ --------------- .2021-06-10 16:36:08--------------- 
+
+ --------------- .2021-06-10 16:36:15--------------- 
+\SignatureVerificationException http_response_code 400
+ --------------- .2021-06-10 16:36:15--------------- 
+
+ --------------- .2021-06-10 16:41:48--------------- 
+\SignatureVerificationException http_response_code 400
+ --------------- .2021-06-10 16:41:48--------------- 
+
+ --------------- .2021-06-10 16:42:06--------------- 
+$payload:{"id":"evt_1J0iznKfjMsC8JpVtXecav7W","object":"event","api_version":"2020-08-27","created":1623312731,"data":{"object":{"id":"pi_1J0iznKfjMsC8JpVLmJkT37o","object":"payment_intent","amount":11800,"amount_capturable":0,"amount_received":0,"application":null,"application_fee_amount":null,"canceled_at":null,"cancellation_reason":null,"capture_method":"automatic","charges":{"object":"list","data":[],"has_more":false,"total_count":0,"url":"/v1/charges?payment_intent=pi_1J0iznKfjMsC8JpVLmJkT37o"},"client_secret":"pi_1J0iznKfjMsC8JpVLmJkT37o_secret_S6IV6LbcvyN8BLnxFlXEvUffF","confirmation_method":"automatic","created":1623312731,"currency":"hkd","customer":null,"description":null,"invoice":null,"last_payment_error":null,"livemode":false,"metadata":[],"next_action":null,"on_behalf_of":null,"payment_method":null,"payment_method_options":{"alipay":[],"card":{"installments":null,"network":null,"request_three_d_secure":"automatic"}},"payment_method_types":["card","alipay"],"receipt_email":null,"review":null,"setup_future_usage":null,"shipping":null,"source":null,"statement_descriptor":null,"statement_descriptor_suffix":null,"status":"requires_payment_method","transfer_data":null,"transfer_group":null}},"livemode":false,"pending_webhooks":2,"request":{"id":"req_8pEZDWT1ExmRZI","idempotency_key":null},"type":"payment_intent.created"}
+ --------------- .2021-06-10 16:42:06--------------- 
+
+ --------------- .2021-06-10 16:42:06--------------- 
+$stripe_signature:t=1623314525,v1=8e6bac486b69b01afc0e7f2c86f0ab9a4dcae91cb5d201e90f2e9f4cdfd9c81a,v0=c5d9809c7ac558b654b6bf41465a7252fd7a8e72539a0c1835fc02f841e304b2
+ --------------- .2021-06-10 16:42:06--------------- 
+
+ --------------- .2021-06-10 16:42:06--------------- 
+$endpoint_secret:whsec_5gBUevqVZTXBcX45wXhYLwQ8LbAiGqcw
+ --------------- .2021-06-10 16:42:06--------------- 
+
+ --------------- .2021-06-10 16:42:06--------------- 
+\SignatureVerificationException http_response_code 400
+ --------------- .2021-06-10 16:42:06--------------- 
+
+ --------------- .2021-06-10 16:43:33--------------- 
+$payload:{"id":"evt_1J0iXFKfjMsC8JpV8TF1oSDN","object":"event","api_version":"2020-08-27","created":1623310961,"data":{"object":{"id":"cs_test_a1yabdAC83ucIvi7zmKoXcJIGG4HDeyfvhcX5U4rxY0TnlHER13rrRJbyP","object":"checkout.session","allow_promotion_codes":null,"amount_subtotal":18900,"amount_total":18900,"billing_address_collection":null,"cancel_url":"http://www.baidu.com","client_reference_id":"wx1623310928524733410","currency":"hkd","customer":"cus_Je0YXeks27lWn1","customer_details":{"email":"1@qq.com","tax_exempt":"none","tax_ids":[]},"customer_email":null,"livemode":false,"locale":"zh-HK","metadata":[],"mode":"payment","payment_intent":"pi_1J0iWiKfjMsC8JpVHaMVz5aN","payment_method_options":[],"payment_method_types":["card","alipay"],"payment_status":"paid","setup_intent":null,"shipping":null,"shipping_address_collection":null,"submit_type":null,"subscription":null,"success_url":"http://www.baidu.com","total_details":{"amount_discount":0,"amount_shipping":0,"amount_tax":0}}},"livemode":false,"pending_webhooks":2,"request":{"id":null,"idempotency_key":null},"type":"checkout.session.completed"}
+ --------------- .2021-06-10 16:43:33--------------- 
+
+ --------------- .2021-06-10 16:43:33--------------- 
+$stripe_signature:t=1623314612,v1=5d5288bd0fd95fd734e0ee522a516a51be3d55a4b2fa262790e4b6a5202d1341,v0=ec44ee48ca44558942a1bb50facfa49a0256b45ede4855b1933a3d6bf38784de
+ --------------- .2021-06-10 16:43:33--------------- 
+
+ --------------- .2021-06-10 16:43:33--------------- 
+$endpoint_secret:whsec_5gBUevqVZTXBcX45wXhYLwQ8LbAiGqcw
+ --------------- .2021-06-10 16:43:33--------------- 
+
+ --------------- .2021-06-10 16:43:33--------------- 
+\SignatureVerificationException http_response_code 400
+ --------------- .2021-06-10 16:43:33--------------- 
+
+ --------------- .2021-06-10 16:44:34--------------- 
+$payload:{"id":"evt_1J0jV7KfjMsC8JpV6IdmuP9x","object":"event","api_version":"2020-08-27","created":1623314673,"data":{"object":{"id":"pi_1J0iYlKfjMsC8JpVug1KIR7h","object":"payment_intent","amount":3200,"amount_capturable":0,"amount_received":0,"application":null,"application_fee_amount":null,"canceled_at":null,"cancellation_reason":null,"capture_method":"automatic","charges":{"object":"list","data":[],"has_more":false,"total_count":0,"url":"/v1/charges?payment_intent=pi_1J0iYlKfjMsC8JpVug1KIR7h"},"client_secret":"pi_1J0iYlKfjMsC8JpVug1KIR7h_secret_IJBojz4gOn5xM1T1hjzLYf9eO","confirmation_method":"automatic","created":1623311055,"currency":"hkd","customer":"cus_Je0aQbGTiGjtbl","description":null,"invoice":null,"last_payment_error":{"code":"payment_intent_payment_attempt_failed","doc_url":"https://stripe.com/docs/error-codes/payment-intent-payment-attempt-failed","message":"The latest payment attempt of this PaymentIntent has expired. You can provide payment_method_data or a new PaymentMethod to attempt to fulfill this PaymentIntent again.","payment_method":{"id":"pm_1J0iYuKfjMsC8JpVJTP3yWn3","object":"payment_method","alipay":[],"billing_details":{"address":{"city":null,"country":null,"line1":null,"line2":null,"postal_code":null,"state":null},"email":"q@qq.com","name":null,"phone":null},"created":1623311064,"customer":null,"livemode":false,"metadata":[],"type":"alipay"},"type":"invalid_request_error"},"livemode":false,"metadata":[],"next_action":null,"on_behalf_of":null,"payment_method":null,"payment_method_options":{"alipay":[],"card":{"installments":null,"network":null,"request_three_d_secure":"automatic"}},"payment_method_types":["card","alipay"],"receipt_email":null,"review":null,"setup_future_usage":null,"shipping":null,"source":null,"statement_descriptor":null,"statement_descriptor_suffix":null,"status":"requires_payment_method","transfer_data":null,"transfer_group":null}},"livemode":false,"pending_webhooks":2,"request":{"id":null,"idempotency_key":null},"type":"payment_intent.payment_failed"}
+ --------------- .2021-06-10 16:44:34--------------- 
+
+ --------------- .2021-06-10 16:44:34--------------- 
+$stripe_signature:t=1623314674,v1=7f8ea218704df71e937d88b4c3c5606909b1783989848c727c0b45adb830c4da,v0=974a70654fb3cd878b36b1742516333e6f6397916d16b2aff84788bac4864f02
+ --------------- .2021-06-10 16:44:34--------------- 
+
+ --------------- .2021-06-10 16:44:34--------------- 
+$endpoint_secret:whsec_5gBUevqVZTXBcX45wXhYLwQ8LbAiGqcw
+ --------------- .2021-06-10 16:44:34--------------- 
+
+ --------------- .2021-06-10 16:44:34--------------- 
+\SignatureVerificationException http_response_code 400
+ --------------- .2021-06-10 16:44:34--------------- 
+
+ --------------- .2021-06-10 16:49:50--------------- 
+\SignatureVerificationException http_response_code 400
+ --------------- .2021-06-10 16:49:50--------------- 
+
+ --------------- .2021-06-10 16:49:51--------------- 
+\SignatureVerificationException http_response_code 400
+ --------------- .2021-06-10 16:49:51--------------- 
+
+ --------------- .2021-06-10 16:50:13--------------- 
+\SignatureVerificationException http_response_code 400
+ --------------- .2021-06-10 16:50:13--------------- 
+
+ --------------- .2021-06-10 16:50:15--------------- 
+\SignatureVerificationException http_response_code 400
+ --------------- .2021-06-10 16:50:15--------------- 
+
+ --------------- .2021-06-10 16:50:34--------------- 
+\SignatureVerificationException http_response_code 400
+ --------------- .2021-06-10 16:50:34--------------- 
+
+ --------------- .2021-06-10 16:51:25--------------- 
+\SignatureVerificationException http_response_code 400
+ --------------- .2021-06-10 16:51:25--------------- 
+
+ --------------- .2021-06-10 16:52:13--------------- 
+\SignatureVerificationException http_response_code 400
+ --------------- .2021-06-10 16:52:13--------------- 
+
+ --------------- .2021-06-10 16:53:34--------------- 
+$payload:{"id":"evt_1J0jdpKfjMsC8JpVllDN3dHR","object":"event","api_version":"2020-08-27","created":1623315213,"data":{"object":{"id":"pi_1J0NAHKfjMsC8JpVUdUeoIjB","object":"payment_intent","amount":11800,"amount_capturable":0,"amount_received":0,"application":null,"application_fee_amount":null,"canceled_at":1623315213,"cancellation_reason":"automatic","capture_method":"automatic","charges":{"object":"list","data":[],"has_more":false,"total_count":0,"url":"/v1/charges?payment_intent=pi_1J0NAHKfjMsC8JpVUdUeoIjB"},"client_secret":"pi_1J0NAHKfjMsC8JpVUdUeoIjB_secret_orFXG6hOxVXVT9LqpnW5lDJUM","confirmation_method":"automatic","created":1623228813,"currency":"hkd","customer":null,"description":null,"invoice":null,"last_payment_error":null,"livemode":false,"metadata":[],"next_action":null,"on_behalf_of":null,"payment_method":null,"payment_method_options":{"alipay":[],"card":{"installments":null,"network":null,"request_three_d_secure":"automatic"}},"payment_method_types":["card","alipay"],"receipt_email":null,"review":null,"setup_future_usage":null,"shipping":null,"source":null,"statement_descriptor":null,"statement_descriptor_suffix":null,"status":"canceled","transfer_data":null,"transfer_group":null}},"livemode":false,"pending_webhooks":2,"request":{"id":null,"idempotency_key":null},"type":"payment_intent.canceled"}
+ --------------- .2021-06-10 16:53:34--------------- 
+
+ --------------- .2021-06-10 16:53:34--------------- 
+$stripe_signature:t=1623315213,v1=7b6ed4be8db51d46544fd0c8119f59814a41832aac275656842c36ea15b315b0,v0=9819f8907c86103669e378f4b52a74b518123976a877d443929cc174cabe123e
+ --------------- .2021-06-10 16:53:34--------------- 
+
+ --------------- .2021-06-10 16:53:34--------------- 
+$endpoint_secret:whsec_5gBUevqVZTXBcX45wXhYLwQ8LbAiGqcw
+ --------------- .2021-06-10 16:53:34--------------- 
+
+ --------------- .2021-06-10 16:53:34--------------- 
+\SignatureVerificationException http_response_code 400
+ --------------- .2021-06-10 16:53:34--------------- 
+
+ --------------- .2021-06-10 16:54:40--------------- 
+\SignatureVerificationException http_response_code 400
+ --------------- .2021-06-10 16:54:40--------------- 
+
+ --------------- .2021-06-10 16:59:02--------------- 
+$$notifyData:{
+  "id": "evt_1J0jj6KfjMsC8JpVBffRjuLp",
+  "object": "event",
+  "api_version": "2020-08-27",
+  "created": 1623315539,
+  "data": {
+    "object": {
+      "id": "pi_1J0jj5KfjMsC8JpVK5GAQ3QD",
+      "object": "payment_intent",
+      "amount": 3200,
+      "amount_capturable": 0,
+      "amount_received": 0,
+      "application": null,
+      "application_fee_amount": null,
+      "canceled_at": null,
+      "cancellation_reason": null,
+      "capture_method": "automatic",
+      "charges": {
+        "object": "list",
+        "data": [
+
+        ],
+        "has_more": false,
+        "total_count": 0,
+        "url": "/v1/charges?payment_intent=pi_1J0jj5KfjMsC8JpVK5GAQ3QD"
+      },
+      "client_secret": "pi_1J0jj5KfjMsC8JpVK5GAQ3QD_secret_1NyzJGywEBVEbIvIV3hl09i6l",
+      "confirmation_method": "automatic",
+      "created": 1623315539,
+      "currency": "hkd",
+      "customer": null,
+      "description": null,
+      "invoice": null,
+      "last_payment_error": null,
+      "livemode": false,
+      "metadata": {
+      },
+      "next_action": null,
+      "on_behalf_of": null,
+      "payment_method": null,
+      "payment_method_options": {
+        "alipay": {
+        },
+        "card": {
+          "installments": null,
+          "network": null,
+          "request_three_d_secure": "automatic"
+        }
+      },
+      "payment_method_types": [
+        "card",
+        "alipay"
+      ],
+      "receipt_email": null,
+      "review": null,
+      "setup_future_usage": null,
+      "shipping": null,
+      "source": null,
+      "statement_descriptor": null,
+      "statement_descriptor_suffix": null,
+      "status": "requires_payment_method",
+      "transfer_data": null,
+      "transfer_group": null
+    }
+  },
+  "livemode": false,
+  "pending_webhooks": 2,
+  "request": {
+    "id": "req_Q0YSRIkrHopYFB",
+    "idempotency_key": null
+  },
+  "type": "payment_intent.created"
+}
+ --------------- .2021-06-10 16:59:02--------------- 
+
+ --------------- .2021-06-10 16:59:02--------------- 
+$stripe_signature:t=1623315540,v1=1447bdb106460342b3e88edbcc015a2336683195de1641ab6c74443aeb108aed,v0=2800f2146cbb40a9fcae02ecdfe2bd89bb9798642f8d2a1adab01e9efa5b8618
+ --------------- .2021-06-10 16:59:02--------------- 
+
+ --------------- .2021-06-10 16:59:02--------------- 
+$endpoint_secret:whsec_5gBUevqVZTXBcX45wXhYLwQ8LbAiGqcw
+ --------------- .2021-06-10 16:59:02--------------- 
+
+ --------------- .2021-06-10 16:59:02--------------- 
+验证成功
+ --------------- .2021-06-10 16:59:02--------------- 
+
+ --------------- .2021-06-10 17:03:46--------------- 
+Received unknown event type"payment_intent.canceled"
+ --------------- .2021-06-10 17:03:46--------------- 
+
+ --------------- .2021-06-10 17:11:31--------------- 
+Received unknown event type"payment_intent.created"
+ --------------- .2021-06-10 17:11:31--------------- 
+
+ --------------- .2021-06-10 17:11:38--------------- 
+Received unknown event type"payment_intent.created"
+ --------------- .2021-06-10 17:11:38--------------- 
+
+ --------------- .2021-06-10 17:13:39--------------- 
+checkout.session.completed
+ --------------- .2021-06-10 17:13:39--------------- 
+
+ --------------- .2021-06-10 17:17:08--------------- 
+Received unknown event type"customer.created"
+ --------------- .2021-06-10 17:17:08--------------- 
+
+ --------------- .2021-06-10 17:17:39--------------- 
+Received unknown event type"payment_intent.created"
+ --------------- .2021-06-10 17:17:39--------------- 
+
+ --------------- .2021-06-10 17:17:43--------------- 
+Received unknown event type"charge.succeeded"
+ --------------- .2021-06-10 17:17:43--------------- 
+
+ --------------- .2021-06-10 17:18:06--------------- 
+payment_intent.succeeded
+ --------------- .2021-06-10 17:18:06--------------- 
+
+ --------------- .2021-06-10 17:18:06--------------- 
+$object->idpi_1J0j4GKfjMsC8JpVhh5mEKk4
+ --------------- .2021-06-10 17:18:06--------------- 
+
+ --------------- .2021-06-10 17:18:06--------------- 
+$order_sn2{"group_order_sn":"wx1623313007658209550"}
+ --------------- .2021-06-10 17:18:06--------------- 
+
+ --------------- .2021-06-10 17:18:06--------------- 
+$object status:succeeded
+ --------------- .2021-06-10 17:18:06--------------- 
+
+ --------------- .2021-06-10 17:18:06--------------- 
+$object amount:11800
+ --------------- .2021-06-10 17:18:06--------------- 
+
+ --------------- .2021-06-10 17:18:06--------------- 
+$order_snwx1623313007658209550
+ --------------- .2021-06-10 17:18:06--------------- 
+
+ --------------- .2021-06-10 17:18:06--------------- 
+check_payment_success :wx1623313007658209550
+ --------------- .2021-06-10 17:18:06--------------- 
+
+ --------------- .2021-06-10 17:18:08--------------- 
+checkout.session.completed
+ --------------- .2021-06-10 17:18:08--------------- 
+
+ --------------- .2021-06-10 17:18:12--------------- 
+Received unknown event type"payment_intent.created"
+ --------------- .2021-06-10 17:18:12--------------- 
+
+ --------------- .2021-06-10 17:18:22--------------- 
+Received unknown event type"payment_intent.requires_action"
+ --------------- .2021-06-10 17:18:22--------------- 
+
+ --------------- .2021-06-10 17:19:12--------------- 
+Received unknown event type"payment_intent.created"
+ --------------- .2021-06-10 17:19:12--------------- 
+
+ --------------- .2021-06-10 17:19:34--------------- 
+checkout.session.completed
+ --------------- .2021-06-10 17:19:34--------------- 
+
+ --------------- .2021-06-10 17:19:47--------------- 
+Received unknown event type"payment_intent.created"
+ --------------- .2021-06-10 17:19:47--------------- 
+
+ --------------- .2021-06-10 17:19:51--------------- 
+Received unknown event type"payment_intent.created"
+ --------------- .2021-06-10 17:19:51--------------- 
+
+ --------------- .2021-06-10 17:21:24--------------- 
+checkout.session.completed
+ --------------- .2021-06-10 17:21:24--------------- 
+
+ --------------- .2021-06-10 17:22:33--------------- 
+Received unknown event type"payment_intent.canceled"
+ --------------- .2021-06-10 17:22:33--------------- 
+
+ --------------- .2021-06-10 17:23:17--------------- 
+Received unknown event type"payment_intent.created"
+ --------------- .2021-06-10 17:23:17--------------- 
+
+ --------------- .2021-06-10 17:23:28--------------- 
+checkout.session.completed
+ --------------- .2021-06-10 17:23:28--------------- 
+
+ --------------- .2021-06-10 17:24:11--------------- 
+Received unknown event type"payment_intent.created"
+ --------------- .2021-06-10 17:24:11--------------- 
+
+ --------------- .2021-06-10 17:24:18--------------- 
+Received unknown event type"payment_intent.created"
+ --------------- .2021-06-10 17:24:18--------------- 
+
+ --------------- .2021-06-10 17:25:29--------------- 
+Received unknown event type"payment_intent.created"
+ --------------- .2021-06-10 17:25:29--------------- 
+
+ --------------- .2021-06-10 17:28:08--------------- 
+Received unknown event type"payment_intent.canceled"
+ --------------- .2021-06-10 17:28:08--------------- 
+
+ --------------- .2021-06-10 17:28:42--------------- 
+Received unknown event type"payment_intent.created"
+ --------------- .2021-06-10 17:28:42--------------- 
+
+ --------------- .2021-06-10 17:28:55--------------- 
+Received unknown event type"payment_intent.requires_action"
+ --------------- .2021-06-10 17:28:55--------------- 
+
+ --------------- .2021-06-10 17:28:55--------------- 
+Received unknown event type"customer.created"
+ --------------- .2021-06-10 17:28:55--------------- 
+
+ --------------- .2021-06-10 17:29:00--------------- 
+Received unknown event type"payment_intent.created"
+ --------------- .2021-06-10 17:29:00--------------- 
+
+ --------------- .2021-06-10 17:29:01--------------- 
+Received unknown event type"payment_intent.requires_action"
+ --------------- .2021-06-10 17:29:01--------------- 
+
+ --------------- .2021-06-10 17:29:04--------------- 
+Received unknown event type"charge.succeeded"
+ --------------- .2021-06-10 17:29:04--------------- 
+
+ --------------- .2021-06-10 17:29:04--------------- 
+payment_intent.succeeded
+ --------------- .2021-06-10 17:29:04--------------- 
+
+ --------------- .2021-06-10 17:29:04--------------- 
+$object->idpi_1J0kBpKfjMsC8JpVyVDr8mMW
+ --------------- .2021-06-10 17:29:04--------------- 
+
+ --------------- .2021-06-10 17:29:04--------------- 
+$order_sn2{"group_order_sn":"wx1623317321224760390"}
+ --------------- .2021-06-10 17:29:04--------------- 
+
+ --------------- .2021-06-10 17:29:04--------------- 
+$object status:succeeded
+ --------------- .2021-06-10 17:29:04--------------- 
+
+ --------------- .2021-06-10 17:29:04--------------- 
+$object amount:11800
+ --------------- .2021-06-10 17:29:04--------------- 
+
+ --------------- .2021-06-10 17:29:04--------------- 
+$order_snwx1623317321224760390
+ --------------- .2021-06-10 17:29:04--------------- 
+
+ --------------- .2021-06-10 17:29:04--------------- 
+check_payment_success :wx1623317321224760390
+ --------------- .2021-06-10 17:29:04--------------- 
+
+ --------------- .2021-06-10 17:29:04--------------- 
+checkout.session.completed
+ --------------- .2021-06-10 17:29:04--------------- 
+
+ --------------- .2021-06-10 17:29:29--------------- 
+Received unknown event type"charge.succeeded"
+ --------------- .2021-06-10 17:29:29--------------- 
+
+ --------------- .2021-06-10 17:29:30--------------- 
+payment_intent.succeeded
+ --------------- .2021-06-10 17:29:30--------------- 
+
+ --------------- .2021-06-10 17:29:30--------------- 
+$object->idpi_1J0jGkKfjMsC8JpV9SmI6b7N
+ --------------- .2021-06-10 17:29:30--------------- 
+
+ --------------- .2021-06-10 17:29:30--------------- 
+$order_sn2{"group_order_sn":"wx1623313781951565960"}
+ --------------- .2021-06-10 17:29:30--------------- 
+
+ --------------- .2021-06-10 17:29:30--------------- 
+$object status:succeeded
+ --------------- .2021-06-10 17:29:30--------------- 
+
+ --------------- .2021-06-10 17:29:30--------------- 
+$object amount:11800
+ --------------- .2021-06-10 17:29:30--------------- 
+
+ --------------- .2021-06-10 17:29:30--------------- 
+$order_snwx1623313781951565960
+ --------------- .2021-06-10 17:29:30--------------- 
+
+ --------------- .2021-06-10 17:29:30--------------- 
+check_payment_success :wx1623313781951565960
+ --------------- .2021-06-10 17:29:30--------------- 
+
+ --------------- .2021-06-10 17:29:49--------------- 
+Received unknown event type"customer.created"
+ --------------- .2021-06-10 17:29:49--------------- 
+
+ --------------- .2021-06-10 17:30:25--------------- 
+checkout.session.completed
+ --------------- .2021-06-10 17:30:25--------------- 
+
+ --------------- .2021-06-10 17:30:26--------------- 
+Received unknown event type"payment_intent.canceled"
+ --------------- .2021-06-10 17:30:26--------------- 
+
+ --------------- .2021-06-10 17:30:26--------------- 
+Received unknown event type"payment_intent.created"
+ --------------- .2021-06-10 17:30:26--------------- 
+
+ --------------- .2021-06-10 17:30:55--------------- 
+payment_intent.succeeded
+ --------------- .2021-06-10 17:30:55--------------- 
+
+ --------------- .2021-06-10 17:30:55--------------- 
+$object->idpi_1J0kDWKfjMsC8JpVS8hFXetL
+ --------------- .2021-06-10 17:30:55--------------- 
+
+ --------------- .2021-06-10 17:30:55--------------- 
+$order_sn2{"group_order_sn":"wx1623317425607920300"}
+ --------------- .2021-06-10 17:30:55--------------- 
+
+ --------------- .2021-06-10 17:30:55--------------- 
+$object status:succeeded
+ --------------- .2021-06-10 17:30:55--------------- 
+
+ --------------- .2021-06-10 17:30:55--------------- 
+$object amount:11800
+ --------------- .2021-06-10 17:30:55--------------- 
+
+ --------------- .2021-06-10 17:30:55--------------- 
+$order_snwx1623317425607920300
+ --------------- .2021-06-10 17:30:55--------------- 
+
+ --------------- .2021-06-10 17:30:55--------------- 
+check_payment_success :wx1623317425607920300
+ --------------- .2021-06-10 17:30:55--------------- 
+
+ --------------- .2021-06-10 17:30:55--------------- 
+Received unknown event type"customer.created"
+ --------------- .2021-06-10 17:30:55--------------- 
+
+ --------------- .2021-06-10 17:30:55--------------- 
+Received unknown event type"charge.succeeded"
+ --------------- .2021-06-10 17:30:55--------------- 
+
+ --------------- .2021-06-10 17:30:56--------------- 
+Received unknown event type"customer.updated"
+ --------------- .2021-06-10 17:30:56--------------- 
+
+ --------------- .2021-06-10 17:30:56--------------- 
+checkout.session.completed
+ --------------- .2021-06-10 17:30:56--------------- 
+
+ --------------- .2021-06-10 17:33:26--------------- 
+Received unknown event type"payment_intent.created"
+ --------------- .2021-06-10 17:33:26--------------- 
+
+ --------------- .2021-06-10 17:38:00--------------- 
+Received unknown event type"payment_intent.created"
+ --------------- .2021-06-10 17:38:00--------------- 
+
+ --------------- .2021-06-10 17:42:35--------------- 
+Received unknown event type"payment_intent.payment_failed"
+ --------------- .2021-06-10 17:42:35--------------- 
+
+ --------------- .2021-06-10 17:42:38--------------- 
+Received unknown event type"payment_intent.created"
+ --------------- .2021-06-10 17:42:38--------------- 
+
+ --------------- .2021-06-10 17:43:25--------------- 
+Received unknown event type"payment_intent.payment_failed"
+ --------------- .2021-06-10 17:43:25--------------- 
+
+ --------------- .2021-06-10 17:48:15--------------- 
+Received unknown event type"payment_intent.created"
+ --------------- .2021-06-10 17:48:15--------------- 
+
+ --------------- .2021-06-10 17:49:18--------------- 
+Received unknown event type"payment_intent.created"
+ --------------- .2021-06-10 17:49:18--------------- 
+
+ --------------- .2021-06-10 17:51:20--------------- 
+Received unknown event type"payment_intent.canceled"
+ --------------- .2021-06-10 17:51:20--------------- 
+
+ --------------- .2021-06-10 17:52:11--------------- 
+Received unknown event type"payment_intent.created"
+ --------------- .2021-06-10 17:52:11--------------- 
+
+ --------------- .2021-06-10 17:53:27--------------- 
+Received unknown event type"payment_intent.canceled"
+ --------------- .2021-06-10 17:53:27--------------- 
+
+ --------------- .2021-06-10 17:54:08--------------- 
+Received unknown event type"payment_intent.created"
+ --------------- .2021-06-10 17:54:08--------------- 
+
+ --------------- .2021-06-10 17:55:25--------------- 
+Received unknown event type"payment_intent.created"
+ --------------- .2021-06-10 17:55:25--------------- 
+
+ --------------- .2021-06-10 17:59:25--------------- 
+Received unknown event type"payment_intent.created"
+ --------------- .2021-06-10 17:59:25--------------- 
+
+ --------------- .2021-06-10 17:59:36--------------- 
+Received unknown event type"payment_intent.created"
+ --------------- .2021-06-10 17:59:36--------------- 
+
+ --------------- .2021-06-10 17:59:57--------------- 
+Received unknown event type"payment_intent.created"
+ --------------- .2021-06-10 17:59:57--------------- 
+
+ --------------- .2021-06-10 18:00:01--------------- 
+Received unknown event type"customer.created"
+ --------------- .2021-06-10 18:00:01--------------- 
+
+ --------------- .2021-06-10 18:00:01--------------- 
+Received unknown event type"charge.succeeded"
+ --------------- .2021-06-10 18:00:01--------------- 
+
+ --------------- .2021-06-10 18:00:01--------------- 
+Received unknown event type"balance.available"
+ --------------- .2021-06-10 18:00:01--------------- 
+
+ --------------- .2021-06-10 18:00:01--------------- 
+payment_intent.succeeded
+ --------------- .2021-06-10 18:00:01--------------- 
+
+ --------------- .2021-06-10 18:00:01--------------- 
+$object->idpi_1J0kfjKfjMsC8JpV5YQKDqSA
+ --------------- .2021-06-10 18:00:01--------------- 
+
+ --------------- .2021-06-10 18:00:01--------------- 
+$order_sn2{"group_order_sn":"wx1623319175152418460"}
+ --------------- .2021-06-10 18:00:01--------------- 
+
+ --------------- .2021-06-10 18:00:01--------------- 
+$object status:succeeded
+ --------------- .2021-06-10 18:00:01--------------- 
+
+ --------------- .2021-06-10 18:00:01--------------- 
+$object amount:9600
+ --------------- .2021-06-10 18:00:01--------------- 
+
+ --------------- .2021-06-10 18:00:01--------------- 
+$order_snwx1623319175152418460
+ --------------- .2021-06-10 18:00:01--------------- 
+
+ --------------- .2021-06-10 18:00:01--------------- 
+check_payment_success :wx1623319175152418460
+ --------------- .2021-06-10 18:00:01--------------- 
+
+ --------------- .2021-06-10 18:00:01--------------- 
+checkout.session.completed
+ --------------- .2021-06-10 18:00:01--------------- 
+
+ --------------- .2021-06-10 18:00:01--------------- 
+Received unknown event type"customer.updated"
+ --------------- .2021-06-10 18:00:01--------------- 
+
+ --------------- .2021-06-10 18:02:47--------------- 
+Received unknown event type"payment_intent.canceled"
+ --------------- .2021-06-10 18:02:47--------------- 
+
+ --------------- .2021-06-10 18:12:45--------------- 
+Received unknown event type"payment_intent.created"
+ --------------- .2021-06-10 18:12:45--------------- 
+
+ --------------- .2021-06-10 18:13:33--------------- 
+Received unknown event type"customer.created"
+ --------------- .2021-06-10 18:13:33--------------- 
+
+ --------------- .2021-06-10 18:13:33--------------- 
+checkout.session.completed
+ --------------- .2021-06-10 18:13:33--------------- 
+
+ --------------- .2021-06-10 18:13:33--------------- 
+Received unknown event type"charge.succeeded"
+ --------------- .2021-06-10 18:13:33--------------- 
+
+ --------------- .2021-06-10 18:13:33--------------- 
+payment_intent.succeeded
+ --------------- .2021-06-10 18:13:33--------------- 
+
+ --------------- .2021-06-10 18:13:33--------------- 
+$object->idpi_1J0ksSKfjMsC8JpV3HUSKT0y
+ --------------- .2021-06-10 18:13:33--------------- 
+
+ --------------- .2021-06-10 18:13:33--------------- 
+$order_sn2{"group_order_sn":"wx1623319964076607050"}
+ --------------- .2021-06-10 18:13:33--------------- 
+
+ --------------- .2021-06-10 18:13:33--------------- 
+$object status:succeeded
+ --------------- .2021-06-10 18:13:33--------------- 
+
+ --------------- .2021-06-10 18:13:33--------------- 
+$object amount:11800
+ --------------- .2021-06-10 18:13:33--------------- 
+
+ --------------- .2021-06-10 18:13:33--------------- 
+$order_snwx1623319964076607050
+ --------------- .2021-06-10 18:13:33--------------- 
+
+ --------------- .2021-06-10 18:13:33--------------- 
+check_payment_success :wx1623319964076607050
+ --------------- .2021-06-10 18:13:33--------------- 
+
+ --------------- .2021-06-10 18:13:33--------------- 
+Received unknown event type"customer.updated"
+ --------------- .2021-06-10 18:13:33--------------- 
+
+ --------------- .2021-06-10 18:13:34--------------- 
+Received unknown event type"balance.available"
+ --------------- .2021-06-10 18:13:34--------------- 
+
+ --------------- .2021-06-10 18:14:04--------------- 
+Received unknown event type"payment_intent.created"
+ --------------- .2021-06-10 18:14:04--------------- 
+
+ --------------- .2021-06-10 18:14:46--------------- 
+Received unknown event type"customer.created"
+ --------------- .2021-06-10 18:14:46--------------- 
+
+ --------------- .2021-06-10 18:14:46--------------- 
+Received unknown event type"charge.succeeded"
+ --------------- .2021-06-10 18:14:46--------------- 
+
+ --------------- .2021-06-10 18:14:46--------------- 
+checkout.session.completed
+ --------------- .2021-06-10 18:14:46--------------- 
+
+ --------------- .2021-06-10 18:14:46--------------- 
+payment_intent.succeeded
+ --------------- .2021-06-10 18:14:46--------------- 
+
+ --------------- .2021-06-10 18:14:46--------------- 
+$object->idpi_1J0ktiKfjMsC8JpVLnyLY0l3
+ --------------- .2021-06-10 18:14:46--------------- 
+
+ --------------- .2021-06-10 18:14:46--------------- 
+$order_sn2{"group_order_sn":"wx1623320042271143060"}
+ --------------- .2021-06-10 18:14:46--------------- 
+
+ --------------- .2021-06-10 18:14:46--------------- 
+$object status:succeeded
+ --------------- .2021-06-10 18:14:46--------------- 
+
+ --------------- .2021-06-10 18:14:46--------------- 
+$object amount:11800
+ --------------- .2021-06-10 18:14:46--------------- 
+
+ --------------- .2021-06-10 18:14:46--------------- 
+$order_snwx1623320042271143060
+ --------------- .2021-06-10 18:14:46--------------- 
+
+ --------------- .2021-06-10 18:14:46--------------- 
+check_payment_success :wx1623320042271143060
+ --------------- .2021-06-10 18:14:46--------------- 
+
+ --------------- .2021-06-10 18:14:46--------------- 
+Received unknown event type"customer.updated"
+ --------------- .2021-06-10 18:14:46--------------- 
+
+ --------------- .2021-06-10 18:14:47--------------- 
+Received unknown event type"balance.available"
+ --------------- .2021-06-10 18:14:47--------------- 
+
+ --------------- .2021-06-10 18:19:35--------------- 
+Received unknown event type"payment_intent.created"
+ --------------- .2021-06-10 18:19:35--------------- 
+
+ --------------- .2021-06-10 18:19:59--------------- 
+Received unknown event type"customer.created"
+ --------------- .2021-06-10 18:19:59--------------- 
+
+ --------------- .2021-06-10 18:19:59--------------- 
+checkout.session.completed
+ --------------- .2021-06-10 18:19:59--------------- 
+
+ --------------- .2021-06-10 18:19:59--------------- 
+Received unknown event type"charge.succeeded"
+ --------------- .2021-06-10 18:19:59--------------- 
+
+ --------------- .2021-06-10 18:20:00--------------- 
+Received unknown event type"customer.updated"
+ --------------- .2021-06-10 18:20:00--------------- 
+
+ --------------- .2021-06-10 18:20:00--------------- 
+payment_intent.succeeded
+ --------------- .2021-06-10 18:20:00--------------- 
+
+ --------------- .2021-06-10 18:20:00--------------- 
+$object->idpi_1J0kz4KfjMsC8JpVQ4Z94iW3
+ --------------- .2021-06-10 18:20:00--------------- 
+
+ --------------- .2021-06-10 18:20:00--------------- 
+$order_sn2{"group_order_sn":"wx1623320374282621590"}
+ --------------- .2021-06-10 18:20:00--------------- 
+
+ --------------- .2021-06-10 18:20:00--------------- 
+$object status:succeeded
+ --------------- .2021-06-10 18:20:00--------------- 
+
+ --------------- .2021-06-10 18:20:00--------------- 
+$object amount:11800
+ --------------- .2021-06-10 18:20:00--------------- 
+
+ --------------- .2021-06-10 18:20:00--------------- 
+$order_snwx1623320374282621590
+ --------------- .2021-06-10 18:20:00--------------- 
+
+ --------------- .2021-06-10 18:20:00--------------- 
+check_payment_success :wx1623320374282621590
+ --------------- .2021-06-10 18:20:00--------------- 
+
+ --------------- .2021-06-10 18:20:00--------------- 
+Received unknown event type"balance.available"
+ --------------- .2021-06-10 18:20:00--------------- 
+
+ --------------- .2021-06-10 18:22:34--------------- 
+Received unknown event type"payment_intent.created"
+ --------------- .2021-06-10 18:22:34--------------- 
+
+ --------------- .2021-06-10 18:24:46--------------- 
+Received unknown event type"payment_intent.created"
+ --------------- .2021-06-10 18:24:46--------------- 
+
+ --------------- .2021-06-10 18:29:08--------------- 
+checkout.session.completed
+ --------------- .2021-06-10 18:29:08--------------- 
+
+ --------------- .2021-06-10 18:29:54--------------- 
+checkout.session.completed
+ --------------- .2021-06-10 18:29:54--------------- 
+
+ --------------- .2021-06-10 18:33:44--------------- 
+Received unknown event type"payment_intent.created"
+ --------------- .2021-06-10 18:33:44--------------- 
+
+ --------------- .2021-06-10 18:35:29--------------- 
+Received unknown event type"payment_intent.created"
+ --------------- .2021-06-10 18:35:29--------------- 
+
+ --------------- .2021-06-10 18:38:40--------------- 
+Received unknown event type"payment_intent.created"
+ --------------- .2021-06-10 18:38:40--------------- 
+
+ --------------- .2021-06-10 18:59:29--------------- 
+checkout.session.completed
+ --------------- .2021-06-10 18:59:29--------------- 
+
+ --------------- .2021-06-10 19:12:43--------------- 
+checkout.session.completed
+ --------------- .2021-06-10 19:12:43--------------- 
+
+ --------------- .2021-06-10 19:14:16--------------- 
+checkout.session.completed
+ --------------- .2021-06-10 19:14:16--------------- 
+
+ --------------- .2021-06-10 19:15:49--------------- 
+checkout.session.completed
+ --------------- .2021-06-10 19:15:49--------------- 
+
+ --------------- .2021-06-10 19:20:06--------------- 
+checkout.session.completed
+ --------------- .2021-06-10 19:20:06--------------- 
+
+ --------------- .2021-06-10 19:30:40--------------- 
+checkout.session.completed
+ --------------- .2021-06-10 19:30:40--------------- 
+
+ --------------- .2021-06-10 20:30:35--------------- 
+checkout.session.completed
+ --------------- .2021-06-10 20:30:35--------------- 
+
+ --------------- .2021-06-10 20:30:48--------------- 
+checkout.session.completed
+ --------------- .2021-06-10 20:30:48--------------- 
+
+ --------------- .2021-06-10 21:01:17--------------- 
+checkout.session.completed
+ --------------- .2021-06-10 21:01:17--------------- 
+
+ --------------- .2021-06-10 21:14:18--------------- 
+checkout.session.completed
+ --------------- .2021-06-10 21:14:18--------------- 
+
+ --------------- .2021-06-10 21:14:42--------------- 
+checkout.session.completed
+ --------------- .2021-06-10 21:14:42--------------- 
+
+ --------------- .2021-06-10 21:19:15--------------- 
+checkout.session.completed
+ --------------- .2021-06-10 21:19:15--------------- 
+

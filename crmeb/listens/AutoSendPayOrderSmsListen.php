@@ -17,16 +17,17 @@ namespace crmeb\listens;
 use app\common\repositories\store\order\StoreGroupOrderRepository;
 use crmeb\interfaces\ListenerInterface;
 use crmeb\jobs\SendSmsJob;
+use crmeb\services\TimerService;
 use Swoole\Timer;
 use think\facade\Queue;
 
-class AutoSendPayOrderSmsListen implements ListenerInterface
+class AutoSendPayOrderSmsListen extends TimerService implements ListenerInterface
 {
 
     public function handle($event): void
     {
-        $storeGroupOrderRepository = app()->make(StoreGroupOrderRepository::class);
-        Timer::tick(1000 * 60 * 5, function () use ($storeGroupOrderRepository) {
+        $this->tick(1000 * 60 * 5, function () {
+            $storeGroupOrderRepository = app()->make(StoreGroupOrderRepository::class);
             $time = date('Y-m-d H:i:s', strtotime("- 10 minutes"));
             $groupOrderIds = $storeGroupOrderRepository->getTimeOutIds($time, true);
             foreach ($groupOrderIds as $id) {

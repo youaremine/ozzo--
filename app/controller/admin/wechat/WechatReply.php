@@ -176,7 +176,7 @@ class WechatReply extends BaseController
         $file = is_array($file) ? $file[0] : $file;
 
         validate(["file|图片" => [
-            'fileSize' => 2097152,
+            'fileSize' => config('upload.filesize'),
             'fileExt' => 'jpg,jpeg,png,bmp,gif',
             'fileMime' => 'image/jpeg,image/png,image/gif',
         ]])->check(['file' => $file]);
@@ -192,7 +192,7 @@ class WechatReply extends BaseController
             return app('json')->fail('请上传声音');
         $file = is_array($file) ? $file[0] : $file;
         validate(["file|声音" => [
-            'fileSize' => 2097152,
+            'fileSize' => config('upload.filesize'),
             'fileExt' => 'wav,aif,mp3',
             'fileMime' => 'audio/x-wav,audio/x-aiff,audio/x-mpeg,audio/mpeg,audio/wav,audio/aiff',
         ]])->check(['file' => $file]);

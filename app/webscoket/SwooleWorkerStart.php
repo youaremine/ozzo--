@@ -56,6 +56,7 @@ class SwooleWorkerStart implements ListenerInterface
      */
     public function handle($event): void
     {
+        if (!env('INSTALLED', false)) return;
         if ($this->server->worker_id == ($this->config->get('swoole.server.options.worker_num')) && $this->config->get('swoole.websocket.enable', false)) {
             $this->ping();
         }
@@ -72,14 +73,13 @@ class SwooleWorkerStart implements ListenerInterface
          */
         $pingService = app()->make(Ping::class);
         $server = $this->server;
-        $timeout = intval($this->config->get('swoole.websocket.ping_timeout', 60000) / 1000);
+        $timeout = (int)($this->config->get('swoole.websocket.ping_timeout', 60000) / 1000);
         Timer::tick(1500, function (int $timer_id) use (&$server, &$pingService, $timeout) {
             $nowTime = time();
             foreach ($server->connections as $fd) {
-                if ($server->isEstablished($fd)) {
+                if ($server->isEstablished($fd) && $server->exist($fd)) {
                     $last = $pingService->getLastTime($fd);
                     if ($last && ($nowTime - $last) > $timeout) {
-                        $server->push($fd, 'timeout');
                         $server->close($fd);
                     }
                 }

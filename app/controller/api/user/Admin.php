@@ -17,6 +17,7 @@ namespace app\controller\api\user;
 use app\common\repositories\store\order\StoreOrderRepository;
 use app\controller\merchant\Common;
 use crmeb\basic\BaseController;
+use crmeb\services\SwooleTaskService;
 use think\App;
 use think\exception\HttpResponseException;
 use think\exception\ValidateException;
@@ -121,10 +122,12 @@ class Admin extends BaseController
         $this->checkOrderAuth($id);
         if (!$repository->merDeliveryExists((int)$id, $this->merId))
             return app('json')->fail('订单信息或状态错误');
-        $data = $this->request->params(['delivery_type', 'delivery_name', 'delivery_id']);
+        $data = $this->request->params(['delivery_type', 'delivery_name', 'delivery_id','express_no_images']);
         if (!in_array($data['delivery_type'], [1, 2, 3]))
             return app('json')->fail('发货类型错误');
         $repository->delivery($id, $data);
+        //TODO 訂單發貨成功 發送一条信息
+        $repository->chatBoxNotice($repository->getDetail($id),5,1,2);
         return app('json')->success('发货成功');
     }
 

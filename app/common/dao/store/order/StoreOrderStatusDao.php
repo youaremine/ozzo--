@@ -52,7 +52,7 @@ class StoreOrderStatusDao extends BaseDao
     {
         return StoreOrderStatus::getDB()->alias('A')->leftJoin('StoreOrder B', 'A.order_id = B.order_id')
             ->whereIn('A.change_type', ['delivery_0', 'delivery_1', 'delivery_2'])
-            ->where('A.change_time', '<', $end)->where('B.order_type', 0)->where('B.paid', 1)->where('B.status', 1)
+            ->where('A.change_time', '<', $end)->where('B.paid', 1)->where('B.status', 1)
             ->column('A.order_id');
     }
 }

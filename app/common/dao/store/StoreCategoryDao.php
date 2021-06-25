@@ -26,6 +26,11 @@ class StoreCategoryDao extends BaseDao
         return model::class;
     }
 
+    public function findChildrenId($id)
+    {
+        return model::getDB()->whereLike('path', '%/'. $id . '/%')->column('store_category_id');
+    }
+
 
     public function fieldExistsList(?int $merId,$field,$value,$except = null)
     {
@@ -39,7 +44,7 @@ class StoreCategoryDao extends BaseDao
 
     public function getTwoLevel($merId = 0)
     {
-        $pid = model::getDB()->where('pid', 0)->where('mer_id', $merId)->column('store_category_id');
+        $pid = model::getDB()->where('pid', 0)->where('is_show',1)->where('mer_id', $merId)->column('store_category_id');
         return model::getDB()->whereIn('pid', $pid)->where('is_show', 1)->where('mer_id', $merId)->order('sort DESC')->column('store_category_id,cate_name,pid');
     }
 

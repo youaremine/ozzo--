@@ -132,9 +132,9 @@ class StoreCouponDao extends BaseDao
      * @author xaboy
      * @day 2020/6/1
      */
-    public function validMerCoupon($merId, $uid = null)
+    public function validMerCoupon($merId, $uid = null, $type = 0)
     {
-        return $this->validCouponQuery(0)->when($uid, function (BaseQuery $query, $uid) {
+        return $this->validCouponQuery($type)->when($uid, function (BaseQuery $query, $uid) {
             $query->with(['issue' => function (BaseQuery $query) use ($uid) {
                 $query->where('uid', $uid);
             }]);

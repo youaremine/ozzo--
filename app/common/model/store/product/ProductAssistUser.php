@@ -58,7 +58,7 @@ class ProductAssistUser extends BaseModel
     public function getAvatarImgAttr($value)
     {
         if(!$value){
-            $value = '/static/images/f.png';
+            $value = '/static/f.png';
         }
         return $value;
     }

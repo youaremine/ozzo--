@@ -13,24 +13,24 @@
 namespace crmeb\listens;
 
 use app\common\repositories\store\ExcelRepository;
+use crmeb\services\TimerService;
 use Swoole\Timer;
 use think\facade\Log;
 use crmeb\interfaces\ListenerInterface;
 
-class ExcelFileDelListen implements ListenerInterface
+class ExcelFileDelListen extends TimerService implements ListenerInterface
 {
     public function handle($event): void
     {
-        $make = app()->make(ExcelRepository::class);
-
-        Timer::tick(1000 * 60 * 60, function () use ($make) {
+        $this->tick(1000 * 60 * 60, function () {
+            $make = app()->make(ExcelRepository::class);
             $time = date('Y-m-d H:i:s', strtotime("-" . 3 . " day"));
             $data = $make->getDelByTime($time);
             foreach ($data as $id => $path) {
                 try {
-                    $make->del($id,$path);
+                    $make->del($id, $path);
                 } catch (\Exception $e) {
-                    Log::info('自动删除导出文件失败' . var_export($id,true));
+                    Log::info('自动删除导出文件失败' . var_export($id, true));
                 }
             }
         });

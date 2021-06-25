@@ -96,7 +96,7 @@ class UserExtractRepository extends BaseRepository
 
             $data['status'] = 0;
             $data['uid'] = $user['uid'];
-            $data['statbalanceus'] = $brokerage_price;
+            $data['balance'] = $brokerage_price;
             return $this->dao->create($data);
         });
 

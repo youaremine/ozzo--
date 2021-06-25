@@ -30,6 +30,7 @@ use app\common\repositories\store\product\ProductGroupBuyingRepository;
 use app\common\repositories\store\product\ProductGroupSkuRepository;
 use app\common\repositories\store\product\ProductPresellSkuRepository;
 use app\common\repositories\store\product\ProductRepository;
+use app\common\repositories\store\service\StoreServiceLogRepository;
 use app\common\repositories\store\shipping\ExpressRepository;
 use app\common\repositories\store\StoreSeckillActiveRepository;
 use app\common\repositories\system\attachment\AttachmentRepository;
@@ -45,6 +46,8 @@ use app\common\repositories\wechat\WechatUserRepository;
 use crmeb\jobs\PayGiveCouponJob;
 use crmeb\jobs\SendSmsJob;
 use crmeb\jobs\SendTemplateMessageJob;
+use crmeb\payment\stripe\sdk\Stripe;
+use crmeb\payment\wechat\Wechat;
 use crmeb\services\AlipayService;
 use crmeb\services\ExpressService;
 use crmeb\services\MiniProgramService;
@@ -53,6 +56,7 @@ use crmeb\services\printer\Printer;
 use crmeb\services\SwooleTaskService;
 use crmeb\services\UploadService;
 use crmeb\services\WechatService;
+use crmeb\payment\tapgo\TapGo;
 use Exception;
 use FormBuilder\Factory\Elm;
 use FormBuilder\Form;
@@ -78,8 +82,8 @@ class StoreOrderRepository extends BaseRepository
     /**
      * 支付类型
      */
-    const PAY_TYPE = ['balance', 'weixin', 'routine', 'h5', 'alipay', 'alipayQr'];
-
+    // const PAY_TYPE = ['balance', 'weixin', 'routine', 'h5', 'alipay', 'alipayQr'];
+    const PAY_TYPE = ['balance', 'weixin', 'routine', 'h5', 'alipay', 'alipayQr','payme','tapgo','weixinAppPay','stripe'];
     /**
      * StoreOrderRepository constructor.
      * @param StoreOrderDao $dao
@@ -720,7 +724,7 @@ class StoreOrderRepository extends BaseRepository
     {
         $groupOrder->append(['user']);
         //修改订单状态
-        Db::transaction(function () use ($groupOrder) {
+//        Db::transaction(function () use ($groupOrder) {
             $time = date('Y-m-d H:i:s');
             $groupOrder->paid = 1;
             $groupOrder->pay_time = $time;
@@ -783,14 +787,16 @@ class StoreOrderRepository extends BaseRepository
                     'financial_record_sn' => $financeSn . ($_k + 1)
                 ];
                 $userMerchantRepository->updatePayTime($uid, $order->mer_id, $order->pay_price);
-                SwooleTaskService::merchant('notice', [
-                    'type' => 'new_order',
-                    'data' => [
-                        'title' => '新订单',
-                        'message' => '您有一个新的订单',
-                        'id' => $order->order_id
-                    ]
-                ], $order->mer_id);
+//                SwooleTaskService::merchant('notice', [
+//                    'type' => 'new_order',
+//                    'data' => [
+//                        'title' => '新订单',
+//                        'message' => '您有一个新的订单',
+//                        'id' => $order->order_id
+//                    ]
+//                ], $order->mer_id);
+                //TODO 訂單支付成 發送一条信息
+                $this->chatBoxNotice($order,5,1,1);
                 //自动打印订单
                 $this->autoPrinter($order->order_id, $order->mer_id);
             }
@@ -803,7 +809,7 @@ class StoreOrderRepository extends BaseRepository
             if (count($groupOrder['give_coupon_ids']) > 0)
                 $groupOrder['give_coupon_ids'] = app()->make(StoreCouponRepository::class)->getGiveCoupon($groupOrder['give_coupon_ids'])->column('coupon_id');
             $groupOrder->save();
-        });
+//        });
 
         if (count($groupOrder['give_coupon_ids']) > 0) {
             try {
@@ -825,7 +831,52 @@ class StoreOrderRepository extends BaseRepository
             'id' => $groupOrder->group_order_id
         ]);
     }
-
+    /**
+     *  chatBox
+     * @Author:zhongguanmao
+     * @Date: 2021/06/23
+     * @param object $order
+     * @param int $merId
+     */
+    public function chatBoxNotice($order,$msn_type = 5,$send_type = 1,$order_status_log = 1){
+        if(empty($order)) return false;
+        $data = [
+            'msn' => $order->order_id, // 订单id
+            'msn_type' => $msn_type, // 发送类型 5 订单
+            'mer_id' => $order->mer_id, // 商户id
+            'service_id' => '17',
+            'send_type' => $send_type, // 发送类型 0 用户发送 1 客服回复
+            'uid' => $order->uid,
+            "service" => [
+                "service_id" =>  17,
+                "avatar" => "/static/images/f.png",
+                "nickname"=>  "M"
+            ],
+            'order_status_log' => $order_status_log,
+        ];
+        $storeServiceLogRepository = app()->make(StoreServiceLogRepository::class);
+        try {
+            $storeServiceLogRepository->checkMsn($order->mer_id, $order->uid, $data['msn_type'], $data['msn']);
+        } catch (ValidateException $e) {
+//            return app('json')->message('err_tip', $e->getMessage());
+            return false;
+        }
+        $log = $storeServiceLogRepository->create($data);
+        $storeServiceLogRepository->getSendData($log);
+        $storeServiceLogRepository->userToChat($data['uid'], $data['mer_id']);
+        $log->user;
+        $log = $log->toArray();
+        SwooleTaskService::chatToUser([
+            'uid' => $order->uid,
+            'data' => $log,
+            'except' => []
+        ]);
+        SwooleTaskService::chatToService([
+            'uid' => 2,
+            'data' => $log,
+            'except' => []
+        ]);
+    }
     /**
      *  自动打印
      * @Author:Qinii
@@ -918,7 +969,72 @@ class StoreOrderRepository extends BaseRepository
         $url = AlipayService::create('order')->qrPaymentPrepare($groupOrder['group_order_sn'], $groupOrder['pay_price'], '订单支付');
         return app('json')->status('alipayQr', ['config' => $url, 'order_id' => $groupOrder['group_order_id']]);
     }
-
+    /**
+     * @param User $user
+     * @param StoreGroupOrder $groupOrder
+     * @param $return_url
+     * @return \think\response\Json
+     * @author zhongguanmao
+     * @day 2021/6/1
+     */
+    public function payTapgo(User $user, StoreGroupOrder $groupOrder)
+    {
+        $tapgo = new TapGo();
+        try {
+            $res = $tapgo->paymentBackEnd($groupOrder['group_order_sn'],$groupOrder['pay_price'],$remark = '','S', 'CR');
+        } catch (Exception $e){
+            throw new ValidateException($e);
+        }
+        return app('json')->status('tapgo',['schemes_url' => $res,'order_id' => $groupOrder['group_order_id'],'order_sn' => $groupOrder['group_order_sn']]);
+    }
+    /**
+     * @param User $user
+     * @param StoreGroupOrder $groupOrder
+     * @param $return_url
+     * @return \think\response\Json
+     * @author zhongguanmao
+     * @day 2021/6/2
+     */
+    public function payWeixinAppPay(User $user, StoreGroupOrder $groupOrder)
+    {
+        $weixin = new Wechat();
+        try {
+            $res = $weixin->unificationOrder($groupOrder['group_order_sn'],'ozzo shop pay', $groupOrder['pay_price']);
+        } catch (Exception $e){
+            throw new ValidateException($e);
+        }
+        return app('json')->status('weixinAppPay',['config' => $res,'order_id' => $groupOrder['group_order_id']]);
+    }
+    /**
+     * @param User $user
+     * @param StoreGroupOrder $groupOrder
+     * @return \think\response\Json
+     * @author zhongguanmao
+     * @day 2021/6/8
+     */
+    public function payStripe(User $user, StoreGroupOrder $groupOrder)
+    {
+        try {
+            $stripe = new Stripe();
+            $goods = ['img_url' => 'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fimg.juimg.com%2Ftuku%2Fyulantu%2F140703%2F330746-140F301555752.jpg&refer=http%3A%2F%2Fimg.juimg.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1625735871&t=a2af2fb51c348a9e88e91140fc5593b7'];
+            $session_id = $stripe->create_session($goods,$groupOrder);
+            if(isset($session_id) && !empty($session_id) && !empty($groupOrder['group_order_sn'])){
+                // 保存繪話號和訂單號
+                // redis
+                $row = Db::table('shop_store_stripe_order')->where('group_order_sn',$groupOrder['group_order_sn'])->field('id')->find();
+                $payment_intent = $stripe->getPaymentIntend($session_id);
+                if($row){
+                    Db::table('shop_store_stripe_order')->where('group_order_sn',$groupOrder['group_order_sn'])->update(['stripe_payment_intent' => $payment_intent]);
+                }else{
+                    Db::table('shop_store_stripe_order')->insert(['group_order_sn' => $groupOrder['group_order_sn'],'stripe_payment_intent' => $payment_intent,'create_time' => date('Y-m-d H:i:s')]);
+                }
+            }
+        } catch (Exception $e){
+            throw new ValidateException($e);
+        }
+        // 返回会话id
+        return app('json')->status('stripe',['config' => ['session_id' => $session_id,'url' => request()->domain() . '/api/stripe/pay'],'order_id' => $groupOrder['group_order_id']]);
+    }
     /**
      * @return string
      * @author xaboy
@@ -1358,12 +1474,14 @@ class StoreOrderRepository extends BaseRepository
      * @author xaboy
      * @day 2020/8/3
      */
-    public function takeAfter(StoreOrder $order, User $user)
+    public function takeAfter(StoreOrder $order, User $user,$source = 'user')
     {
-        Db::transaction(function () use ($user, $order) {
+        Db::transaction(function () use ($user, $order,$source) {
             $this->computed($order, $user);
             //TODO 确认收货
-            app()->make(StoreOrderStatusRepository::class)->status($order->order_id, 'take', '已收货');
+            if($source == 'user')  $msg = '已收貨';
+            else if ($source == 'merchant') $msg = '已收貨(商家送達)';
+            app()->make(StoreOrderStatusRepository::class)->status($order->order_id, 'take', $msg);
             Queue::push(SendTemplateMessageJob::class, [
                 'tempCode' => 'ORDER_TAKE_SUCCESS',
                 'id' => $order->order_id
@@ -1389,7 +1507,7 @@ class StoreOrderRepository extends BaseRepository
      * @author xaboy
      * @day 2020/6/17
      */
-    public function takeOrder($id, ?User $user = null)
+    public function takeOrder($id, ?User $user = null,$data = '')
     {
         $order = $this->dao->search(!$user ? [] : ['uid' => $user->uid], null)->where('order_id', $id)->where('is_del', 0)->find();
         if (!$order)
@@ -1398,10 +1516,24 @@ class StoreOrderRepository extends BaseRepository
             throw new ValidateException('订单状态有误');
         if (!$user) $user = $order->user;
         $order->status = 2;
-        Db::transaction(function () use ($order, $user) {
-            $this->takeAfter($order, $user);
-            $order->save();
-        });
+        if(!empty($data)){
+            Db::transaction(function () use ($order, $user,$data) {
+                $this->takeAfter($order, $user,'merchant');
+                Db::table('shop_store_order_annex_image')->insert([
+                    'order_id' => $order['order_id'],
+                    'image' => $data,
+                    'type' => 2,
+                    'mer_id' => 77,
+                ]);
+                $order->save();
+            });
+        }else{
+            Db::transaction(function () use ($order, $user) {
+                $this->takeAfter($order, $user);
+                $order->save();
+            });
+        }
+
     }
 
 
@@ -1695,6 +1827,12 @@ class StoreOrderRepository extends BaseRepository
     public function delivery($id, $data)
     {
         $data['status'] = 1;
+        // 运单号图片
+        $express_no_images = $data['express_no_images'];
+        if(is_array($data['express_no_images'])){
+            $express_no_images = json_encode($data['express_no_images']);
+        }
+        unset($data['express_no_images']);
         $order = $this->dao->get($id);
         if ($data['delivery_type'] == 1) {
             $exprss = app()->make(ExpressRepository::class)->getWhere(['id' => $data['delivery_name']]);
@@ -1703,7 +1841,17 @@ class StoreOrderRepository extends BaseRepository
         }
         if ($data['delivery_type'] == 2 && !preg_match("/^1[3456789]{1}\d{9}$/", $data['delivery_id']))
             throw new ValidateException('手机号格式错误');
-        $this->dao->update($id, $data);
+
+        Db::transaction(function () use ($id,$data,$order,$express_no_images) {
+            $this->dao->update($id, $data);
+            // 上傳運貨單
+            Db::table('shop_store_order_annex_image')->insert([
+                'order_id' => $order['order_id'],
+                'type' => 1,
+                'image' => $express_no_images,
+            ]);
+        });
+
 
         if ($data['delivery_type'] == 1) {
             app()->make(StoreOrderStatusRepository::class)->status($id, 'delivery_0', '订单已配送【快递名称】:' . $data['delivery_name'] . '; 【快递单号】：' . $data['delivery_id']);
@@ -1740,9 +1888,27 @@ class StoreOrderRepository extends BaseRepository
             $whre['mer_id'] = $merId;
             $whre['is_system_del'] = 0;
         }
-        return $this->dao->getWhere($where, '*', ['user' => function ($query) {
+        $data = $this->dao->getWhere($where, '*', ['user' => function ($query) {
             $query->field('uid,real_name,nickname');
-        },'finalOrder']);
+        },'finalOrder','annex']);
+
+        if(isset($data['annex']) && count($data['annex']) >= 1){
+            $data['express_image'] = [];
+            $data['take_image'] = [];
+            foreach ($data['annex'] as $key => $value){
+                // 運貨單
+                if(isset($value['type']) && $value['type'] == 1){
+                    $data['express_image'] = $value['image'];
+                }
+                // 用戶收據
+                if(isset($value['type']) && $value['type'] == 2){
+                    $data['take_image'] = $value['image'];
+                }
+            }
+            unset($data['annex']);
+        }
+        return $data;
+
     }
 
     public function getOrderStatus($id, $page, $limit)
@@ -1758,6 +1924,16 @@ class StoreOrderRepository extends BaseRepository
             Elm::text('remark', '备注', $data['remark'])->required(),
         ]);
         return $form->setTitle('修改备注');
+    }
+    // 商家確認送達表單
+    public function takeForm($id)
+    {
+        $data = $this->dao->get($id);
+        $form = Elm::createForm(Route::buildUrl('merchantStoreOrderTake', ['id' => $id])->build());
+        $form->setRule([
+            Elm::frameImages('images', '客戶收據', '/' . config('admin.merchant_prefix') . '/setting/uploadPicture?field=images&type=2')->maxLength(6)->width('896px')->height('480px')->spin(0)->modal(['modal' => false])->props(['footer' => false]),
+        ]);
+        return $form->setTitle('商家確認送達');
     }
 
     public function adminMarkForm($id)

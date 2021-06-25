@@ -15,6 +15,8 @@ namespace app\common\model\system\merchant;
 
 
 use app\common\model\BaseModel;
+use app\common\model\store\order\StoreOrder;
+use app\common\model\store\order\StoreRefundOrder;
 use app\common\model\user\User;
 use app\common\repositories\system\merchant\MerchantRepository;
 
@@ -39,5 +41,13 @@ class FinancialRecord extends BaseModel
     public function merchant()
     {
         return $this->hasOne(Merchant::class,'mer_id','mer_id');
+    }
+    public function orderInfo()
+    {
+        return $this->hasOne(StoreOrder::class,'order_sn','order_sn');
+    }
+    public function refundOrder()
+    {
+        return $this->hasOne(StoreRefundOrder::class,'refund_order_sn','order_sn');
     }
 }

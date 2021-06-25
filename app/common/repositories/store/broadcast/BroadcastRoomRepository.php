@@ -206,6 +206,7 @@ class BroadcastRoomRepository extends BaseRepository
         $miniProgramService = MiniProgramService::create();
         $coverImg = './public' . app()->make(DownloadImageService::class)->downloadImage($room['cover_img'])['path'];
         $shareImg = './public' . app()->make(DownloadImageService::class)->downloadImage($room['share_img'])['path'];
+        $shareImgMedia = $miniProgramService->material()->uploadImage($shareImg)->media_id;
         $data = [
             'startTime' => strtotime($room['start_time']),
             'endTime' => strtotime($room['end_time']),
@@ -220,7 +221,8 @@ class BroadcastRoomRepository extends BaseRepository
             'closeKf' => $room['close_kf'],
             'closeReplay' => $room['replay_status'] == 1 ? 0 : 1,
             'coverImg' => $miniProgramService->material()->uploadImage($coverImg)->media_id,
-            'shareImg' => $miniProgramService->material()->uploadImage($shareImg)->media_id
+            'shareImg' => $shareImgMedia,
+            'feedsImg' => $shareImgMedia,
         ];
         @unlink($coverImg);
         @unlink($shareImg);

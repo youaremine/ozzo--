@@ -52,11 +52,13 @@ class StoreProduct extends BaseController
     public function lst()
     {
         [$page, $limit] = $this->getPage();
-        $where = $this->request->params(['cate_id', 'keyword', ['type', 1], 'mer_cate_id', 'pid','order','store_name','is_trader','us_status','product_id']);
+        $where = $this->request->params(['cate_id', 'keyword', ['type', 1], 'mer_cate_id', 'pid','store_name','is_trader','us_status','product_id','star']);
         $mer_id = $this->request->param('mer_id','');
         $merId = $mer_id ? $mer_id : null;
         $where['is_gift_bag'] = 0;
-        $where = array_merge($where, $this->repository->switchType($where['type'], null,0));
+        $_where = $this->repository->switchType($where['type'], null,0);
+        unset($_where['star']);
+        $where = array_merge($where, $_where);
         return app('json')->success($this->repository->getAdminList($merId, $where, $page, $limit));
     }
 
@@ -158,7 +160,6 @@ class StoreProduct extends BaseController
         return app('json')->success('修改成功');
     }
 
-
     /**
      * @Author:Qinii
      * @Date: 2020/5/11
@@ -167,7 +168,7 @@ class StoreProduct extends BaseController
      */
     public function checkParams(validate $validate)
     {
-        $data = $this->request->params(['is_hot','is_best','is_benefit','is_new','store_name','content','rank']);
+        $data = $this->request->params(['is_hot','is_best','is_benefit','is_new','store_name','content','rank','star']);
         $validate->check($data);
         return $data;
     }
@@ -182,7 +183,6 @@ class StoreProduct extends BaseController
         Queue::push(CheckProductExtensionJob::class,[]);
         return app('json')->success('后台已开始检测');
     }
-
 
     public function lists()
     {
@@ -230,6 +230,13 @@ class StoreProduct extends BaseController
         return app('json')->success('修改成功');
     }
 
+    /**
+     * TODO
+     * @param $id
+     * @return \think\response\Json
+     * @author Qinii
+     * @day 3/17/21
+     */
     public function updateSort($id)
     {
         $sort = $this->request->param('sort');

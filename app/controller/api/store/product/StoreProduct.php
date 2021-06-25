@@ -16,6 +16,7 @@ namespace app\controller\api\store\product;
 use app\common\repositories\store\product\SpuRepository;
 use app\common\repositories\system\groupData\GroupDataRepository;
 use app\common\repositories\user\UserMerchantRepository;
+use crmeb\jobs\ChangeSpuStatusJob;
 use think\App;
 use crmeb\basic\BaseController;
 use app\common\repositories\store\product\ProductRepository as repository;
@@ -48,9 +49,8 @@ class StoreProduct extends BaseController
     public function lst()
     {
         [$page, $limit] = $this->getPage();
-        $where = $this->request->params(['keyword', 'cate_id', 'order', 'price_on', 'price_off', 'brand_id', 'pid']);
+        $where = $this->request->params(['keyword', 'cate_id', 'order', 'price_on', 'price_off', 'brand_id', 'pid','star']);
         $data = $this->repository->getApiSearch(null, $where, $page, $limit, $this->userInfo);
-        //$data = app()->make(SpuRepositor::class)->getApiSearch($where,$page, $limit, $this->userInfo);
         return app('json')->success($data);
     }
 
@@ -63,7 +63,10 @@ class StoreProduct extends BaseController
     public function detail($id)
     {
         $data = $this->repository->detail($id, $this->userInfo);
-        if (!$data) return app('json')->fail('商品已下架');
+        if (!$data){
+            queue(ChangeSpuStatusJob::class,['id' => $id,'product_type' => 0]);
+            return app('json')->fail('商品已下架');
+        }
 
         if ($this->request->isLogin()) {
             app()->make(UserMerchantRepository::class)->updateLastTime($this->request->uid(), $data->mer_id);

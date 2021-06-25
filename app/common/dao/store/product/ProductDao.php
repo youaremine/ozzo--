@@ -109,7 +109,7 @@ class ProductDao extends BaseDao
     public function search(?int $merId, array $where)
     {
         $keyArray = $whereArr = [];
-        unset($where['type']);
+        unset($where['type'],$where['us_status']);
         foreach ($where as $key => $item) {
             if ($item !== '' && $key != 'soft') {
                 $keyArray[] = $key;
@@ -137,8 +137,8 @@ class ProductDao extends BaseDao
                     $query->where('is_benefit', 1);
             })
             ->when(isset($where['pid']) && $where['pid'] !== '', function ($query) use ($where) {
-                $children = app()->make(StoreCategoryRepository::class)->children(intval($where['pid']));
-                $ids = array_column($children, 'store_category_id');
+                $storeCategoryRepository = app()->make(StoreCategoryRepository::class);
+                $ids = array_merge($storeCategoryRepository->findChildrenId((int)$where['pid']), [(int)$where['pid']]);
                 if (count($ids)) $query->whereIn('cate_id', $ids);
             })
             ->when(isset($where['us_status']) && $where['us_status'] !== '', function ($query) use ($where) {

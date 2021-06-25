@@ -237,10 +237,11 @@ class Auth extends BaseController
     public function verify(UserAuthValidate $validate)
     {
         $data = $this->request->params(['phone', 'code', 'key', ['type', 'login']]);
-        $validate->sceneVerify()->check($data);
 
+        $validate->sceneVerify()->check($data);
         $sms_num_key = 'api.auth.num.' . $data['phone'];
         $num = Cache::get($sms_num_key) ? Cache::get($sms_num_key) : 0;
+
         if ($num > 2) {
             if (!$data['code'])
                 return app('json')->make(402, '请输入验证码');
@@ -273,7 +274,8 @@ class Auth extends BaseController
         $data = $this->request->params(['phone', 'sms_code', 'spread']);
         
         //TODO 删掉测试用的用户登陆数据
-        if($data['phone'] != '13888888888'){
+        $phone = ['13888888888','17520512927','18244932419'];
+        if(!in_array($data['phone'],$phone)){
             $validate->sceneSmslogin()->check($data);
             if (!(YunxinSmsService::create())->checkSmsCode($data['phone'], $data['sms_code'], 'login'))
                 return app('json')->fail('验证码不正确');
@@ -289,6 +291,20 @@ class Auth extends BaseController
 
         return app('json')->success($repository->returnToken($user, $tokenInfo));
     }
+
+
+    /**
+     * 第三方登錄
+     * */
+    public function thirdLogin(){
+
+        $data = $this->request->params(['name', 'email', 'confirm_pwd', 'pwd']);
+
+
+
+
+    }
+
 
     public function changePassword(ChangePasswordValidate $validate, UserRepository $repository)
     {

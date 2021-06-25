@@ -127,9 +127,10 @@ class UserHandler
     {
         app()->make(StoreServiceLogRepository::class)->userToChat($result['frame']->uid, $result['data']['mer_id']);
     }
-
+    // 客服發消息給用戶
     public function service_chat(array $result)
     {
+        Db::table('shop_text')->insert(['text' => json_encode($result).'service_chat']);
         $data = $result['data'];
         $frame = $result['frame'];
         if (!isset($data['msn_type']) || !isset($data['msn']) || !isset($data['uid']))
@@ -159,17 +160,20 @@ class UserHandler
         $storeServiceLogRepository->serviceToChat($frame->uid, $data['uid']);
         $log = $log->toArray();
 
-        SwooleTaskService::chatToUser([
-            'uid' => $data['uid'],
-            'data' => $log,
-            'except' => [$frame->fd]
-        ]);
+        SwooleTaskService::chatToUser(
+            [
+                'uid' => $data['uid'],
+                'data' => $log,
+                'except' => [$frame->fd]
+            ]
+        );
 
         return app('json')->message('chat', $log);
     }
-
+    // 用戶發消息給客服
     public function send_chat(array $result)
     {
+        Db::table('shop_text')->insert(['text' => json_encode($result).'send_chat']);
         $data = $result['data'];
         $frame = $result['frame'];
         if (!isset($data['msn_type']) || !isset($data['msn']) || !isset($data['mer_id']))

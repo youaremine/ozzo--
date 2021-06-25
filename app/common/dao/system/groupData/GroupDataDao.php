@@ -76,6 +76,11 @@ class GroupDataDao extends BaseDao
         return $groupData;
     }
 
+    public function groupDataCount($merId, $groupId)
+    {
+        return SystemGroupData::getDB()->where('mer_id', $merId)->where('group_id', $groupId)->where('status', 1)->count();
+    }
+
     /**
      * @param $merId
      * @param $groupId

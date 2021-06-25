@@ -12,6 +12,7 @@
 // [ 应用入口文件 ]
 namespace think;
 
+exit('只支持通过 swoole 服务运行项目');
 
 //检测是否已安装CRMEB系统
 

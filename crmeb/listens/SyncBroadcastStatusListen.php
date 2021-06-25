@@ -17,17 +17,17 @@ namespace crmeb\listens;
 use app\common\repositories\store\broadcast\BroadcastGoodsRepository;
 use app\common\repositories\store\broadcast\BroadcastRoomRepository;
 use crmeb\interfaces\ListenerInterface;
+use crmeb\services\TimerService;
 use Swoole\Timer;
 use think\facade\Log;
 
-class SyncBroadcastStatusListen implements ListenerInterface
+class SyncBroadcastStatusListen extends TimerService implements ListenerInterface
 {
 
     public function handle($event): void
     {
-        $broadcastRoomRepository = app()->make(BroadcastRoomRepository::class);
-        $broadcastGoodsRepository = app()->make(BroadcastGoodsRepository::class);
-        Timer::tick(1000 * 60 * 5, function () use ($broadcastGoodsRepository) {
+        $this->tick(1000 * 60 * 5, function () {
+            $broadcastGoodsRepository = app()->make(BroadcastGoodsRepository::class);
             try {
                 $broadcastGoodsRepository->syncGoodStatus();
             } catch (\Exception $e) {
@@ -35,7 +35,8 @@ class SyncBroadcastStatusListen implements ListenerInterface
             }
         });
 
-        Timer::tick(1000 * 60 * 5, function () use ($broadcastRoomRepository) {
+        $this->tick(1000 * 60 * 5, function () {
+            $broadcastRoomRepository = app()->make(BroadcastRoomRepository::class);
             try {
                 $broadcastRoomRepository->syncRoomStatus();
             } catch (\Exception $e) {

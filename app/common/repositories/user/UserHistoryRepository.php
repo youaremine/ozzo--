@@ -78,5 +78,22 @@ class UserHistoryRepository extends BaseRepository
         }
     }
 
-
+    /**
+     * TODO 商品推荐列表
+     * @param int|null $uid
+     * @return array
+     * @author Qinii
+     * @day 4/9/21
+     */
+    public function getRecommend(?int $uid)
+    {
+        $ret = $this->dao->search($uid,1)->with(['spu.product'])->limit(10)->select();
+        if(!$ret) return [];
+        $i = [];
+        foreach ($ret as $item){
+            if(isset($item['spu']['product']['cate_id'])) $i[] = $item['spu']['product']['cate_id'];
+        }
+        if($i) $i = array_unique($i);
+        return $i;
+    }
 }

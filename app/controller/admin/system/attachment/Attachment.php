@@ -87,7 +87,7 @@ class Attachment extends BaseController
         }
 
         validate(["$field|图片" => [
-            'fileSize' => 2097152,
+            'fileSize' => config('upload.filesize'),
             'fileExt' => 'jpg,jpeg,png,bmp,gif',
             'fileMime' => 'image/jpeg,image/png,image/gif',
         ]])->check([$field => $file]);

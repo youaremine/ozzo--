@@ -16,17 +16,18 @@ namespace crmeb\listens;
 
 use app\common\repositories\user\UserBillRepository;
 use crmeb\interfaces\ListenerInterface;
+use crmeb\services\TimerService;
 use Swoole\Timer;
 use think\facade\Db;
 
-class AutoUnLockBrokerageListen implements ListenerInterface
+class AutoUnLockBrokerageListen extends TimerService implements ListenerInterface
 {
 
     public function handle($event): void
     {
         //TODO 自动解冻佣金
-        $userBill = app()->make(UserBillRepository::class);
-        Timer::tick(1000 * 60 * 20, function () use ($userBill) {
+        $this->tick(1000 * 60 * 20, function () {
+            $userBill = app()->make(UserBillRepository::class);
             request()->clearCache();
             $timer = ((int)systemConfig('lock_brokerage_timer'));
             $time = date('Y-m-d H:i:s', $timer ? strtotime("- $timer day") : time());

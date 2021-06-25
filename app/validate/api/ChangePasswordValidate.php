@@ -23,7 +23,6 @@ class ChangePasswordValidate extends Validate
     protected $rule = [
         'phone|手机号' => 'require|mobile',
         'pwd|密码' => 'require|min:6',
-        'confirm_pwd|确认密码' => 'require|confirm:pwd',
         'sms_code|短信验证码' => 'require|max:4',
     ];
 }

@@ -35,6 +35,7 @@ use EasyWeChat\Server\BadRequestException;
 use EasyWeChat\Support\Collection;
 use Exception;
 use Symfony\Component\HttpFoundation\Request;
+use think\facade\Cache;
 use think\facade\Log;
 use think\facade\Route;
 use think\Response;
@@ -93,8 +94,8 @@ class WechatService
             $config['payment'] = [
                 'merchant_id' => trim($payment['pay_weixin_mchid']),
                 'key' => trim($payment['pay_weixin_key']),
-                'cert_path' => realpath('./public' . $payment['pay_weixin_client_cert']),
-                'key_path' => realpath('./public' . $payment['pay_weixin_client_key']),
+                'cert_path' => (app()->getRootPath() . 'public' . $payment['pay_weixin_client_cert']),
+                'key_path' => (app()->getRootPath() . 'public' . $payment['pay_weixin_client_key']),
                 'notify_url' => $payment['site_url'] . Route::buildUrl('wechatNotify')->build(),
                 'pay_weixin_client_cert' => $payment['pay_weixin_client_cert'],
                 'pay_weixin_client_key' => $payment['pay_weixin_client_key'],
@@ -157,6 +158,14 @@ class WechatService
             $wechatUserRepository = app()->make(WechatUserRepository::class);
             $users = $wechatUserRepository->syncUser($openId, $userInfo, true);
 
+            $scanLogin = function () use ($message, $users) {
+                $ticket = $message->Ticket;
+                if (strpos($ticket, '_sys_scan_login.') === 0) {
+                    $key = str_replace('_sys_scan_login.', '', $ticket);
+                    Cache::set('_scan_login' . $key, $users[1]['uid']);
+                }
+            };
+
             $response = null;
             /** @var WechatReplyRepository $make * */
             $make = app()->make(WechatReplyRepository::class);
@@ -165,6 +174,7 @@ class WechatService
                 case 'event':
                     switch (strtolower($message->Event)) {
                         case 'subscribe':
+                            $scanLogin();
                             $response = $make->reply('subscribe');
                             if (isset($message->EventKey) && $message->EventKey) {
                                 /** @var WechatQrcodeRepository $qr */
@@ -193,6 +203,7 @@ class WechatService
                             event('WechatEventUnsubscribe', $message);
                             break;
                         case 'scan':
+                            $scanLogin();
                             $response = $make->reply('subscribe');
                             /** @var WechatQrcodeRepository $qr */
                             $qr = app()->make(WechatQrcodeRepository::class);
@@ -630,5 +641,15 @@ class WechatService
     public function noticeService()
     {
         return $this->application->notice;
+    }
+
+
+    /**
+     * 微信二维码生成接口
+     * @return \EasyWeChat\QRCode\QRCode
+     */
+    public function qrcodeService()
+    {
+        return $this->application->qrcode;
     }
 }

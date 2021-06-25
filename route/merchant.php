@@ -324,6 +324,8 @@ Route::group(config('admin.api_merchant_prefix') . '/', function () {
             Route::post('reconciliation/status/:id', 'Reconciliation/switchStatus')->name('merchantReconciliationSwitchStatus');
             Route::get('reconciliation/:id/order', 'Order/reList')->name('merchantReconciliationOrderReList');
             Route::get('reconciliation/:id/refund', 'RefundOrder/reList')->name('merchantReconciliationRefundReList');
+            Route::get('take/:id/form','Order/takeForm')->name('merchantStoreOrderTakeForm'); // 商家確認送達表單
+            Route::post('take/:id','Order/take')->name('merchantStoreOrderTake'); // 商家確認送達
         })->prefix('merchant.store.order.');
 
         //退款订单

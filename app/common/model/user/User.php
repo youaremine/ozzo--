@@ -253,4 +253,10 @@ class User extends BaseModel
             return false;
         }
     }
+
+    public function getAvatarAttr($value)
+    {
+        return $value ? $value : '/static/f.png';
+    }
+
 }

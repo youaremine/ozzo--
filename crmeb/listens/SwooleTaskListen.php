@@ -24,7 +24,7 @@ use crmeb\jobs\SendNewsJob;
 use Swoole\Server;
 use Swoole\Server\Task;
 use think\facade\Queue;
-
+use think\facade\Db;
 class SwooleTaskListen implements ListenerInterface
 {
     /**

@@ -194,6 +194,8 @@ class ProductSeckill extends BaseController
         ];
         $data = $this->request->params($params);
         $validate->check($data);
+        $data['start_time'] = (int)substr($data['start_time'],0,2);
+        $data['end_time'] = (int)substr($data['end_time'],0,2);
         return $data;
     }
 

@@ -16,16 +16,17 @@ namespace crmeb\listens;
 
 use app\common\repositories\system\sms\SmsRecordRepository;
 use crmeb\interfaces\ListenerInterface;
+use crmeb\services\TimerService;
 use crmeb\services\YunxinSmsService;
 use Swoole\Timer;
 
-class SyncSmsResultCodeListen implements ListenerInterface
+class SyncSmsResultCodeListen extends TimerService implements ListenerInterface
 {
 
     public function handle($event): void
     {
-        $smsRecordRepository = app()->make(SmsRecordRepository::class);
-        Timer::tick(1000 * 60 * 5, function () use ($smsRecordRepository) {
+        $this->tick(1000 * 60 * 5, function () {
+            $smsRecordRepository = app()->make(SmsRecordRepository::class);
             $time = date('Y-m-d H:i:s', strtotime("- 10 minutes"));
             $ids = $smsRecordRepository->getTimeOutIds($time);
             if (count($ids)) return;

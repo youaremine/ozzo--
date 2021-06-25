@@ -13,6 +13,8 @@
 namespace crmeb\services;
 
 
+use think\exception\ValidateException;
+
 class SpreadsheetExcelService
 {
     //
@@ -38,6 +40,8 @@ class SpreadsheetExcelService
     protected static $height = 50;
     //保存文件目录
     protected static $path = 'phpExcel/';
+    //总行数
+    protected static $colum = 3;
     //设置style
     private static $styleArray = [
 //         'borders' => [
@@ -129,51 +133,49 @@ class SpreadsheetExcelService
      * @param $funName function($style,$A,$A2) 自定义设置头部样式
      * @return $this
      */
-    public function setExcelTile($title = '', $Name = '', $info = [], $funName = null)
+    public function setExcelTile(array $data)
     {
         //设置参数
-        if (is_array($title)) {
-            if (isset($title['title'])) $title = $title['title'];
-            if (isset($title['name'])) $Name = $title['name'];
-            if (isset($title['info'])) $info = $title['info'];
+        if (is_array($data)) {
+            if (isset($data['title'])) $title = $data['title'];
+            if (isset($data['sheets'])) $sheets = $data['sheets'];
         }
-        if (empty($title))
-            $title = self::$title;
-        else
-            self::$title = $title;
-        if (empty($Name)) $Name = time();
+        empty($title) ? $title = self::$title : self::$title = $title;
+
+        if (empty($sheets)) $sheets = time();
+
         //设置Excel属性
         self::$spreadsheet->getProperties()
             ->setCreator("Neo")
             ->setLastModifiedBy("Neo")
             ->setTitle(self::setUtf8($title))
-            ->setSubject($Name)
+            ->setSubject($sheets)
             ->setDescription("")
-            ->setKeywords($Name)
+            ->setKeywords($sheets)
             ->setCategory("");
-        self::$sheet->setTitle($Name);
-        self::$sheet->setCellValue('A1', $title);
-        self::$sheet->setCellValue('A2', self::setCellInfo($info));
-        //文字居中
-        self::$sheet->getStyle('A1')->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
-        self::$sheet->getStyle('A2')->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+        self::$sheet->setTitle($sheets);
 
-        //合并表头单元格
-        self::$sheet->mergeCells('A1:' . self::$cells . '1');
-        self::$sheet->mergeCells('A2:' . self::$cells . '2');
-
-        self::$sheet->getRowDimension(1)->setRowHeight(40);
-        self::$sheet->getRowDimension(2)->setRowHeight(20);
-
-        //设置表头字体
+        self::$sheet->mergeCells('A1:' . self::$cells . '1');   //合并表头单元格
+        self::$sheet->getRowDimension('A')->setRowHeight(40);   //设置行高
+        self::$sheet->setCellValue('A1', $title);               //负值
         self::$sheet->getStyle('A1')->getFont()->setName('黑体');
         self::$sheet->getStyle('A1')->getFont()->setSize(20);
         self::$sheet->getStyle('A1')->getFont()->setBold(true);
-        self::$sheet->getStyle('A2')->getFont()->setName('宋体');
-        self::$sheet->getStyle('A2')->getFont()->setSize(14);
-        self::$sheet->getStyle('A2')->getFont()->setBold(true);
+        self::$sheet->getStyle('A1')->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER); //设置左对齐
 
-        self::$sheet->getStyle('A3:' . self::$cells . '3')->getFont()->setBold(true);
+        if(isset($data['mark']) && !empty($data['mark'])){
+            foreach ($data['mark'] as $k => $v){
+                $i = $k + 2;
+                self::$sheet->mergeCells('A'.$i.':' . self::$cells . $i);
+                self::$sheet->setCellValue('A'.$i, $v);
+
+                self::$sheet->getStyle('A'.$i)->getFont()->setName('宋体');
+                self::$sheet->getStyle('A'.$i)->getFont()->setSize(16);
+                self::$sheet->getStyle('A'.$i)->getFont()->setBold(true);
+                self::$sheet->getStyle('A'.$i)->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT);
+            }
+        }
+
         return $this;
     }
 
@@ -211,16 +213,21 @@ class SpreadsheetExcelService
      * @param $data array
      * @return $this
      */
-    public  function setExcelHeader($data)
+    public  function setExcelHeader($data,$topNumber)
     {
         $span = 'A';
+        self::$topNumber = $topNumber;
         foreach ($data as $key => $value) {
             self::$sheet->getColumnDimension($span)->setWidth(self::$width);
             self::$sheet->setCellValue($span.self::$topNumber, $value);
+            self::$sheet->getStyle($span.self::$topNumber)->getFont()->setSize(16);
             $span++;
         }
-        self::$sheet->getRowDimension(3)->setRowHeight(self::$height);
+        $span = chr(ord($span) -1);
+        self::$sheet->getRowDimension(self::$topNumber)->setRowHeight(25);
+        self::$sheet->getStyle('A1:' . $span.self::$topNumber)->getBorders()->getAllBorders()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
         self::$cells = $span;
+
         return  $this;
     }
 
@@ -245,16 +252,38 @@ class SpreadsheetExcelService
                 }
                 $column++;
             }
+            $span = chr(ord($span) -1);
+            self::$colum =  $column;
             self::$sheet->getDefaultRowDimension()->setRowHeight(self::$height);
             //设置内容字体样式
-            self::$sheet->getStyle('A1:' . $span.$column)->applyFromArray(self::$styleArray);
+            self::$sheet->getStyle('A'.self::$topNumber .':'. $span.$column)->applyFromArray(self::$styleArray);
             //设置边框
-            self::$sheet->getStyle('A1:' . $span.$column)->getBorders()->getAllBorders()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
+            self::$sheet->getStyle('A1:' . $span.$column )->getBorders()->getAllBorders()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
             //设置自动换行
             self::$sheet->getStyle('A4:' . $span.$column)->getAlignment()->setWrapText(true);
         }
         return $this;
     }
+
+    public function setExcelEnd(array $data)
+    {
+        if(!empty($data)){
+            foreach ($data as $key => $value){
+                $i = self::$colum + $key ;
+                self::$sheet->mergeCells('A'.$i.':' . self::$cells.$i);
+                self::$sheet->setCellValue('A'.$i, $value);
+
+                self::$sheet->getStyle('A'.$i)->getFont()->setName('宋体');
+                self::$sheet->getStyle('A'.$i)->getFont()->setSize(16);
+                self::$sheet->getStyle('A'.$i)->getFont()->setBold(true);
+                self::$sheet->getStyle('A'.$i)->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT);
+            }
+            self::$sheet->getStyle('A1:' .self::$cells.$i)->getBorders()->getAllBorders()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
+        }
+        return $this;
+    }
+
+
     /**
      * 保存表格数据
      * @param $filename 文件名称
@@ -277,6 +306,78 @@ class SpreadsheetExcelService
         $writer->save($root_path.'/'.$fileName.'.'.$suffix);
 
         return $save_path.'/'.$fileName.'.'.$suffix;
+    }
+
+    /**
+     * TODO
+     * @param $filePath 文件路径
+     * @param array $sql  需要入库的字段 => excel表的列  例 [order_sn => 'B']
+     * @param array $where  每条入库的条件 同上
+     * @param int $startRow 有效数据从第几行开始
+     * @return array
+     * @author Qinii
+     * @day 3/15/21
+     */
+    public function _import($filePath,array $sql,$where = [],$startRow = 1)
+    {
+        if(!file_exists($filePath)) return ;
+        $ext = ucfirst(pathinfo($filePath, PATHINFO_EXTENSION));
+        $ret = [];
+        if(in_array($ext,['Xlsx','Xls'])){
+            $reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader($ext);
+            $spreadsheet = $reader->load($filePath);
+            $sheet = $spreadsheet->getActiveSheet();
+            $row_count = $sheet->getHighestDataRow();//取得总行数
+            if(!empty($check)){
+                foreach ($check as $s => $c){
+                    $_c = $sheet->getCell($s)->getValue();
+                    if($_c !== $c)  throw new ValidateException($s.'不是'.$s.'不可打入');
+                }
+            }
+
+            for ($row = $startRow; $row <= $row_count; $row++){
+                $_where = [];
+                $item = [];
+                if(!empty($where)){
+                    foreach ($where as $k => $v){
+                        $_w = $sheet->getCell($v.$row)->getValue();
+                        if(!$_w) continue;
+                        $_where[$k] = $_w;
+                    }
+                }
+                if(!empty($sql)){
+                    foreach ($sql as $key => $value){
+                        $item[$key] = $sheet->getCell($value.$row)->getValue();
+                    }
+                }
+                $ret[] = ['where' => $_where, 'value' => $item];
+            }
+        }
+
+        return $ret;
+    }
+
+    /**
+     * TODO 检测导入格式
+     * @param $filePath
+     * @param array $check
+     * @return bool
+     * @author Qinii
+     * @day 5/7/21
+     */
+    public function checkImport($filePath,$check = [])
+    {
+        $ext = ucfirst(pathinfo($filePath, PATHINFO_EXTENSION));
+        $reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader($ext);
+        $spreadsheet = $reader->load($filePath);
+        $sheet = $spreadsheet->getActiveSheet();
+        if(!empty($check)){
+            foreach ($check as $s => $c){
+                $_c = $sheet->getCell($s)->getValue();
+                if($_c !== $c)  throw new ValidateException('表格"'.$s.'"不是"'.$c.'"不可导入');
+            }
+        }
+        return true;
     }
 
 }

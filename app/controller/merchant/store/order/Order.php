@@ -18,6 +18,7 @@ use crmeb\exceptions\UploadException;
 use think\App;
 use crmeb\basic\BaseController;
 use app\common\repositories\store\order\StoreOrderRepository as repository;
+use think\facade\Db;
 
 class Order extends BaseController
 {
@@ -121,10 +122,16 @@ class Order extends BaseController
     {
         if(!$this->repository->merDeliveryExists($id,$this->request->merId()))
            return app('json')->fail('订单信息或状态错误');
-        $data = $this->request->params(['delivery_type','delivery_name','delivery_id']);
+//        $data = $this->request->params(['delivery_type','delivery_name','delivery_id']);
+        $data = $this->request->params(['delivery_type', 'delivery_name', 'delivery_id','express_no_images']);
+        if(empty($data['express_no_images']) || count($data['express_no_images']) < 1){
+            return app('json')->fail('請上傳運貨單');
+        }
         if(preg_match('/([\x81-\xfe][\x40-\xfe])/',$data['delivery_id']))
             return app('json')->fail('请输入正确的单号/电话');
         $this->repository->delivery($id,$data);
+        //TODO 訂單發貨成功 發送一条信息
+        $this->repository->chatBoxNotice($this->repository->getDetail($id),5,1,2);
         return app('json')->success('发货成功');
     }
 
@@ -211,7 +218,34 @@ class Order extends BaseController
 
         return app('json')->success('备注成功');
     }
-
+    /**
+     * @param $id
+     * @return mixed
+     * @author zhongguanmao
+     * @day 2021-06-24
+     */
+    public function takeForm($id)
+    {
+        return app('json')->success(formToData($this->repository->takeForm($id)));
+    }
+    /**
+     * @param $id
+     * @return mixed
+     * @author zhongguanmao
+     * @day 2021-06-24
+     */
+    public function take($id)
+    {
+        if(!$this->repository->getOne($id,$this->request->merId()))
+            return app('json')->fail('数据不存在');
+        $data = $this->request->params(['images']);
+        if(empty($data['images'])) return app('json')->fail('請先上傳收據');
+        if(is_array($data['images'])) $data['images'] = json_encode($data['images']);
+        $this->repository->takeOrder($id,null,$data['images']);
+        //TODO 訂單商家確認送達 發送一条信息
+        $this->repository->chatBoxNotice($this->repository->getDetail($id),5,1,4);
+        return app('json')->success('確認送達成功');
+    }
     /**
      * 核销
      * @param $code

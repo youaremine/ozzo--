@@ -68,13 +68,21 @@ class FinancialRecordDao extends BaseDao
             })
             ->when(isset($where['user_id']) && $where['user_id'] !== '', function ($query) use ($where) {
                 $query->where('user_id', $where['user_id']);
-            })->when(isset($where['keyword']) && $where['keyword'] !== '', function ($query) use ($where) {
+            })
+            ->when(isset($where['keyword']) && $where['keyword'] !== '', function ($query) use ($where) {
                 $query->whereLike('order_sn|user_info|financial_record_sn', "%{$where['keyword']}%");
-            })->when(isset($where['date']) && $where['date'] !== '', function ($query) use ($where) {
+            })
+            ->when(isset($where['date']) && $where['date'] !== '', function ($query) use ($where) {
                 getModelTime($query, $where['date'], 'create_time');
+            })
+            ->when(isset($where['is_mer']) && $where['is_mer'] !== '', function ($query) use ($where) {
+                if($where['is_mer']){
+                    $query->where('mer_id',$where['is_mer'])->where('type','in',[0,1]);
+                }else{
+                    $query->where('type','in',[1,2]);
+                }
             });
-
-        return $query->order('create_time DESC');
+        return $query;
     }
 
 }

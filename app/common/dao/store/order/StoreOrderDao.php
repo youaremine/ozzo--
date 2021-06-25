@@ -20,11 +20,14 @@ use app\common\model\store\order\StoreOrder;
 use app\common\model\store\order\StoreOrderProduct;
 use app\common\model\store\order\StoreOrderStatus;
 use app\common\model\user\User;
+use app\common\repositories\store\order\StoreImportDeliveryRepository;
+use app\common\repositories\store\order\StoreImportRepository;
 use app\common\repositories\store\order\StoreOrderStatusRepository;
 use app\common\repositories\store\product\ProductAssistSetRepository;
 use app\common\repositories\store\product\ProductGroupBuyingRepository;
 use app\common\repositories\store\product\ProductGroupRepository;
 use app\common\repositories\system\merchant\MerchantRepository;
+use crmeb\services\SpreadsheetExcelService;
 use think\db\BaseQuery;
 use think\db\exception\DataNotFoundException;
 use think\db\exception\DbException;
@@ -88,6 +91,12 @@ class StoreOrderDao extends BaseDao
             })
             ->when(isset($where['uid']) && $where['uid'] !== '', function ($query) use ($where) {
                 $query->where('uid', $where['uid']);
+            })
+            ->when(isset($where['pay_type']) && $where['pay_type'] !== '', function ($query) use ($where) {
+                $query->where('pay_type', $where['pay_type']);
+            })
+            ->when(isset($where['order_ids']) && $where['order_ids'] !== '', function ($query) use ($where) {
+                $query->whereIn('order_id', $where['order_ids']);
             })
             ->when(isset($where['order_id']) && $where['order_id'] !== '', function ($query) use ($where) {
                 $query->where('order_id', $where['order_id']);
@@ -642,5 +651,61 @@ class StoreOrderDao extends BaseDao
             })
             ->where('P.product_type',1)->where('R.status',3);
         return $query->count();
+    }
+
+    /**
+     * TODO 导入发货信息
+     * @param array $data
+     * @param $merId
+     * @author Qinii
+     * @day 3/16/21
+     */
+    public function setWhereDeliveryStatus(array $arrary,$merId)
+    {
+        //读取excel
+        $data = SpreadsheetExcelService::instance()->_import($arrary['path'],$arrary['sql'],$arrary['where'],4);
+        if(!$data) return ;
+        $import_id = $arrary['import_id'];
+        Db::transaction(function() use ($data,$merId,$import_id){
+            $result = [];
+            $num = 0;
+            $count = 0;
+            $status = 0;
+            foreach ($data as $datum){
+                $value = [];
+                $ret = [];
+                if($datum['where']){
+                    $count = $count +1;
+                    if(empty($datum['value']['delivery_id'])){
+                        $mark = '发货单号为空';
+                    }else{
+                        $ret = $this->getModel()::getDB()->where('status',0)->where('paid',1)->where('order_type',0)->where('mer_id',$merId)->where($datum['where'])->find();
+                        $mark = '数据有误或已发货';
+                    }
+                    if($ret){
+                        try{
+                            $value = array_merge($datum['value'],['status' => 1]);
+                            $value['delivery_type'] = 1;
+                            $this->getModel()::getDB()->where($datum['where'])->update($value);
+                            $status = 1;
+                            $mark = '';
+                            $num = $num + 1;
+                        }catch (\Exception $exception){
+                            $mark = '数据库操作失败';
+                        }
+                    }
+                    $datum['where']['mark'] = $mark;
+                    $datum['where']['mer_id'] = $merId;
+                    $datum['where']['status'] = $status;
+                    $datum['where']['import_id'] = $import_id;
+                    $result[] = array_merge($datum['where'],$datum['value']);
+                }
+            }
+            // 记录入库操作
+            if(!empty($result)) app()->make(StoreImportDeliveryRepository::class)->insertAll($result);
+            $_status = ($count == $num) ? 1 : (($num < 1) ? -1 : 10 );
+            app()->make(StoreImportRepository::class)->update($import_id,['count'=> $count,'success' => $num,'status' => $_status]);
+        });
+        if(file_exists($arrary['path'])) unlink($arrary['path']);
     }
 }

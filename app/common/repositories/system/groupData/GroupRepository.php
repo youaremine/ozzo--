@@ -41,7 +41,7 @@ class GroupRepository extends BaseRepository
     /**
      *
      */
-    const TYPES = ['input' => '文本框', 'number' => '数字框', 'textarea' => '多行文本框', 'radio' => '单选框', 'checkbox' => '多选框', 'select' => '下拉框', 'file' => '文件上传', 'image' => '图片上传', 'color' => '颜色选择框'];
+    const TYPES = ['input' => '文本框', 'number' => '数字框', 'textarea' => '多行文本框', 'radio' => '单选框', 'checkbox' => '多选框', 'select' => '下拉框', 'file' => '文件上传', 'image' => '图片上传', 'color' => '颜色选择框', 'cate' => '平台分类'];
 
 
     /**

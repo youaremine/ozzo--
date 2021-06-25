@@ -266,11 +266,11 @@ abstract class BaseQuery
     /**
      * 得到某个列的数组
      * @access public
-     * @param string $field 字段名 多个字段用逗号分隔
+     * @param string|array $field 字段名 多个字段用逗号分隔
      * @param string $key   索引
      * @return array
      */
-    public function column(string $field, string $key = ''): array
+    public function column($field, string $key = ''): array
     {
         return $this->connection->column($this, $field, $key);
     }
@@ -1246,6 +1246,7 @@ abstract class BaseQuery
     public function parsePkWhere($data): void
     {
         $pk = $this->getPk();
+
         if (is_string($pk)) {
             // 获取数据表
             if (empty($this->options['table'])) {

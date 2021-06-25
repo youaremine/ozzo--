@@ -17,16 +17,17 @@ use app\common\repositories\store\order\PresellOrderRepository;
 use app\common\repositories\store\product\ProductPresellRepository;
 use crmeb\jobs\CheckProductPresellJob;
 use crmeb\jobs\SendSmsJob;
+use crmeb\services\TimerService;
 use Swoole\Timer;
 use think\facade\Log;
 use crmeb\interfaces\ListenerInterface;
 use think\facade\Queue;
 
-class ProductPresellStatusListen implements ListenerInterface
+class ProductPresellStatusListen extends TimerService implements ListenerInterface
 {
     public function handle($event): void
     {
-        Timer::tick(1000 * 300, function () {
+        $this->tick(1000 * 300, function () {
             try {
                 Queue::push(CheckProductPresellJob::class, []);
             } catch (\Exception $e) {

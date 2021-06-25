@@ -28,7 +28,7 @@ return [
             'reactor_num'           => swoole_cpu_num(),
             'worker_num'            => swoole_cpu_num(),
             'task_worker_num'       => swoole_cpu_num(),
-            'task_enable_coroutine' => true,
+            'task_enable_coroutine' => false,
             'task_max_request'      => 2000,
             'enable_static_handler' => true,
             'document_root'         => root_path('public'),
@@ -37,6 +37,7 @@ return [
             'socket_buffer_size'    => 128 * 1024 * 1024,
             'max_request'           => 3000,
             'send_yield'            => true,
+            'reload_async'          => true,
         ],
     ],
     'websocket'  => [
@@ -111,5 +112,5 @@ return [
     'instances'  => [],
     //每次请求前需要重新执行的服务
     'services'   => [],
-    'locks' => [],
+    'locks' => ['group_buying'],
 ];

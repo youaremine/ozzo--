@@ -72,7 +72,7 @@ class StoreCartDao extends BaseDao
                     $query->field('product_id,stock,price,unique,sku,image');
                 },
                 'merchant' => function ($query) {
-                    $query->field('mer_id,mer_name,mer_state,mer_avatar');
+                    $query->field('mer_id,mer_name,mer_state,mer_avatar,is_trader');
                 }
             ])->select();
 

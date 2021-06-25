@@ -21,13 +21,13 @@ class MerchantUpdateValidate extends Validate
     protected $failException = true;
 
     protected $rule = [
-        'mer_info|店铺简介' => 'require|max:200',
+        'mer_info|店铺简介' => 'max:200',
         'service_phone|服务电话' => 'require|isPhone',
         'mer_avatar|店铺头像' => 'require|max:128',
         'mer_banner|店铺banner' => 'require|max:128',
         'mini_banner|店铺街banner' => 'max:128',
         'mer_keyword|店铺关键字' => 'max:128',
-        'mer_address|店铺地址' => 'require|max:128',
+        'mer_address|店铺地址' => 'max:128',
         'long|店铺经度' => 'max:24',
         'lat|店铺纬度' => 'max:24',
         'mer_state|是否开启' => 'require|in:0,1',

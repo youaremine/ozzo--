@@ -173,6 +173,7 @@ class ExpressRepository extends BaseRepository
                     ],
 
                 ]),
+            Elm::frameImages('express_no_images', '運貨單', '/' . config('admin.merchant_prefix') . '/setting/uploadPicture?field=express_no_images&type=2')->maxLength(6)->width('896px')->height('480px')->spin(0)->modal(['modal' => false])->props(['footer' => false]),
         ]);
         return $form->setTitle('添加发货信息');
     }

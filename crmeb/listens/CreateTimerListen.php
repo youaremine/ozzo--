@@ -13,16 +13,9 @@
 
 namespace crmeb\listens;
 
-
-use app\common\repositories\store\broadcast\BroadcastGoodsRepository;
-use app\common\repositories\store\broadcast\BroadcastRoomRepository;
 use crmeb\interfaces\ListenerInterface;
 use Swoole\Process;
 use Swoole\Server;
-use Swoole\Timer;
-use think\facade\Log;
-use think\swoole\FileWatcher;
-use function Swoole\Coroutine\run;
 
 class CreateTimerListen implements ListenerInterface
 {

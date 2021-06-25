@@ -15,16 +15,19 @@ namespace app\controller\api;
 
 
 use app\common\repositories\system\CacheRepository;
+use app\Request;
 use crmeb\basic\BaseController;
 use app\common\repositories\store\shipping\ExpressRepository;
 use app\common\repositories\store\StoreCategoryRepository;
 use app\common\repositories\system\groupData\GroupDataRepository;
 use app\common\repositories\user\UserVisitRepository;
 use app\common\repositories\wechat\TemplateMessageRepository;
+use crmeb\payment\stripe\sdk\Stripe;
 use crmeb\services\AlipayService;
 use crmeb\services\MiniProgramService;
 use crmeb\services\UploadService;
 use crmeb\services\WechatService;
+use crmeb\payment\tapgo\TapGo;
 use Exception;
 use Joypack\Tencent\Map\Bundle\Location;
 use Joypack\Tencent\Map\Bundle\LocationOption;
@@ -163,7 +166,72 @@ class Common extends BaseController
             Log::info('支付宝回调失败:' . var_export([$e->getMessage(), $e->getFile() . ':' . $e->getLine()], true));
         }
     }
+    /**
+     * tapgo 回調
+     */
+    public function tapgoNotify(Request $request){
+        $test_log =  dirname(dirname(dirname(dirname(__FILE__)))).'/crmeb/payment/log/tapgo/1.txt';
+        $fp = fopen($test_log, 'w');
+        $data = json_encode($this->request->get()) . json_encode($this->request->post());
+        fwrite($fp, json_encode($data));
+        fclose($fp);
+        try{
+           $TapGo = new TapGo();
+           $TapGo->notify($this->request->post());
+        } catch (Exception $e) {
+            Log::info('tapgo回调失败:' . var_export([$e->getMessage(), $e->getFile() . ':' . $e->getLine()], true));
+        }
+    }
+    /**
+     * 微信App支付 回調
+     */
+    public function weixinAppNotify(){
+        try{
+            $wechat = new \crmeb\payment\wechat\Wechat();
+            $http_headers = \think\facade\Request ::header();
+            // file_get_contents("php://input")
+            $params = \think\facade\Request ::param();
+            $wechat->notice($params, $http_headers,$this->request->post());
+        } catch (Exception $e) {
+            Log::info('微信app支付回調失敗:' . var_export([$e->getMessage(), $e->getFile() . ':' . $e->getLine()], true));
+        }
+    }
+    /**
+     * stripe支付 回調
+     */
+    public function stripeNotify(){
+        try {
+            $stripe = new \crmeb\payment\stripe\sdk\Stripe;
+            $http_headers = \think\facade\Request ::header();
+            $stripe->notice($http_headers,request()->getInput());
+        } catch (Exception $e){
+            Log::info('stripe支付回調失敗:' . var_export([$e->getMessage(), $e->getFile() . ':' . $e->getLine()], true));
+        }
 
+//        switch ($type){
+//                // 支付成功通知
+//            case "checkout_payment_success":
+//                try{
+//                    $stripe = new \crmeb\payment\stripe\sdk\Stripe;
+//                    $http_headers = \think\facade\Request ::header();
+//                    $params = \think\facade\Request ::param();
+//                    $stripe->pay_success_notice($http_headers,$params);
+//                } catch (Exception $e) {
+//                    Log::info('stripe支付回調失敗:' . var_export([$e->getMessage(), $e->getFile() . ':' . $e->getLine()], true));
+//                }
+//            break;
+//                // 支付失敗通知
+//            case "checkout_payment_failed" : $b = 1;
+//            break;
+//                // completed
+//            case "checkout_completed" :
+//            break;
+//            default:
+//                echo json(['code' => 400,'msg' => '参数错误']);
+//                break;
+//        }
+
+    }
     /**
      * 获取图片base64
      * @return mixed

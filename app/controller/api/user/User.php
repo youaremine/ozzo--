@@ -248,4 +248,32 @@ class User extends BaseController
         return app('json')->success($this->repository->returnToken($user, $tokenInfo));
     }
 
+    public function edit()
+    {
+        $data = $this->request->params(['avatar','nickname']);
+        $uid = (int)$this->request->param('uid');
+        if (!$uid) return app('json')->fail('用户不存在');
+
+        if(empty($data['avatar'])) unset($data['avatar']);
+        if(empty($data['nickname'])) unset($data['nickname']);
+        if(empty($data)) return app('json')->fail('参数丢失');
+        $this->repository->update($this->request->uid(),$data);
+
+        return app('json')->success('修改成功');
+    }
+
+    public function chagePassword()
+    {
+        $data = $this->request->params(['password', 'sms_code']);
+        if (!$data['sms_code'] || !(YunxinSmsService::create())->checkSmsCode($data['phone'], $data['sms_code'],'binding')) return app('json')->fail('验证码不正确');
+        $user = $this->repository->accountByUser($data['phone']);
+        if ($user) {
+            $data = ['phone' => $data['phone']];
+        } else {
+            $data = ['account' => $data['phone'], 'phone' => $data['phone']];
+        }
+        $this->repository->update($this->request->uid(), $data);
+        return app('json')->success('绑定成功');
+    }
+
 }

@@ -14,6 +14,7 @@ use app\common\model\BaseModel;
 use app\common\model\store\order\StoreOrderProduct;
 use app\common\model\system\merchant\Merchant;
 use app\common\repositories\store\order\StoreOrderRepository;
+use app\common\repositories\store\product\SpuRepository;
 use crmeb\jobs\ChangeSpuStatusJob;
 
 class ProductGroup extends BaseModel
@@ -78,7 +79,8 @@ class ProductGroup extends BaseModel
         if($end_time <= time()){
             $this->action_status = -1;
             $this->save();
-            queue(ChangeSpuStatusJob::class,['product_type' => 4,'id' => $this->product_group_id]);
+            queue(ChangeSpuStatusJob::class, ['id' => $this->product_group_id, 'product_type' => 4]);
+            //app()->make(SpuRepository::class)->changeStatus($this->product_group_id,4);
             return -1;
         }
     }

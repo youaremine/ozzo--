@@ -61,6 +61,9 @@ class MerchantDao extends BaseDao
             ->when(isset($where['mer_state']) && $where['mer_state'] !== '', function ($query) use ($where) {
                 $query->where('mer_state', $where['mer_state']);
             })
+            ->when(isset($where['mer_id']) && $where['mer_id'] !== '', function ($query) use ($where) {
+                $query->where('mer_id', $where['mer_id']);
+            })
             ->when(isset($where['category_id']) && $where['category_id'] !== '', function ($query) use ($where) {
                 is_array($where['category_id']) ? $query->whereIn('category_id', $where['category_id']) : $query->where('category_id', $where['category_id']);
             });
@@ -208,4 +211,35 @@ class MerchantDao extends BaseDao
     {
         return Merchant::getDB()->whereIn('mer_id',$ids)->column('mer_name');
     }
+
+    /**
+     * TODO 增加商户余额
+     * @param int $merId
+     * @param float $num
+     * @author Qinii
+     * @day 3/19/21
+     */
+    public function addMoney(int $merId,float $num)
+    {
+        $merchant = $this->getModel()::getDB()->where('mer_id', $merId)->find();
+        $mer_money = bcadd($merchant['mer_money'], $num, 2);
+        $merchant->mer_money = $mer_money;
+        $merchant->save();
+    }
+
+    /**
+     * TODO 减少商户余额
+     * @param int $merId
+     * @param float $num
+     * @author Qinii
+     * @day 3/19/21
+     */
+    public function subMoney(int $merId,float $num)
+    {
+        $merchant = $this->getModel()::getDB()->where('mer_id', $merId)->find();
+        $mer_money = bcsub($merchant['mer_money'], $num, 2);
+        $merchant->mer_money = $mer_money;
+        $merchant->save();
+    }
+
 }

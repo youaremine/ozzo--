@@ -333,4 +333,9 @@ class Common extends BaseController
         $login_banner = systemGroupData('sys_login_banner');
         return app('json')->success(compact('login_banner', 'login_logo', 'login_title', 'menu_slogo', 'menu_logo'));
     }
+
+    public function version()
+    {
+        return app('json')->success(['version' => get_crmeb_version('未知')]);
+    }
 }

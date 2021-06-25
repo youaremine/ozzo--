@@ -56,4 +56,92 @@ class FinancialRecord extends BaseController
         app()->make(ExcelRepository::class)->create($where, $this->request->adminId(), 'financial',$merId);
         return app('json')->success('开始导出数据');
     }
+
+
+    /**
+     * TODO 头部统计
+     * @return \think\response\Json
+     * @author Qinii
+     * @day 3/23/21
+     */
+    public function getTitle()
+    {
+        $where = $this->request->params(['date']);
+        $where['is_mer'] = $this->request->merId() ?? 0 ;
+        if($where['is_mer'] == 0){
+            $data = $this->repository->getAdminTitle($where);
+        }else{
+            $data = $this->repository->getMerchantTitle($where);
+        }
+        return app('json')->success($data);
+    }
+
+
+    /**
+     * TODO 列表
+     * @return \think\response\Json
+     * @author Qinii
+     * @day 3/23/21
+     */
+    public function getList()
+    {
+        [$page, $limit] = $this->getPage();
+        $where = $this->request->params(['type','date']);
+        $where['is_mer'] = $this->request->merId() ?? 0 ;
+        $data = $this->repository->getAdminList($where,$page, $limit);
+        return app('json')->success($data);
+    }
+
+
+    /**
+     * TODO 详情
+     * @param $type
+     * @return \think\response\Json
+     * @author Qinii
+     * @day 3/23/21
+     */
+    public function detail($type)
+    {
+        $date = $this->request->param('date');
+        $where['date'] = empty($date) ? date('Y-m-d',time()) : $date ;
+        $where['is_mer'] = $this->request->merId() ?? 0 ;
+        if($this->request->merId()){
+            $data = $this->repository->merDetail($type,$where);
+        }else{
+            $data = $this->repository->adminDetail($type,$where);
+        }
+
+        return app('json')->success($data);
+    }
+
+    /**
+     * TODO 导出文件
+     * @param $type
+     * @author Qinii
+     * @day 3/25/21
+     */
+    public function exportDetail($type)
+    {
+        $date = $this->request->param('date');
+        $where['date'] = empty($date) ? date('Y-m-d',time()) : $date ;
+        $where['type'] = $type;
+        $where['is_mer'] = $this->request->merId() ?? 0 ;
+        app()->make(ExcelRepository::class)->create($where, $this->request->adminId(), 'exportFinancial',$where['is_mer']);
+        return app('json')->success('开始生成文件');
+    }
+
+    /**
+     * TODO 流水统计
+     * @return \think\response\Json
+     * @author Qinii
+     * @day 5/7/21
+     */
+    public function title()
+    {
+        $where = $this->request->params(['date']);
+
+        $data = $this->repository->getFiniancialTitle($this->request->merId(),$where);
+        return app('json')->success($data);
+    }
+
 }

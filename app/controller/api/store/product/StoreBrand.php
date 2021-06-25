@@ -43,7 +43,7 @@ class StoreBrand extends BaseController
     public function lst()
     {
         [$page, $limit] = $this->getPage();
-        $where = $this->request->params(['keyword', 'cate_id','mer_id','mer_cate_id']);
+        $where = $this->request->params(['keyword', 'cate_id','mer_id','mer_cate_id','pid']);
         return app('json')->success($this->repository->getCategorySearch($where, $page, $limit));
     }
 

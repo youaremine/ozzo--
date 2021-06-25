@@ -17,6 +17,7 @@ namespace app\common\repositories\system\groupData;
 use app\common\dao\BaseDao;
 use app\common\dao\system\groupData\GroupDataDao;
 use app\common\repositories\BaseRepository;
+use app\common\repositories\store\StoreCategoryRepository;
 use FormBuilder\Exception\FormBuilderException;
 use FormBuilder\Factory\Elm;
 use FormBuilder\Form;
@@ -129,14 +130,33 @@ class GroupDataRepository extends BaseRepository
      * @author xaboy
      * @day 2020-04-02
      */
-    public function form(int $groupId, ?int $id = null, array $formData = []): Form
+    public function form(int $groupId, ?int $id = null, ?int $merId = null, array $formData = []): Form
     {
         $fields = app()->make(GroupRepository::class)->fields($groupId);
-        $form = Elm::createForm(is_null($id) ? Route::buildUrl('groupDataCreate', compact('groupId'))->build() : Route::buildUrl('groupDataUpdate', compact('groupId', 'id'))->build());
+        if (is_null($merId) || empty($merId)) {
+            $url = is_null($id)
+                ? Route::buildUrl('groupDataCreate', compact('groupId'))->build()
+                : Route::buildUrl('groupDataUpdate', compact('groupId', 'id'))->build();
+        } else {
+            $url = is_null($id)
+                ? Route::buildUrl('merchantGroupDataCreate', compact('groupId'))->build()
+                : Route::buildUrl('merchantGroupDataUpdate', compact('groupId', 'id'))->build();
+        }
+
+        $form = Elm::createForm($url);
         $rules = [];
         foreach ($fields as $field) {
             if ($field['type'] == 'image') {
-                $rules[] = Elm::frameImage($field['field'], $field['name'], '/' . config('admin.admin_prefix') . '/setting/uploadPicture?field=' . $field['field'] . '&type=1')->modal(['modal' => false])->width('896px')->height('480px')->props(['footer' => false]);
+                $rules[] = Elm::frameImage($field['field'], $field['name'], '/' . config('admin.' . ($merId ? 'merchant' : 'admin') . '_prefix') . '/setting/uploadPicture?field=' . $field['field'] . '&type=1')->modal(['modal' => false])->width('896px')->height('480px')->props(['footer' => false]);
+                continue;
+            } else if ($field['type'] == 'cate') {
+                $rules[] = Elm::cascader($field['field'], $field['name'])->options(function () use ($id) {
+                    $storeCategoryRepository = app()->make(StoreCategoryRepository::class);
+                    $menus = $storeCategoryRepository->getAllOptions(0, 1, null);
+                    if ($id && isset($menus[$id])) unset($menus[$id]);
+                    $menus = formatCascaderData($menus, 'cate_name');
+                    return $menus;
+                })->props(['props' => ['checkStrictly' => true, 'emitPath' => false]])->filterable(true)->appendValidate(Elm::validateInt()->required()->message('请选择分类'));
                 continue;
             } else if (in_array($field['type'], ['select', 'checkbox', 'radio'])) {
                 $options = array_map(function ($val) {
@@ -144,8 +164,8 @@ class GroupDataRepository extends BaseRepository
                     return compact('value', 'label');
                 }, explode("\n", $field['param']));
                 $rule = Elm::{$field['type']}($field['field'], $field['name'])->options($options);
-                if($field['type'] == 'select'){
-                    $rule->filterable(true)->prop('allow-create',true);
+                if ($field['type'] == 'select') {
+                    $rule->filterable(true)->prop('allow-create', true);
                 }
                 $rules[] = $rule;
                 continue;
@@ -182,7 +202,7 @@ class GroupDataRepository extends BaseRepository
         $value = $data['value'];
         unset($data['value']);
         $data += $value;
-        return $this->form($groupId, $id, $data);
+        return $this->form($groupId, $id, $merId, $data);
     }
 
     /**
@@ -201,6 +221,24 @@ class GroupDataRepository extends BaseRepository
         $groupId = $make->keyById($key);
         if (!$groupId) return [];
         return $this->dao->getGroupData($merId, $groupId, $page, $limit);
+    }
+
+    /**
+     * @param string $key
+     * @param int $merId
+     * @param int|null $page
+     * @param int|null $limit
+     * @return int
+     * @author xaboy
+     * @day 2020/5/27
+     */
+    public function getGroupDataCount(string $key, int $merId)
+    {
+        /** @var GroupRepository $make */
+        $make = app()->make(GroupRepository::class);
+        $groupId = $make->keyById($key);
+        if (!$groupId) 0;
+        return $this->dao->groupDataCount($merId, $groupId);
     }
 
     /**

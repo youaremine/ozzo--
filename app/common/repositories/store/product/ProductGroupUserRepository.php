@@ -46,7 +46,14 @@ class ProductGroupUserRepository extends BaseRepository
                 'nickname'=> $userInfo->nickname,
                 'avatar' => $userInfo->avatar,
             ];
-            $user = $this->dao->create($data);
+            makeLock('group_buying')->lock();
+            try{
+                $user = $this->dao->create($data);
+            }catch (\Exception $exception){
+                makeLock('group_buying')->unlock();
+            }
+            makeLock('group_buying')->unlock();
+
         }
         return  $user;
     }

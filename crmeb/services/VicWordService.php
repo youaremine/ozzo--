@@ -20,7 +20,7 @@ class VicWordService
 
     public function getWord($str)
     {
-        ini_set('memory_limit', '256M');
+        ini_set('memory_limit', '-1');
         $vicWord = new VicWord();
         $word = $vicWord->getAutoWord($str);
         $data = [];

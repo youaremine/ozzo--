@@ -13,6 +13,7 @@
 
 namespace crmeb\listens;
 
+use crmeb\services\TimerService;
 use Swoole\Timer;
 use think\facade\Log;
 use crmeb\interfaces\ListenerInterface;
@@ -21,15 +22,15 @@ use app\common\repositories\store\product\ProductAssistRepository;
 use app\common\repositories\store\product\ProductGroupRepository;
 use app\common\repositories\store\product\ProductPresellRepository;
 
-class SeckillTImeCheckListen implements ListenerInterface
+class SeckillTImeCheckListen extends TimerService implements ListenerInterface
 {
     public function handle($event): void
     {
-        $make = app()->make(StoreSeckillActiveRepository::class);
-        $make_1 = app()->make(ProductAssistRepository::class);
-        $make_2 = app()->make(ProductPresellRepository::class);
-        $make_3 = app()->make(ProductGroupRepository::class);
-        Timer::tick(1000 * 60, function () use ($make,$make_1,$make_2,$make_3) {
+        $this->tick(1000 * 60, function () {
+            $make = app()->make(StoreSeckillActiveRepository::class);
+            $make_1 = app()->make(ProductAssistRepository::class);
+            $make_2 = app()->make(ProductPresellRepository::class);
+            $make_3 = app()->make(ProductGroupRepository::class);
             try {
                 $make->valActiveStatus();
                 $make_1->valActiveStatus();

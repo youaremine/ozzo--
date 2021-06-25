@@ -17,17 +17,17 @@ namespace crmeb\listens;
 use app\common\repositories\store\order\StoreOrderRepository;
 use crmeb\interfaces\ListenerInterface;
 use crmeb\jobs\OrderReplyJob;
+use crmeb\services\TimerService;
 use Swoole\Timer;
 use think\facade\Queue;
 
-class AutoOrderReplyListen implements ListenerInterface
+class AutoOrderReplyListen extends TimerService implements ListenerInterface
 {
 
     public function handle($event): void
     {
-        $storeOrderRepository = app()->make(StoreOrderRepository::class);
-
-        Timer::tick(1000 * 60 * 60, function () use ($storeOrderRepository) {
+        $this->tick(1000 * 60 * 60, function () {
+            $storeOrderRepository = app()->make(StoreOrderRepository::class);
             $time = date('Y-m-d H:i:s', strtotime('- 7 day'));
             $ids = $storeOrderRepository->getFinishTimeoutIds($time);
             foreach ($ids as $id) {

@@ -40,6 +40,7 @@ return [
             \crmeb\listens\AutoOrderReplyListen::class,
             \crmeb\listens\ProductPresellStatusListen::class,
             \crmeb\listens\ProductGroupStatusCheckListen::class,
+            \crmeb\listens\TapgoOrderStatusListen::class,
         ] : [],
         'pay_success_user_recharge' => [\crmeb\listens\pay\UserRechargeSuccessListen::class],
         'pay_success_order' => [\crmeb\listens\pay\OrderPaySuccessListen::class],

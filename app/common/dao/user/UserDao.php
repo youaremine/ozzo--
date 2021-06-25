@@ -99,9 +99,9 @@ class UserDao extends BaseDao
         })->when(isset($where['uids']), function (BaseQuery $query) use ($where) {
             return $query->whereIn('User.uid', $where['uids']);
         })->when(isset($where['pay_count']) && $where['pay_count'] !== '', function ($query) use ($where) {
-            if($where['pay_count'] == -1 ){
+            if ($where['pay_count'] == -1) {
                 $query->where('User.pay_count', 0);
-            }else{
+            } else {
                 $query->where('User.pay_count', '>', $where['pay_count']);
             }
         })->when(isset($where['user_time_type']) && $where['user_time_type'] !== '' && $where['user_time'] != '', function ($query) use ($where) {
@@ -307,5 +307,26 @@ class UserDao extends BaseDao
     public function selfUserList($phone)
     {
         return User::getDB()->where('phone', $phone)->field('uid,nickname,avatar,user_type')->select();
+    }
+
+    public function initSpreadLimitDay(int $day)
+    {
+        return User::getDB()->where('spread_uid', '>', 0)->update(['spread_limit' => date('Y-m-d H:i:s', strtotime("+ $day day"))]);
+    }
+
+    public function clearSpreadLimitDay()
+    {
+        return User::getDB()->where('spread_uid', '>', 0)->update(['spread_limit' => null]);
+    }
+
+    public function updateSpreadLimitDay(int $day)
+    {
+        User::getDB()->where('spread_uid', '>', 0)->whereNull('spread_limit')->update(['spread_limit' => date('Y-m-d H:i:s', strtotime("+ $day day"))]);
+        return User::getDB()->where('spread_uid', '>', 0)->whereNotNull('spread_limit')->update(['spread_limit' => Db::raw('TIMESTAMPADD(DAY, ' . $day . ', `spread_limit`)')]);
+    }
+
+    public function syncSpreadStatus()
+    {
+        return User::getDB()->where('spread_uid', '>', 0)->whereNotNull('spread_limit')->where('spread_limit', '<=', date('Y-m-d H:i:s'))->update(['spread_time' => null, 'spread_uid' => 0, 'spread_limit' => null]);
     }
 }

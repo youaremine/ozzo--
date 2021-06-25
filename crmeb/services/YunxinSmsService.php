@@ -30,6 +30,10 @@ use think\facade\Cache;
 use think\facade\Config;
 use think\facade\Route;
 
+use AlibabaCloud\Client\AlibabaCloud;
+use AlibabaCloud\Client\Exception\ClientException;
+use AlibabaCloud\Client\Exception\ServerException;
+
 /**
  * Class YunxinSmsService
  * @package crmeb\services
@@ -311,7 +315,10 @@ class YunxinSmsService
             throw new SmsException('Mobile number cannot be empty');
         }
 
-        $this->checkConfig();
+        //$this->checkConfig();
+
+        $temp_id = 'SMS_218170777';
+        $signname = '奥世傲科技';
 
         $formData['uid'] = $this->config['sms_account'];
         $formData['token'] = $this->config['sms_token'];
@@ -321,7 +328,43 @@ class YunxinSmsService
             throw new SmsException('Missing template number');
 
         $formData['param'] = json_encode($data);
-        $resource = json_decode(HttpService::postRequest(self::API . 'sms/send', $formData), true);
+
+        AlibabaCloud::accessKeyClient('LTAI5tBD6Xq2nvzFojiMcX5s', '6Y3PWhXLoD4q8FYCprO8IymeJRI6kE')
+            ->regionId('cn-shenzhen')
+            ->asDefaultClient();
+
+        try {
+            $resource = AlibabaCloud::rpc()
+                ->product('Dysmsapi')
+                ->scheme('https') // https | http
+                ->version('2017-05-25')
+                ->action('SendSms')
+                ->method('POST')
+                ->host('dysmsapi.aliyuncs.com')
+                ->options([
+                    'query' => [
+                        'PhoneNumbers' => '852'.$phone,
+                        'SignName' => $signname,
+                        'TemplateCode' => $temp_id,//旧的注册验证码模板id，新的审核通过后用新的
+                        'TemplateParam' => json_encode($data)
+                    ],
+                ])
+                ->request();
+            $resource = $resource->toArray();
+            app()->make(SmsRecordDao::class)->create([
+                'uid' => $formData['uid'],
+                'phone' => $phone,
+                'content' => 'sign:'.$signname.'template:'.$temp_id.'content:'.json_encode($data),
+                'template' => $temp_id,
+                'record_id' => $resource['BizId']
+            ]);
+        } catch (ClientException $e) {
+            echo $e->getErrorMessage() . PHP_EOL;
+        } catch (ServerException $e) {
+            echo $e->getErrorMessage() . PHP_EOL;
+        }
+
+       /* $resource = json_decode(HttpService::postRequest(self::API . 'sms/send', $formData), true);
         if ($resource['status'] === 400) {
             throw new SmsException($resource['msg']);
         } else {
@@ -332,7 +375,7 @@ class YunxinSmsService
                 'template' => $resource['data']['template'],
                 'record_id' => $resource['data']['id']
             ]);
-        }
+        }*/
         return $resource;
     }
 

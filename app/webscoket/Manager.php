@@ -29,7 +29,7 @@ use think\swoole\contract\websocket\HandlerInterface;
 use think\swoole\Table;
 use think\swoole\Websocket;
 use think\swoole\websocket\Room;
-
+use think\facade\Db;
 /**
  * Class Manager
  * @package app\webscoket
